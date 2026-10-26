@@ -2,13 +2,14 @@
 <!DOCTYPE html>
 <!--
   ============================================================================
-  سُعرة (NutriLens) — النسخة الأسطورية المحسنة المتكاملة
+  سُعرة (NutriLens AI) — النسخة الشاملة الأسطورية الموحدة
   ----------------------------------------------------------------------------
-  - SPA نقي فائق السرعة والخفة (Vanilla JS + IndexedDB) بدون أي أطر ثقيلة.
-  - يعمل بدون توقف مع دعم PWA و GitHub Pages بالمسارات النسبية.
-  - مؤثرات صوتية تخليقية (Web Audio API) بدون ملفات صوت خارجية.
-  - نظام تذكير 11:00 م ذكي لحساب السعرات المتبقية + إشعارات رد المدرب.
-  - محرك Gemini مع تحكم كامل بالنماذج (Flash/Pro) واستكشاف تلقائي للبدائل.
+  - SPA فائق السرعة وخفيف (Vanilla JS + IndexedDB محصن).
+  - يدعم تثبيت الـ PWA ويعمل بسلاسة على GitHub Pages.
+  - محرك Gemini مرن مع نظام استكشاف وتبديل تلقائي عند نفاد الكوتا.
+  - ضغط صور الوجبات تلقائياً قبل الحفظ لتفادي استهلاك الذاكرة.
+  - محلل صوتي ذكي للموجات والماكروز ومؤثرات صوتية تخليقية عبر Web Audio API.
+  - بطاقة ستوري 600x900 احترافية لمشاركة الإنجاز على السوشيال ميديا.
   ============================================================================
 -->
 <html lang="ar" dir="rtl">
@@ -16,8 +17,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>سُعرة — NutriLens AI</title>
-  <meta name="description" content="سُعرة: متتبع السعرات والماكروز الذكي مع مدرب Gemini، يعمل محلياً على جهازك." />
-  <meta name="theme-color" content="#130c07" />
+  <meta name="description" content="سُعرة: متتبع السعرات والماكروز الذكي مع مدرب Gemini الرياضي، يعمل محلياً بالكامل على جهازك." />
+  <meta name="theme-color" content="#0c0806" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -40,7 +41,7 @@
   <!-- Google Fonts: Cairo, Tajawal & El Messiri -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=El+Messiri:wght@600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=El+Messiri:wght@600;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -52,31 +53,32 @@
           colors: {
             roast: {
               950: '#0c0806',
-              900: '#130c07',
-              850: '#1b120c',
-              800: '#261b14',
-              700: '#38281d',
-              600: '#4d3728'
+              900: '#140d08',
+              850: '#1c130d',
+              800: '#271c14',
+              700: '#3a2b20',
+              600: '#523d2e'
             },
             warmBeige: {
               50: '#fdfbf7',
-              100: '#f4ede4',
-              200: '#e8dbca',
+              100: '#f5ede3',
+              200: '#e8dbcb',
               300: '#d7be9f',
               400: '#c5a37a',
-              500: '#aa8256'
+              500: '#ab8357'
             },
             caramel: {
               DEFAULT: '#c88a58',
-              hover: '#b87744',
-              glow: 'rgba(200, 138, 88, 0.25)'
+              hover: '#b57643',
+              glow: 'rgba(200, 138, 88, 0.28)'
             },
-            protein: '#7dd3fc',
+            protein: '#38bdf8',
             carbs: '#fbbf24',
-            fats: '#f87171'
+            fats: '#f87171',
+            ok: '#4ade80'
           },
           fontFamily: {
-            sans: ['Cairo', 'Tajawal', 'sans-serif'],
+            sans: ['Tajawal', 'Cairo', 'sans-serif'],
             brand: ['El Messiri', 'Cairo', 'serif']
           }
         }
@@ -87,14 +89,13 @@
   <style>
     :root {
       --bg: #0c0806;
-      --surface-1: #130c07;
-      --surface-2: #1b120c;
-      --surface-3: #261b14;
+      --surface-1: #140d08;
+      --surface-2: #1c130d;
+      --surface-3: #271c14;
       --border: rgba(215, 190, 159, 0.12);
       --caramel: #c88a58;
-      --caramel-hover: #b87744;
-      --text: #ede3d5;
-      --protein: #7dd3fc;
+      --text: #f5ede3;
+      --protein: #38bdf8;
       --carbs: #fbbf24;
       --fats: #f87171;
     }
@@ -102,7 +103,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Cairo', 'Tajawal', sans-serif;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
       margin: 0; padding: 0;
       min-height: 100vh;
       overflow-x: hidden;
@@ -112,19 +113,19 @@
     ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--caramel); }
     .glass-card {
-      background: linear-gradient(135deg, rgba(27, 18, 12, 0.92) 0%, rgba(19, 12, 7, 0.98) 100%);
-      backdrop-filter: blur(12px);
+      background: linear-gradient(135deg, rgba(28, 19, 13, 0.94) 0%, rgba(20, 13, 8, 0.98) 100%);
+      backdrop-filter: blur(14px);
       border: 1px solid var(--border);
     }
     .glass-modal {
-      background: rgba(19, 12, 7, 0.98);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(215, 190, 159, 0.2);
+      background: rgba(20, 13, 8, 0.98);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(215, 190, 159, 0.22);
     }
     @keyframes pulse-ring {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7); }
-      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(248, 113, 113, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+      0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7); }
+      70% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(248, 113, 113, 0); }
+      100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
     }
     .mic-recording-active {
       animation: pulse-ring 1.3s infinite !important;
@@ -134,32 +135,38 @@
     }
     .brand-title { font-family: 'El Messiri', 'Cairo', serif; }
     .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fade .2s ease; }
-    @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .tab-content.active { display: block; animation: tabFade .22s ease-out; }
+    @keyframes tabFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="selection:bg-caramel selection:text-roast-950 pb-20 md:pb-10">
+<body class="selection:bg-caramel selection:text-roast-950 pb-24 md:pb-10">
 
   <!-- Toast Notice -->
-  <div id="toast-notice" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-roast-850 border border-caramel/50 text-warmBeige-100 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs transition-opacity duration-300 opacity-0 pointer-events-none">
-    <span class="text-caramel font-bold">✨</span>
-    <span id="toast-text"></span>
+  <div id="toast-notice" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-roast-850/95 border border-caramel/60 text-warmBeige-100 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2 backdrop-blur-md">
+    <span class="text-caramel font-bold text-sm">✨</span>
+    <span id="toast-text" class="font-semibold"></span>
   </div>
 
   <!-- ================= TOP MAIN NAVBAR ================= -->
   <header id="main-global-header" class="sticky top-0 z-40 bg-roast-900/95 backdrop-blur-md border-b border-roast-800 px-4 py-3">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       
-      <!-- Logo + Brand Name -->
+      <!-- Brand & Status -->
       <div class="flex items-center gap-3">
-        <img 
-          id="nav-brand-img" 
-          src="icon.png" 
-          onerror="this.style.display='none'"
-          alt="سُعرة" 
-          class="w-10 h-10 rounded-xl border border-warmBeige-400/30 shadow-md shadow-black/60 object-cover flex-shrink-0" 
-        />
-        <h1 class="font-bold text-2xl text-warmBeige-50 brand-title leading-tight">سُعرة</h1>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-caramel to-warmBeige-500 flex items-center justify-center font-bold text-roast-950 shadow-md text-lg">
+          🥗
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-2xl text-warmBeige-50 brand-title leading-tight">سُعرة</h1>
+            <span id="header-model-pill" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-caramel/15 text-caramel border border-caramel/30 font-bold hidden sm:inline-block">
+              Gemini 3.8 Flash
+            </span>
+          </div>
+          <p class="text-[10px] text-warmBeige-300/70 hidden sm:block">المتتبع الذكي للمغذيات والماكروز</p>
+        </div>
       </div>
 
       <!-- Desktop Tabs -->
@@ -178,16 +185,16 @@
         </button>
       </nav>
 
-      <!-- Action Items -->
+      <!-- Top Action Items -->
       <div class="flex items-center gap-2">
-        <button onclick="toggleAudioMute()" id="btn-sound-toggle" title="كتم / تشغيل المؤثرات الصوتية" class="w-9 h-9 rounded-xl bg-roast-850 border border-warmBeige-400/20 text-warmBeige-300 hover:text-caramel flex items-center justify-center text-sm font-bold">
+        <button onclick="toggleAudioMute()" id="btn-sound-toggle" title="كتم / تشغيل المؤثرات الصوتية" class="w-9 h-9 rounded-xl bg-roast-850 border border-warmBeige-400/20 text-warmBeige-200 hover:text-caramel flex items-center justify-center text-sm font-bold transition-all">
           🔊
         </button>
-        <button onclick="openShareStoryModal()" class="flex items-center gap-1.5 bg-roast-850 border border-warmBeige-400/30 hover:border-caramel text-warmBeige-200 px-3 py-1.5 rounded-full text-xs font-semibold transition-all">
+        <button onclick="openShareStoryModal()" class="flex items-center gap-1.5 bg-roast-850 border border-warmBeige-400/30 hover:border-caramel text-warmBeige-100 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-sm">
           <span>📸</span>
-          <span class="hidden sm:inline">مشاركة الإنجاز</span>
+          <span class="hidden sm:inline">بطاقة الستوري</span>
         </button>
-        <button id="btn-install-pwa" onclick="triggerPwaInstall()" class="hidden items-center gap-1.5 bg-caramel text-roast-950 font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md animate-pulse">
+        <button id="btn-install-pwa" onclick="triggerPwaInstall()" class="hidden items-center gap-1.5 bg-caramel text-roast-950 font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-md animate-pulse">
           <span>📲 تثبيت</span>
         </button>
       </div>
@@ -201,67 +208,63 @@
     <!-- ---------------- TAB 1: DASHBOARD ---------------- -->
     <div id="tab-dashboard" class="tab-content active space-y-5">
 
-      <!-- Personalized Greeting & Streak Banner -->
-      <div class="glass-card rounded-3xl p-5 border-caramel/30 bg-gradient-to-r from-roast-900 to-roast-850 flex items-center justify-between">
+      <!-- Streak & Motivation Banner -->
+      <div class="glass-card rounded-3xl p-5 border-caramel/30 bg-gradient-to-r from-roast-900 via-roast-850 to-roast-900 flex items-center justify-between">
         <div>
           <div class="flex flex-wrap items-center gap-2 mb-1.5">
-            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-caramel/20 text-caramel font-bold">لوحة المتابعة</span>
+            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-caramel/20 text-caramel font-bold border border-caramel/30">المتابعة المباشرة</span>
             <span id="streak-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-rose-950/80 border border-fats/40 text-fats font-bold">
               🔥 1 يوم التزام
             </span>
             <span id="dashboard-date-display" class="text-xs text-warmBeige-400 font-mono"></span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-black text-warmBeige-50">أهلاً عبدالله 👋</h2>
-          <p class="text-xs sm:text-sm text-warmBeige-300/80 mt-1">يوم جديد ومسار صحي نحو هدفك الرياضي مع <strong>سُعرة</strong>!</p>
+          <h2 class="text-2xl sm:text-3xl font-black text-warmBeige-50" id="dashboard-greeting-title">أهلاً بك يا بطل 👋</h2>
+          <p class="text-xs sm:text-sm text-warmBeige-300/80 mt-1">يوم جديد وسعرات محسوبة بدقة مع <strong>سُعرة</strong> ونماذج Gemini السريعة.</p>
         </div>
-        <div class="flex flex-col items-center gap-1">
-          <div class="hidden sm:flex w-14 h-14 rounded-2xl bg-caramel/15 border border-caramel/30 items-center justify-center text-caramel text-2xl font-bold">
-            🥗
-          </div>
-          <button onclick="openShareStoryModal()" class="text-[10px] text-caramel hover:underline font-bold mt-1">
-            مشاركة اليوم 📸
-          </button>
+        <div class="hidden sm:flex flex-col items-center justify-center p-3 rounded-2xl bg-caramel/10 border border-caramel/20 text-center">
+          <span class="text-xs text-warmBeige-300 font-bold">الهدف الحالي</span>
+          <span id="banner-goal-name" class="text-xs font-black text-caramel mt-0.5">تنشيف</span>
         </div>
       </div>
 
       <!-- Quick Add Staples Bar -->
       <div class="glass-card rounded-2xl p-3 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
-        <span class="text-warmBeige-400/80 font-bold whitespace-nowrap pl-1 text-[11px]">⚡ سناك سريع:</span>
-        <button onclick="quickAddFood('حبة تمر', 26, 0.2, 7, 0)" class="bg-roast-800 hover:bg-roast-700 border border-warmBeige-400/20 text-warmBeige-200 px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
+        <span class="text-warmBeige-400 font-bold whitespace-nowrap pl-1 text-[11px]">⚡ سناك سريع:</span>
+        <button onclick="quickAddFood('حبة تمر خلاص', 26, 0.2, 7, 0)" class="bg-roast-800 hover:bg-roast-700 border border-warmBeige-400/20 text-warmBeige-100 px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
           🌴 حبة تمر (26 cal)
         </button>
         <button onclick="quickAddFood('سكوب واي بروتين', 120, 24, 3, 1.5)" class="bg-roast-800 hover:bg-roast-700 border border-protein/30 text-protein px-3 py-1.5 rounded-xl whitespace-nowrap transition-all font-bold">
           🥛 سكوب بروتين (24g P)
         </button>
-        <button onclick="quickAddFood('حبة موز', 105, 1.3, 27, 0.4)" class="bg-roast-800 hover:bg-roast-700 border border-carbs/30 text-carbs px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
+        <button onclick="quickAddFood('حبة موز متوسطة', 105, 1.3, 27, 0.4)" class="bg-roast-800 hover:bg-roast-700 border border-carbs/30 text-carbs px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
           🍌 موزة (105 cal)
         </button>
-        <button onclick="quickAddFood('قهوة سوداء (أمريكانو)', 2, 0.3, 0, 0)" class="bg-roast-800 hover:bg-roast-700 border border-warmBeige-400/20 text-warmBeige-300 px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
+        <button onclick="quickAddFood('قهوة سوداء (أمريكانو)', 2, 0.3, 0, 0)" class="bg-roast-800 hover:bg-roast-700 border border-warmBeige-400/20 text-warmBeige-200 px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
           ☕ قهوة سوداء (2 cal)
         </button>
-        <button onclick="quickAddFood('بيضة مسلوقة', 78, 6.3, 0.6, 5.3)" class="bg-roast-800 hover:bg-roast-700 border border-warmBeige-400/20 text-warmBeige-200 px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
+        <button onclick="quickAddFood('بيضة مسلوقة', 78, 6.3, 0.6, 5.3)" class="bg-roast-800 hover:bg-roast-700 border border-warmBeige-400/20 text-warmBeige-100 px-3 py-1.5 rounded-xl whitespace-nowrap transition-all">
           🥚 بيضة مسلوقة (78 cal)
         </button>
       </div>
 
-      <!-- Action Bar -->
+      <!-- Action & Timeline Switch Bar -->
       <div class="glass-card rounded-2xl p-3 flex items-center justify-between">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2.5">
           <div class="p-2 bg-roast-800 rounded-xl text-caramel text-base">📅</div>
           <div>
             <div class="flex items-center gap-2">
               <span id="timeline-date-label" class="font-bold text-sm sm:text-base text-warmBeige-100">سجل وجبات اليوم</span>
-              <span id="badge-midnight-reset" class="bg-caramel/20 text-caramel text-[10px] px-2 py-0.5 rounded-full font-bold">يتصفر 12:00 م</span>
+              <span id="badge-midnight-reset" class="bg-caramel/20 text-caramel text-[10px] px-2 py-0.5 rounded-full font-bold">يتجدد 12:00 م</span>
             </div>
-            <p class="text-[11px] text-warmBeige-300/70">تخزين دائم محصن في الهاتف (IndexedDB)</p>
+            <p class="text-[11px] text-warmBeige-400/70">تخزين آمن ومحلي في جهازك (IndexedDB)</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="btn-back-today" onclick="returnToToday()" class="hidden text-xs bg-roast-800 hover:bg-roast-700 text-warmBeige-200 px-3 py-1.5 rounded-xl border border-roast-700 font-semibold">
-            اليوم
+          <button id="btn-back-today" onclick="returnToToday()" class="hidden text-xs bg-roast-800 hover:bg-roast-700 text-warmBeige-200 px-3 py-1.5 rounded-xl border border-roast-700 font-semibold transition-all">
+            العودة لليوم
           </button>
-          <button onclick="openMealModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-caramel to-warmBeige-500 hover:from-caramel-hover text-roast-950 font-bold px-4 py-2 rounded-xl text-sm shadow-lg shadow-caramel/20 active:scale-95 transition-all">
+          <button onclick="openMealModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-caramel to-warmBeige-500 hover:from-caramel-hover text-roast-950 font-black px-4 py-2 rounded-xl text-xs sm:text-sm shadow-lg shadow-caramel/20 active:scale-95 transition-all">
             <span class="text-base leading-none">+</span>
             <span>إضافة وجبة</span>
           </button>
@@ -271,14 +274,14 @@
       <!-- Calorie Gauge & Macros -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
-        <!-- Gauge Card -->
+        <!-- Energy Gauge Card -->
         <div class="lg:col-span-5 glass-card rounded-3xl p-6 flex flex-col justify-between">
           <div class="flex justify-between items-start">
             <div>
               <span class="text-xs text-warmBeige-300/80 font-semibold">الميزان الطاقي</span>
-              <h3 class="text-lg font-bold text-warmBeige-50 mt-0.5">احتياج السعرات اليومي</h3>
+              <h3 class="text-lg font-bold text-warmBeige-50 mt-0.5">سعرات اليوم</h3>
             </div>
-            <span id="goal-badge-mode" class="text-xs px-2.5 py-1 rounded-full bg-roast-800 border border-warmBeige-400/20 text-warmBeige-300 font-bold">
+            <span id="goal-badge-mode" class="text-xs px-2.5 py-1 rounded-full bg-roast-800 border border-warmBeige-400/20 text-warmBeige-200 font-bold">
               تنشيف
             </span>
           </div>
@@ -291,7 +294,7 @@
                 cx="60"
                 cy="60"
                 r="50"
-                stroke="url(#calorieGradientWarm)"
+                stroke="url(#calorieGradient)"
                 stroke-width="10"
                 stroke-dasharray="314.159"
                 stroke-dashoffset="314.159"
@@ -300,15 +303,15 @@
                 style="transition: stroke-dashoffset 0.8s ease-in-out;"
               />
               <defs>
-                <linearGradient id="calorieGradientWarm" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="calorieGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stop-color="#c88a58" />
-                  <stop offset="100%" stop-color="#e8dbca" />
+                  <stop offset="100%" stop-color="#f5ede3" />
                 </linearGradient>
               </defs>
             </svg>
             <div class="absolute text-center flex flex-col items-center">
-              <span id="stat-consumed-calories" class="text-4xl font-black text-warmBeige-50">0</span>
-              <span id="stat-target-calories" class="text-xs text-warmBeige-300/80 font-medium">من 2000 سعرة</span>
+              <span id="stat-consumed-calories" class="text-4xl font-black text-warmBeige-50 font-mono">0</span>
+              <span id="stat-target-calories" class="text-xs text-warmBeige-300 font-medium">من 2000 سعرة</span>
               <div class="mt-1 flex items-center gap-1 text-[11px] font-bold text-carbs bg-roast-900/90 px-2.5 py-0.5 rounded-full border border-carbs/30">
                 <span>🔥</span>
                 <span id="stat-calorie-percent">0% مستهلك</span>
@@ -317,13 +320,13 @@
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-3 border-t border-roast-800 text-center">
-            <div class="bg-roast-900/80 p-2.5 rounded-xl border border-roast-800">
-              <p class="text-[11px] text-warmBeige-300/70">السعرات المتبقية</p>
-              <p class="text-lg font-black text-warmBeige-100"><span id="stat-remaining-calories">2000</span> <span class="text-xs font-normal text-warmBeige-400">kcal</span></p>
+            <div class="bg-roast-900/80 p-2.5 rounded-2xl border border-roast-800">
+              <p class="text-[11px] text-warmBeige-400">السعرات المتبقية</p>
+              <p class="text-lg font-black text-warmBeige-100 font-mono"><span id="stat-remaining-calories">2000</span> <span class="text-xs font-normal text-warmBeige-400">kcal</span></p>
             </div>
-            <div class="bg-roast-900/80 p-2.5 rounded-xl border border-roast-800">
-              <p class="text-[11px] text-warmBeige-300/70">تجاوز الهدف</p>
-              <p id="stat-excess-calories-wrap" class="text-lg font-black text-warmBeige-400/40">
+            <div class="bg-roast-900/80 p-2.5 rounded-2xl border border-roast-800">
+              <p class="text-[11px] text-warmBeige-400">تجاوز الهدف</p>
+              <p id="stat-excess-calories-wrap" class="text-lg font-black text-warmBeige-400/40 font-mono">
                 <span id="stat-excess-calories">0</span> <span class="text-xs font-normal text-warmBeige-400">kcal</span>
               </p>
             </div>
@@ -331,80 +334,94 @@
         </div>
 
         <!-- Macros Breakdown -->
-        <div class="lg:col-span-7 flex flex-col justify-between gap-4">
+        <div class="lg:col-span-7 flex flex-col justify-between gap-3.5">
           
           <!-- Protein -->
-          <div class="glass-card rounded-2xl p-5 border-l-4 border-l-protein">
+          <div class="glass-card rounded-2xl p-4 sm:p-5 border-r-4 border-r-protein">
             <div class="flex justify-between items-center mb-2">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-protein flex items-center justify-center font-bold text-xs">P</div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-protein flex items-center justify-center font-black text-xs">P</div>
                 <div>
                   <h4 class="font-bold text-warmBeige-50 text-sm">البروتين (Protein)</h4>
-                  <p class="text-[11px] text-warmBeige-300/70">بناء وحفظ الكتلة العضلية</p>
+                  <p class="text-[10px] sm:text-[11px] text-warmBeige-400/80">بناء واستشفاء الألياف العضلية</p>
                 </div>
               </div>
               <div class="text-left font-mono">
-                <span id="macro-consumed-protein" class="text-lg font-black text-protein">0</span>
+                <span id="macro-consumed-protein" class="text-base sm:text-lg font-black text-protein">0</span>
                 <span id="macro-target-protein" class="text-xs text-warmBeige-400"> / 175g</span>
               </div>
             </div>
             <div class="w-full bg-roast-950 rounded-full h-2.5 overflow-hidden">
               <div id="bar-protein" class="bg-protein h-2.5 rounded-full transition-all duration-700" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between text-[11px] text-warmBeige-300/70 mt-2">
+            <div class="flex justify-between text-[11px] text-warmBeige-400 mt-2 font-semibold">
               <span id="macro-ratio-protein">النسبة: 35%</span>
-              <span>متبقي: <span id="macro-remaining-protein">175</span>g</span>
+              <span>متبقي: <span id="macro-remaining-protein" class="text-protein">175</span>g</span>
             </div>
           </div>
 
           <!-- Carbs -->
-          <div class="glass-card rounded-2xl p-5 border-l-4 border-l-carbs">
+          <div class="glass-card rounded-2xl p-4 sm:p-5 border-r-4 border-r-carbs">
             <div class="flex justify-between items-center mb-2">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-carbs flex items-center justify-center font-bold text-xs">C</div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-carbs flex items-center justify-center font-black text-xs">C</div>
                 <div>
                   <h4 class="font-bold text-warmBeige-50 text-sm">الكربوهيدرات (Carbs)</h4>
-                  <p class="text-[11px] text-warmBeige-300/70">طاقة التمارين ونشاط الجسم</p>
+                  <p class="text-[10px] sm:text-[11px] text-warmBeige-400/80">طاقة التمارين ونشاط الجليكوجين</p>
                 </div>
               </div>
               <div class="text-left font-mono">
-                <span id="macro-consumed-carbs" class="text-lg font-black text-carbs">0</span>
+                <span id="macro-consumed-carbs" class="text-base sm:text-lg font-black text-carbs">0</span>
                 <span id="macro-target-carbs" class="text-xs text-warmBeige-400"> / 200g</span>
               </div>
             </div>
             <div class="w-full bg-roast-950 rounded-full h-2.5 overflow-hidden">
               <div id="bar-carbs" class="bg-carbs h-2.5 rounded-full transition-all duration-700" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between text-[11px] text-warmBeige-300/70 mt-2">
+            <div class="flex justify-between text-[11px] text-warmBeige-400 mt-2 font-semibold">
               <span id="macro-ratio-carbs">النسبة: 40%</span>
-              <span>متبقي: <span id="macro-remaining-carbs">200</span>g</span>
+              <span>متبقي: <span id="macro-remaining-carbs" class="text-carbs">200</span>g</span>
             </div>
           </div>
 
           <!-- Fats -->
-          <div class="glass-card rounded-2xl p-5 border-l-4 border-l-fats">
+          <div class="glass-card rounded-2xl p-4 sm:p-5 border-r-4 border-r-fats">
             <div class="flex justify-between items-center mb-2">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-fats flex items-center justify-center font-bold text-xs">F</div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-fats flex items-center justify-center font-black text-xs">F</div>
                 <div>
                   <h4 class="font-bold text-warmBeige-50 text-sm">الدهون الصحية (Fats)</h4>
-                  <p class="text-[11px] text-warmBeige-300/70">توازن الهرمونات والوظائف الحيوية</p>
+                  <p class="text-[10px] sm:text-[11px] text-warmBeige-400/80">التوازن الهرموني وامتصاص الفيتامينات</p>
                 </div>
               </div>
               <div class="text-left font-mono">
-                <span id="macro-consumed-fats" class="text-lg font-black text-fats">0</span>
+                <span id="macro-consumed-fats" class="text-base sm:text-lg font-black text-fats">0</span>
                 <span id="macro-target-fats" class="text-xs text-warmBeige-400"> / 56g</span>
               </div>
             </div>
             <div class="w-full bg-roast-950 rounded-full h-2.5 overflow-hidden">
               <div id="bar-fats" class="bg-fats h-2.5 rounded-full transition-all duration-700" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between text-[11px] text-warmBeige-300/70 mt-2">
+            <div class="flex justify-between text-[11px] text-warmBeige-400 mt-2 font-semibold">
               <span id="macro-ratio-fats">النسبة: 25%</span>
-              <span>متبقي: <span id="macro-remaining-fats">56</span>g</span>
+              <span>متبقي: <span id="macro-remaining-fats" class="text-fats">56</span>g</span>
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- Smart Next Meal Recommendation (اقتراح الوجبة القادمة) -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 border-r-4 border-r-caramel space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-base text-warmBeige-100 flex items-center gap-2">
+            <span>🎯</span>
+            <span>اقتراح ذكي للوجبة القادمة</span>
+          </h3>
+          <span class="text-[11px] text-warmBeige-400">مبني على عجز الماكروز الحالي</span>
+        </div>
+        <div id="reco-container" class="space-y-2">
+          <!-- Populated dynamically -->
         </div>
       </div>
 
@@ -412,7 +429,7 @@
       <div class="space-y-4">
         <div class="flex justify-between items-center px-1">
           <h3 class="font-bold text-lg text-warmBeige-100 flex items-center gap-2">
-            <span class="text-caramel">✨</span>
+            <span class="text-caramel">🥣</span>
             <span>جدول وجبات اليوم (<span id="count-meals-today">0</span>)</span>
           </h3>
         </div>
@@ -430,15 +447,15 @@
         <div>
           <h3 class="text-xl font-bold text-warmBeige-50 flex items-center gap-2">
             <span class="text-caramel">📜</span>
-            <span>أرشيف الوجبات المستمر</span>
+            <span>الأرشيف التراكمي</span>
           </h3>
           <p class="text-xs text-warmBeige-400/80 mt-1">
-            محفوظ دائماً في IndexedDB ولا يُحذف عند إغلاق المتصفح
+            سجل وجباتك محفوظ محلياً عبر IndexedDB ولا يضيع عند مسح الذاكرة العشوائية
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-warmBeige-300 font-semibold">تاريخ العرض:</span>
-          <select id="select-history-date" onchange="onHistoryDateChange(this.value)" class="bg-roast-850 border border-roast-700 text-warmBeige-200 text-xs rounded-xl px-3 py-2 font-mono">
+          <span class="text-xs text-warmBeige-300 font-semibold whitespace-nowrap">عرض تاريخ:</span>
+          <select id="select-history-date" onchange="onHistoryDateChange(this.value)" class="bg-roast-850 border border-roast-700 text-warmBeige-100 text-xs rounded-xl px-3 py-2 font-mono focus:outline-none focus:border-caramel">
             <!-- Dynamically populated -->
           </select>
         </div>
@@ -449,7 +466,7 @@
       </div>
     </div>
 
-    <!-- ---------------- TAB 3: FULLSCREEN GEMINI COACH CHAT ---------------- -->
+    <!-- ---------------- TAB 3: GEMINI COACH CHAT ---------------- -->
     <div id="tab-chat" class="tab-content">
       <div class="fixed inset-0 z-40 bg-roast-950 flex flex-col pb-16 md:pb-0">
         
@@ -461,29 +478,28 @@
             <span>الرئيسية</span>
           </button>
 
-          <!-- Model Selector Location #1 -->
-          <div class="relative">
-            <select id="chat-top-model-select" onchange="onChatModelChange(this.value)" class="bg-roast-850 border border-warmBeige-400/30 text-warmBeige-100 font-bold text-xs rounded-full px-4 py-1.5 focus:outline-none focus:border-caramel appearance-none pr-7 cursor-pointer text-center">
-              <!-- Dynamically populated -->
+          <!-- Usable Models Dropdown -->
+          <div class="relative max-w-[220px] sm:max-w-xs">
+            <select id="chat-top-model-select" onchange="onModelChange(this.value)" class="w-full bg-roast-850 border border-warmBeige-400/30 text-caramel font-bold text-xs rounded-full px-4 py-1.5 focus:outline-none focus:border-caramel truncate cursor-pointer text-center">
+              <!-- Dynamically populated with active models -->
             </select>
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-warmBeige-400 pointer-events-none text-[10px]">▼</span>
           </div>
 
-          <!-- 3-Dots Menu Button -->
+          <!-- History Drawer Trigger -->
           <div class="flex items-center gap-2">
-            <button onclick="openChatHistoryDrawer()" title="المحادثات السابقة" class="w-9 h-9 rounded-full bg-roast-850 hover:bg-roast-800 border border-warmBeige-400/20 flex items-center justify-center text-warmBeige-200 text-lg font-bold">
+            <button onclick="openChatHistoryDrawer()" title="المحادثات السابقة" class="w-9 h-9 rounded-full bg-roast-850 hover:bg-roast-800 border border-warmBeige-400/20 flex items-center justify-center text-warmBeige-200 text-base font-bold">
               ⋮
             </button>
           </div>
 
         </div>
 
-        <!-- Chat Messages -->
+        <!-- Chat Messages Window -->
         <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-3.5 max-w-4xl mx-auto w-full">
-          <!-- Populated -->
+          <!-- Messages inserted dynamically -->
         </div>
 
-        <!-- Gemini Action Chips -->
+        <!-- Smart Action Chips -->
         <div class="max-w-4xl mx-auto w-full px-4 py-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px]">
           <button onclick="sendQuickPrompt('حلل وجباتي وسعراتي لليوم وهل أنا بالمسار الصحيح؟')" class="whitespace-nowrap bg-roast-900 hover:bg-roast-850 border border-warmBeige-400/20 text-warmBeige-200 px-3 py-1 rounded-full transition-all">
             📊 حلل يومي بالتفصيل
@@ -496,7 +512,7 @@
           </button>
         </div>
 
-        <!-- Chat Bottom Bar with Continuous Voice -->
+        <!-- Chat Input Bar with Continuous Speech -->
         <div class="bg-roast-900/90 backdrop-blur-md border-t border-roast-800 p-3 max-w-4xl mx-auto w-full">
           <div class="flex items-center gap-2">
             <button type="button" id="btn-mic-chat" onclick="toggleFieldVoice('chat')" class="w-11 h-11 rounded-2xl bg-roast-800 border border-warmBeige-400/20 text-warmBeige-200 flex items-center justify-center flex-shrink-0 text-lg transition-all" title="تسجيل صوتي مستمر">
@@ -506,15 +522,15 @@
               id="input-chat-text" 
               onkeydown="if(event.key==='Enter') sendChatMessage()" 
               type="text" 
-              placeholder="تحدث أو اسأل جيمناي عن خطتك، وجباتك، وماكروزك..." 
+              placeholder="تحدث أو اسأل المدرب عن خطتك، وجباتك، وماكروزك..." 
               class="flex-1 bg-roast-950 border border-roast-800 text-warmBeige-100 placeholder:text-warmBeige-400/40 rounded-2xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-caramel" 
             />
-            <button onclick="sendChatMessage()" class="w-11 h-11 rounded-2xl bg-caramel hover:bg-caramel-hover text-roast-950 font-bold flex items-center justify-center flex-shrink-0 text-base shadow-md">
+            <button onclick="sendChatMessage()" class="w-11 h-11 rounded-2xl bg-caramel hover:bg-caramel-hover text-roast-950 font-bold flex items-center justify-center flex-shrink-0 text-base shadow-md transition-all active:scale-95">
               ➤
             </button>
           </div>
           <p id="chat-mic-status" class="hidden text-[11px] text-fats mt-1.5 text-center animate-pulse font-bold">
-            🔴 الميكروفون يستمع الآن دون انقطاع.. اضغط الميكروفون مجدداً للإيقاف والإرسال.
+            🔴 الميكروفون يستمع دون انقطاع.. اضغط الميكروفون مجدداً للإيقاف والإرسال.
           </p>
         </div>
 
@@ -524,38 +540,24 @@
     <!-- ---------------- TAB 4: SETTINGS ---------------- -->
     <div id="tab-settings" class="tab-content space-y-6">
       
-      <!-- PWA Status -->
-      <div class="glass-card rounded-3xl p-6 border-l-4 border-l-caramel">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2.5">
-            <span class="text-xl">📲</span>
-            <h3 class="text-base font-bold text-warmBeige-50">تثبيت تطبيق سُعرة على جوالك</h3>
-          </div>
-          <span class="text-[11px] bg-caramel/20 text-caramel font-bold px-2.5 py-1 rounded-full">IndexedDB نشط</span>
-        </div>
-        <p class="text-xs text-warmBeige-300/80 mb-4 leading-relaxed">
-          التطبيق متوافق بالكامل كـ PWA مع صورة سُعرة الحقيقية المعتمدة وبدون أي ملفات مفقودة.
-        </p>
-        <button onclick="triggerPwaInstall()" class="bg-caramel hover:bg-caramel-hover text-roast-950 font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md">
-          تثبيت التطبيق على الشاشة الرئيسية
-        </button>
-      </div>
-
-      <!-- Gemini API Key & Model Settings -->
-      <div class="glass-card rounded-3xl p-6 border-l-4 border-l-protein">
+      <!-- Gemini API Engine Configuration -->
+      <div class="glass-card rounded-3xl p-6 border-r-4 border-r-protein">
         <div class="flex items-center gap-2.5 mb-2">
-          <span class="text-protein text-lg">⚙️</span>
-          <h3 class="text-base font-bold text-warmBeige-50">إعدادات محرك Google Gemini</h3>
+          <span class="text-protein text-xl">⚙️</span>
+          <div>
+            <h3 class="text-base font-bold text-warmBeige-50">محرك الذكاء الاصطناعي (Google Gemini)</h3>
+            <p class="text-xs text-warmBeige-400">النماذج المعتمدة والمطابقة لكوتا حسابك الفعّالة</p>
+          </div>
         </div>
         
         <!-- Model Selection Dropdown -->
-        <div class="mb-4">
-          <label class="block text-xs font-bold text-warmBeige-300 mb-1.5">اختر نموذج الذكاء الاصطناعي الافتراضي</label>
+        <div class="my-4">
+          <label class="block text-xs font-bold text-warmBeige-300 mb-1.5">النموذج النشط للتحليل والمحادثة</label>
           <select id="select-gemini-model" onchange="onModelChange(this.value)" class="w-full bg-roast-900 border border-roast-800 text-warmBeige-100 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-caramel font-semibold">
-            <!-- Dynamically populated with all models -->
+            <!-- Dynamically populated -->
           </select>
-          <p class="text-[11px] text-warmBeige-400 mt-1">
-            * يدعم التطبيق التبديل التلقائي إذا انتهت كوتا أحد النماذج لحسابك.
+          <p class="text-[11px] text-warmBeige-400 mt-1.5 leading-relaxed">
+            💡 النماذج ذات الـ <strong>500 طلب/يوم</strong> (مثل Gemini 3.1 Flash Lite) تضمن عمل التطبيق دون توقف حتى لو نفدت كوتا النماذج الأخرى مؤقتاً.
           </p>
         </div>
 
@@ -563,46 +565,65 @@
         <div>
           <label class="block text-xs font-bold text-warmBeige-300 mb-1">مفتاح الذكاء الاصطناعي (Gemini API Key)</label>
           <div class="flex gap-2">
-            <input id="settings-api-key-input" type="password" placeholder="أدخل مفتاح الـ API هنا (AIza... أو AQ...)" class="flex-1 bg-roast-900 border border-roast-800 text-warmBeige-100 text-xs font-mono rounded-xl px-3 py-2.5 focus:outline-none focus:border-caramel" />
-            <button onclick="saveApiKeyFromSettings()" class="bg-caramel hover:bg-caramel-hover text-roast-950 font-bold text-xs px-4 py-2.5 rounded-xl">حفظ</button>
+            <input id="settings-api-key-input" type="password" placeholder="أدخل مفتاح الـ API هنا (يبدأ بـ AIza...)" class="flex-1 bg-roast-900 border border-roast-800 text-warmBeige-100 text-xs font-mono rounded-xl px-3 py-2.5 focus:outline-none focus:border-caramel" />
+            <button onclick="saveApiKeyFromSettings()" class="bg-caramel hover:bg-caramel-hover text-roast-950 font-bold text-xs px-5 py-2.5 rounded-xl transition-all">حفظ</button>
           </div>
-          <div class="flex items-center justify-between mt-2.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3">
             <p id="settings-key-status" class="text-[11px]"></p>
-            <button onclick="testCurrentApiKey()" class="text-xs bg-roast-800 hover:bg-roast-700 text-warmBeige-200 border border-warmBeige-400/20 px-3 py-1 rounded-xl font-bold">
+            <button onclick="testCurrentApiKey()" class="text-xs bg-roast-800 hover:bg-roast-700 text-warmBeige-200 border border-warmBeige-400/20 px-3.5 py-1.5 rounded-xl font-bold transition-all self-start sm:self-auto">
               ⚡ فحص الاتصال بالنموذج
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Fitness Goals -->
-      <div class="glass-card rounded-3xl p-6">
+      <!-- Fitness Goals Customizer -->
+      <div class="glass-card rounded-3xl p-6 border-r-4 border-r-caramel">
         <div class="flex items-center gap-2.5 mb-2">
-          <span class="text-caramel text-lg">🎯</span>
-          <h3 class="text-base font-bold text-warmBeige-50">تخصيص الأهداف اليومية</h3>
+          <span class="text-caramel text-xl">🎯</span>
+          <div>
+            <h3 class="text-base font-bold text-warmBeige-50">تخصيص الأهداف الغذائية والماكروز</h3>
+            <p class="text-xs text-warmBeige-400">اختر خطة معتمدة أو حدد أرقامك الخاصة بدقة</p>
+          </div>
         </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4" id="goal-presets-grid">
           <!-- Presets -->
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-5 border-t border-roast-800">
           <div>
+            <label class="block text-xs font-bold text-warmBeige-300 mb-1">الاسم الشخصي</label>
+            <input id="set-name-input" onchange="updateCustomGoal()" type="text" class="w-full bg-roast-900 border border-roast-800 text-warmBeige-100 font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-caramel" />
+          </div>
+          <div>
             <label class="block text-xs font-bold text-warmBeige-300 mb-1">الهدف اليومي (سعرة)</label>
-            <input id="goal-target-calories" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-warmBeige-100 font-mono font-bold rounded-xl px-3 py-2 text-sm" />
+            <input id="goal-target-calories" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-warmBeige-100 font-mono font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-caramel" />
           </div>
           <div>
             <label class="block text-xs font-bold text-protein mb-1">بروتين %</label>
-            <input id="goal-protein-ratio" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-protein font-mono font-bold rounded-xl px-3 py-2 text-sm" />
+            <input id="goal-protein-ratio" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-protein font-mono font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-protein" />
           </div>
           <div>
             <label class="block text-xs font-bold text-carbs mb-1">كارب %</label>
-            <input id="goal-carbs-ratio" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-carbs font-mono font-bold rounded-xl px-3 py-2 text-sm" />
+            <input id="goal-carbs-ratio" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-carbs font-mono font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-carbs" />
           </div>
           <div>
             <label class="block text-xs font-bold text-fats mb-1">دهون %</label>
-            <input id="goal-fats-ratio" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-fats font-mono font-bold rounded-xl px-3 py-2 text-sm" />
+            <input id="goal-fats-ratio" onchange="updateCustomGoal()" type="number" class="w-full bg-roast-900 border border-roast-800 text-fats font-mono font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-fats" />
           </div>
         </div>
+      </div>
+
+      <!-- Wipe Data Danger Zone -->
+      <div class="glass-card rounded-3xl p-6 border-r-4 border-r-fats flex items-center justify-between">
+        <div>
+          <h4 class="font-bold text-warmBeige-50 text-sm">مسح الذاكرة المحلية وتصفير التطبيق</h4>
+          <p class="text-xs text-warmBeige-400 mt-0.5">حذف كافة الوجبات والمحادثات المخزنة محلياً في جهازك نهائياً</p>
+        </div>
+        <button onclick="wipeAllData()" class="bg-rose-950/80 hover:bg-rose-900 text-fats border border-fats/40 font-bold text-xs px-4 py-2.5 rounded-xl transition-all">
+          🗑️ مسح الكل
+        </button>
       </div>
 
     </div>
@@ -636,9 +657,9 @@
         </button>
       </div>
 
-      <!-- Shared Image Upload -->
+      <!-- Shared Image Upload with Auto-Compression -->
       <div class="mb-4">
-        <label class="block text-xs font-bold text-warmBeige-300 mb-1.5">صورة الوجبة (اختياري - كاميرا أو رفع ملف)</label>
+        <label class="block text-xs font-bold text-warmBeige-300 mb-1.5">صورة الوجبة (كاميرا أو رفع ملف - تُضغط آلياً)</label>
         <div class="relative border-2 border-dashed border-roast-800 hover:border-caramel rounded-2xl p-4 text-center cursor-pointer bg-roast-900/60 transition-colors">
           <input type="file" accept="image/*" onchange="handleImageFileSelect(this)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
           <div id="image-preview-wrapper" class="hidden relative">
@@ -760,7 +781,7 @@
           <p id="ai-mic-status" class="hidden text-[11px] text-fats mt-1 animate-pulse font-bold">🔴 يستمع الآن بصوتك مستمراً دون انقطاع.. اضغط الميكروفون عند الانتهاء.</p>
         </div>
 
-        <!-- Overrides with Voice for Weight -->
+        <!-- Weight and Cooking Options -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <div class="flex items-center justify-between mb-1">
@@ -809,7 +830,7 @@
       <div class="flex items-center justify-center gap-2">
         <button onclick="downloadStoryCard()" class="bg-caramel hover:bg-caramel-hover text-roast-950 font-bold text-xs py-2.5 px-6 rounded-xl shadow-md flex items-center gap-1.5">
           <span>⬇️</span>
-          <span>تحميل بطاقة الستوري</span>
+          <span>تحميل بطاقة الستوري PNG</span>
         </button>
       </div>
     </div>
@@ -868,6 +889,7 @@
 
   <!-- ================= PURE JAVASCRIPT LOGIC ================= -->
   <script>
+    // Storage Keys
     const KEY_MEALS = 'su3rah_meals_db';
     const KEY_GOAL = 'su3rah_goal_profile';
     const KEY_API_KEY = 'su3rah_gemini_api_key';
@@ -876,15 +898,18 @@
     const KEY_MODEL = 'su3rah_selected_model';
     const KEY_AUDIO_MUTED = 'su3rah_audio_muted';
 
-    // Comprehensive list of supported models in priority order
+    // Curated models based on active account quotas
     const SUPPORTED_MODELS = [
-      { id: 'gemini-3.8-flash', name: '⚡ Gemini 3.8 Flash (المتوازن والأحدث - موصى به)' },
-      { id: 'gemini-3.1-pro-preview', name: '🚀 Gemini 3.1 Pro Preview (الأقوى في التفكير والتحليل)' },
-      { id: 'gemini-2.5-flash', name: '🌪️ Gemini 2.5 Flash (سريع ومجاني)' },
-      { id: 'gemini-2.5-pro', name: '🧠 Gemini 2.5 Pro' },
-      { id: 'gemini-2.0-flash', name: '🛡️ Gemini 2.0 Flash (الأعلى استقراراً)' },
-      { id: 'gemini-1.5-flash', name: '📦 Gemini 1.5 Flash (الكلاسيكي)' }
+      { id: 'gemini-3.8-flash', name: '⚡ Gemini 3.8 Flash (المتوازن والأحدث - افتراضي)' },
+      { id: 'gemini-3.1-flash-lite', name: '🌪️ Gemini 3.1 Flash Lite (سريع جداً - 500 طلب/يوم)' },
+      { id: 'gemini-3.5-flash-lite', name: '🚀 Gemini 3.5 Flash Lite (خفيف وعالي التحمل - 500 طلب/يوم)' },
+      { id: 'gemini-3.6-flash', name: '🧠 Gemini 3.6 Flash' },
+      { id: 'gemini-3-flash', name: '🛡️ Gemini 3 Flash' },
+      { id: 'gemini-2.5-flash-lite', name: '⚡ Gemini 2.5 Flash Lite' },
+      { id: 'gemini-2.5-flash', name: '📦 Gemini 2.5 Flash' }
     ];
+
+    const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
     const GOAL_PRESETS = {
       cut: { label: 'تنشيف وحرق دهون', delta: -500, ratio: { p: 35, c: 40, f: 25 }, desc: 'عجز سعرات مدروس لخسارة الشحوم مع الحفاظ على العضلات' },
@@ -892,6 +917,18 @@
       bulk: { label: 'تضخيم وبناء عضلات', delta: 400, ratio: { p: 30, c: 50, f: 20 }, desc: 'فائض سعرات نظيف مع بروتين عالي لبناء الكتلة العضلية' },
       custom: { label: 'تخصيص حر يدوي', delta: 0, ratio: { p: 30, c: 45, f: 25 }, desc: 'أدخل احتياجك الدقيق من السعرات والماكروز يدوياً' }
     };
+
+    // Scientific foods database for smart next-meal recommendations (values per 100g)
+    const RECO_FOODS = [
+      { name: 'صدر دجاج مشوي', type: 'p', cal: 165, p: 31, c: 0, f: 3.6 },
+      { name: 'تونة بالماء مصفاة', type: 'p', cal: 116, p: 26, c: 0, f: 1 },
+      { name: 'زبادي يوناني قليل الدسم', type: 'p', cal: 73, p: 10, c: 4, f: 2 },
+      { name: 'أرز أبيض بسمتي مطبوخ', type: 'c', cal: 130, p: 2.7, c: 28, f: 0.3 },
+      { name: 'شوفان كامل الحبة', type: 'c', cal: 389, p: 17, c: 66, f: 7 },
+      { name: 'بطاطا حلوة مشوية', type: 'c', cal: 90, p: 2, c: 21, f: 0.2 },
+      { name: 'لوز نيء', type: 'f', cal: 579, p: 21, c: 22, f: 50 },
+      { name: 'أفوكادو طازج', type: 'f', cal: 160, p: 2, c: 9, f: 15 }
+    ];
 
     function getTodayDateString() {
       const now = new Date();
@@ -901,6 +938,7 @@
     // App State
     let state = {
       currentTab: 'dashboard',
+      userName: 'عبدالله',
       todayDate: getTodayDateString(),
       selectedDate: getTodayDateString(),
       apiKey: '',
@@ -933,7 +971,7 @@
     let initialTextBeforeVoice = '';
 
     // ==========================================
-    // WEB AUDIO SYNTHESIZER (مؤثرات صوتية نقية)
+    // WEB AUDIO SYNTHESIZER (Pure synthetic sounds)
     // ==========================================
     const Sound = {
       ctx: null,
@@ -965,19 +1003,16 @@
         } catch (_) {}
       },
       mealAdded() {
-        // نغمة إنجاز متصاعدة عند إضافة/تعديل وجبة
         this.play(523.25, 'sine', 0.1, 0.09); // C5
-        setTimeout(() => this.play(659.25, 'sine', 0.12, 0.08), 90); // E5
-        setTimeout(() => this.play(783.99, 'sine', 0.15, 0.08), 180); // G5
-        setTimeout(() => this.play(1046.50, 'sine', 0.25, 0.07), 270); // C6
+        setTimeout(() => this.play(659.25, 'sine', 0.12, 0.08), 85); // E5
+        setTimeout(() => this.play(783.99, 'sine', 0.15, 0.08), 170); // G5
+        setTimeout(() => this.play(1046.50, 'sine', 0.25, 0.07), 255); // C6
       },
       coachReply() {
-        // نغمة إشعار وصول رد المدرب
         this.play(587.33, 'triangle', 0.12, 0.09); // D5
         setTimeout(() => this.play(880.00, 'sine', 0.22, 0.08), 110); // A5
       },
       alertChime() {
-        // نغمة تذكير الساعة 11 مساءً
         this.play(659.25, 'sine', 0.18, 0.1);
         setTimeout(() => this.play(880.00, 'sine', 0.22, 0.09), 160);
         setTimeout(() => this.play(1174.66, 'sine', 0.35, 0.08), 340);
@@ -996,7 +1031,6 @@
     // NOTIFICATION & 11:00 PM REMINDER ENGINE
     // ==========================================
     function initNightReminder() {
-      // Check notification permission
       if ('Notification' in window && Notification.permission === 'default') {
         setTimeout(() => {
           Notification.requestPermission().catch(() => {});
@@ -1008,14 +1042,13 @@
         const todayStr = getTodayDateString();
         const lastAlertDay = localStorage.getItem('last_11pm_reminder_day');
 
-        // Trigger at 23:00 (11:00 PM) once per day
         if (now.getHours() === 23 && lastAlertDay !== todayStr) {
           localStorage.setItem('last_11pm_reminder_day', todayStr);
           trigger11PMAlert();
         }
       }
 
-      setInterval(check11PM, 25000); // Check every 25 seconds
+      setInterval(check11PM, 25000);
     }
 
     async function trigger11PMAlert() {
@@ -1026,12 +1059,11 @@
 
       const alertMsg = rem > 0
         ? `بقي لك ${rem} سعرة لتكتمل أهداف يومك! هل ترغب في تسجيل سناك خفيف أو تقفيل الماكروز؟`
-        : `أحسنت يا بطل! أتممت سعراتك لليوم بنجاح (${consumedCal} kcal). نوم هنيء وراحة عضلية!`;
+        : `أحسنت يا ${state.userName}! أتممت سعراتك لليوم بنجاح (${consumedCal} kcal). نوم هنيء وراحة عضلية!`;
 
       Sound.alertChime();
       showToast(`🌙 تذكير 11:00 م: ${alertMsg}`);
 
-      // Browser Push Notification
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
           new Notification('سُعرة — تذكير الساعة 11:00 م 🌙', {
@@ -1042,14 +1074,16 @@
       }
     }
 
-    // Hardened Storage Engine (IndexedDB + LocalStorage)
+    // ==========================================
+    // HARDENED STORAGE ENGINE (IndexedDB + Fallback)
+    // ==========================================
     const StorageEngine = {
       db: null,
       async init() {
         if (!('indexedDB' in window)) return null;
         return new Promise((resolve) => {
           try {
-            const req = indexedDB.open('Su3rahNativeDB_v11', 1);
+            const req = indexedDB.open('Su3rahNativeDB_v12', 1);
             req.onupgradeneeded = (e) => {
               const db = e.target.result;
               if (!db.objectStoreNames.contains('data_store')) {
@@ -1087,6 +1121,15 @@
           if (localVal) return JSON.parse(localVal);
         } catch(e){}
         return fallback;
+      },
+      async clearAll() {
+        localStorage.clear();
+        if (this.db) {
+          try {
+            const tx = this.db.transaction('data_store', 'readwrite');
+            tx.objectStore('data_store').clear();
+          } catch(e){}
+        }
       }
     };
 
@@ -1127,9 +1170,14 @@
 
       const settingsSelect = document.getElementById('select-gemini-model');
       if (settingsSelect) settingsSelect.innerHTML = opts;
+
+      const pill = document.getElementById('header-model-pill');
+      if (pill) pill.innerText = state.selectedModel;
     }
 
+    // ==========================================
     // UI RENDERERS
+    // ==========================================
     function renderApp() {
       const globalHeader = document.getElementById('main-global-header');
       if (globalHeader) {
@@ -1139,13 +1187,15 @@
       const dateDisplay = document.getElementById('dashboard-date-display');
       if (dateDisplay) dateDisplay.innerText = state.selectedDate;
 
+      const greetingTitle = document.getElementById('dashboard-greeting-title');
+      if (greetingTitle) greetingTitle.innerText = `أهلاً ${state.userName} 👋`;
+
       const streakBadge = document.getElementById('streak-badge');
       if (streakBadge) {
         const count = calculateStreak();
         streakBadge.innerText = `🔥 ${count} ${count > 1 ? 'أيام التزام متواصل' : 'يوم التزام'}`;
       }
 
-      // Sync Model Dropdowns
       populateModelDropdowns();
 
       const isToday = state.selectedDate === state.todayDate;
@@ -1179,7 +1229,10 @@
 
       // Update Gauge
       const badgeMode = document.getElementById('goal-badge-mode');
-      if (badgeMode) badgeMode.innerText = GOAL_PRESETS[state.goalConfig.mode]?.label || 'مخصص';
+      const bannerGoal = document.getElementById('banner-goal-name');
+      const modeLabel = GOAL_PRESETS[state.goalConfig.mode]?.label || 'مخصص';
+      if (badgeMode) badgeMode.innerText = modeLabel;
+      if (bannerGoal) bannerGoal.innerText = modeLabel;
       
       setElText('stat-consumed-calories', consumed.cal);
       setElText('stat-target-calories', `من ${targetCal} سعرة`);
@@ -1197,28 +1250,30 @@
       }
 
       // Update Macros
-      setElText('macro-consumed-protein', consumed.p);
+      setElText('macro-consumed-protein', Math.round(consumed.p));
       setElText('macro-target-protein', ` / ${targetP}g`);
       setElText('macro-ratio-protein', `النسبة: ${state.goalConfig.proteinRatio}%`);
-      setElText('macro-remaining-protein', Math.max(0, targetP - consumed.p));
+      setElText('macro-remaining-protein', Math.max(0, targetP - Math.round(consumed.p)));
       setElWidth('bar-protein', Math.min(100, (consumed.p / (targetP || 1)) * 100) + '%');
 
-      setElText('macro-consumed-carbs', consumed.c);
+      setElText('macro-consumed-carbs', Math.round(consumed.c));
       setElText('macro-target-carbs', ` / ${targetC}g`);
       setElText('macro-ratio-carbs', `النسبة: ${state.goalConfig.carbsRatio}%`);
-      setElText('macro-remaining-carbs', Math.max(0, targetC - consumed.c));
+      setElText('macro-remaining-carbs', Math.max(0, targetC - Math.round(consumed.c)));
       setElWidth('bar-carbs', Math.min(100, (consumed.c / (targetC || 1)) * 100) + '%');
 
-      setElText('macro-consumed-fats', consumed.f);
+      setElText('macro-consumed-fats', Math.round(consumed.f));
       setElText('macro-target-fats', ` / ${targetF}g`);
       setElText('macro-ratio-fats', `النسبة: ${state.goalConfig.fatsRatio}%`);
-      setElText('macro-remaining-fats', Math.max(0, targetF - consumed.f));
+      setElText('macro-remaining-fats', Math.max(0, targetF - Math.round(consumed.f)));
       setElWidth('bar-fats', Math.min(100, (consumed.f / (targetF || 1)) * 100) + '%');
 
       setElText('count-meals-today', mealsForDate.length);
       renderMealCards(mealsForDate);
+      renderSmartRecommendations(consumed, targetCal, targetP, targetC, targetF);
 
       // Render Settings Inputs
+      setVal('set-name-input', state.userName);
       setVal('goal-target-calories', state.goalConfig.targetCalories);
       setVal('goal-protein-ratio', state.goalConfig.proteinRatio);
       setVal('goal-carbs-ratio', state.goalConfig.carbsRatio);
@@ -1254,7 +1309,87 @@
       if (el) el.value = v;
     }
 
-    // Render Meals with Edit (✏️) and Delete (✕)
+    // ==========================================
+    // SMART RECOMMENDATION SYSTEM
+    // ==========================================
+    function renderSmartRecommendations(consumed, targetCal, targetP, targetC, targetF) {
+      const container = document.getElementById('reco-container');
+      if (!container) return;
+
+      const remCal = targetCal - consumed.cal;
+      const remP = Math.max(0, targetP - consumed.p);
+      const remC = Math.max(0, targetC - consumed.c);
+      const remF = Math.max(0, targetF - consumed.f);
+
+      if (remCal <= 60) {
+        container.innerHTML = `
+          <div class="p-3 bg-roast-900/80 rounded-xl border border-warmBeige-400/20 text-xs text-warmBeige-300">
+            ${remCal < 0 
+              ? `⚠️ تجاوزت احتياج السعرات بـ ${Math.abs(remCal)} سعرة. اكتفِ بالماء وشاي الأعشاب والمشي الخفيف الليلة.`
+              : `✅ أحسنت! حققت هدف السعرات اليومية بدقة ممتازة.`}
+          </div>
+        `;
+        return;
+      }
+
+      // Prioritize macro with highest relative deficit
+      const gaps = [
+        { k: 'p', ratio: targetP ? remP / targetP : 0, rem: remP, label: 'البروتين' },
+        { k: 'c', ratio: targetC ? remC / targetC : 0, rem: remC, label: 'الكارب' },
+        { k: 'f', ratio: targetF ? remF / targetF : 0, rem: remF, label: 'الدهون' }
+      ].filter(g => g.rem > 2).sort((a,b) => b.ratio - a.ratio);
+
+      if (gaps.length === 0) {
+        container.innerHTML = `
+          <div class="p-3 bg-roast-900/80 rounded-xl border border-warmBeige-400/20 text-xs text-warmBeige-300">
+            أغلقت الماكروز الرئيسية بالكامل 👌 متبقي ${remCal} سعرة يمكن استغلالها في سلطة خضراء خفيفة.
+          </div>
+        `;
+        return;
+      }
+
+      const topMacro = gaps[0];
+      const matchingFoods = RECO_FOODS.filter(f => f.type === topMacro.k).slice(0, 2);
+
+      const items = matchingFoods.map(food => {
+        let grams = (topMacro.rem / (food[topMacro.k] || 1)) * 100;
+        grams = Math.min(grams, (remCal / food.cal) * 100);
+        grams = Math.max(25, Math.round(grams / 5) * 5);
+        const k = grams / 100;
+        return {
+          foodName: food.name,
+          grams,
+          cal: Math.round(food.cal * k),
+          p: Math.round(food.p * k * 10) / 10,
+          c: Math.round(food.c * k * 10) / 10,
+          f: Math.round(food.f * k * 10) / 10
+        };
+      });
+
+      container.innerHTML = `
+        <div class="text-xs text-warmBeige-300 mb-1 flex items-center justify-between">
+          <span>الأولوية القصوى الآن: <strong class="text-caramel font-bold">${topMacro.label}</strong> (متبقي ${Math.round(topMacro.rem)}g)</span>
+          <span class="text-[11px] text-warmBeige-400 font-mono">طاقة متاحة: ${remCal} kcal</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          ${items.map(it => `
+            <div class="bg-roast-900/90 p-2.5 rounded-xl border border-roast-800 flex items-center justify-between gap-2">
+              <div>
+                <h5 class="text-xs font-bold text-warmBeige-100">${it.grams}g ${it.foodName}</h5>
+                <p class="text-[10px] text-warmBeige-400 font-mono mt-0.5">${it.cal} cal • P:${it.p}g • C:${it.c}g • F:${it.f}g</p>
+              </div>
+              <button onclick="quickAddFood('${it.grams}g ${it.foodName}', ${it.cal}, ${it.p}, ${it.c}, ${it.f})" class="bg-caramel/20 hover:bg-caramel text-caramel hover:text-roast-950 px-2.5 py-1.5 rounded-lg text-xs font-black transition-all">
+                + إضافة
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // RENDER MEALS & CARDS
+    // ==========================================
     function renderMealCards(mealsList) {
       const container = document.getElementById('meals-container');
       if (!container) return;
@@ -1315,6 +1450,7 @@
         notes: 'سناك سريع مضاف بلمسة واحدة.',
         source: 'سناك سريع ⚡'
       });
+      Sound.mealAdded();
       showToast(`تمت إضافة ${name} (${cal} سعرة)!`);
     }
 
@@ -1341,10 +1477,10 @@
                   <div class="p-2.5 bg-roast-850 rounded-xl text-warmBeige-200 font-mono font-bold text-xs border border-roast-800">${d}</div>
                   <div>
                     <h4 class="font-bold text-warmBeige-50 text-base">${d === state.todayDate ? 'اليوم الحاضر' : 'يوم ' + d}</h4>
-                    <p class="text-xs text-warmBeige-400">الإجمالي: <strong class="text-caramel">${dayCal}</strong> سعرة</p>
+                    <p class="text-xs text-warmBeige-400">الإجمالي: <strong class="text-caramel">${dayCal}</strong> سعرة • ${dayMeals.length} وجبات</p>
                   </div>
                 </div>
-                <button onclick="viewDateFromHistory('${d}')" class="text-xs bg-caramel hover:bg-caramel-hover text-roast-950 font-bold px-3 py-1.5 rounded-xl transition-all">عرض الوجبات</button>
+                <button onclick="viewDateFromHistory('${d}')" class="text-xs bg-caramel hover:bg-caramel-hover text-roast-950 font-bold px-3 py-1.5 rounded-xl transition-all">عرض وتعديل وجبات اليوم</button>
               </div>
             </div>
           `;
@@ -1366,7 +1502,9 @@
       }).join('');
     }
 
+    // ==========================================
     // CHAT MANAGEMENT
+    // ==========================================
     function getActiveChatSession() {
       if (!state.chatSessions || state.chatSessions.length === 0) {
         startNewChatSession(false);
@@ -1407,7 +1545,7 @@
         title: 'محادثة جديدة',
         date: state.todayDate,
         messages: [
-          { role: 'assistant', text: 'أهلاً بك يا بطل في سُعرة! ☕ أنا جيمناي، مستشارك الغذائي الذكي. اسألني عن أي وجبة، أو كيف تكمل احتياجك اليومي من البروتين والسعرات!' }
+          { role: 'assistant', text: `أهلاً بك يا ${state.userName}! ☕ أنا مدربك الذكي في سُعرة مدعوماً بـ Gemini. اسألني عن أي وجبة، خطتك، أو كيف تكمل احتياجك اليومي من البروتين والسعرات!` }
         ]
       };
       state.chatSessions.unshift(newSession);
@@ -1475,13 +1613,6 @@
       }
     }
 
-    function onChatModelChange(val) {
-      state.selectedModel = val;
-      StorageEngine.set(KEY_MODEL, val);
-      renderApp();
-      showToast(`تم تغيير الموديل إلى: ${val}`);
-    }
-
     function onModalModelChange(val) {
       state.selectedModel = val;
       StorageEngine.set(KEY_MODEL, val);
@@ -1492,7 +1623,7 @@
       state.selectedModel = val;
       StorageEngine.set(KEY_MODEL, val);
       renderApp();
-      showToast(`تم تغيير الموديل إلى: ${val}`);
+      showToast(`تم تعيين الموديل: ${val}`);
     }
 
     function sendQuickPrompt(prompt) {
@@ -1625,9 +1756,9 @@
     function showToast(msg) {
       const toast = document.getElementById('toast-notice');
       document.getElementById('toast-text').innerText = msg;
-      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
       setTimeout(() => {
-        toast.classList.add('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
       }, 3500);
     }
 
@@ -1661,7 +1792,72 @@
       showToast('تم حفظ المفتاح بنجاح في جهازك.');
     }
 
-    // Direct Gemini Connection Test
+    // ==========================================
+    // GEMINI ROBUST CALLER & MODEL DISCOVERY
+    // ==========================================
+    async function listAvailableGeminiModels(key) {
+      try {
+        const res = await fetch(`${API_BASE}/models?key=${encodeURIComponent(key)}`);
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.models || [])
+          .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+          .map(m => m.name.replace(/^models\//, ''));
+      } catch(_) { return []; }
+    }
+
+    async function callGeminiCascade(payload, cleanKey) {
+      const priorityModels = Array.from(new Set([
+        state.selectedModel,
+        'gemini-3.8-flash',
+        'gemini-3.1-flash-lite',
+        'gemini-3.5-flash-lite',
+        'gemini-3.6-flash',
+        'gemini-2.5-flash-lite',
+        'gemini-2.5-flash'
+      ]));
+
+      let lastError = '';
+      for (const m of priorityModels) {
+        try {
+          const endpoint = `${API_BASE}/models/${m}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+          const r = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const d = await r.json();
+          if (r.ok && d?.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return { text: d.candidates[0].content.parts[0].text, usedModel: m };
+          } else {
+            lastError = d?.error?.message || `HTTP ${r.status}`;
+          }
+        } catch(e) {
+          lastError = e.message;
+        }
+      }
+
+      // Dynamic Discovery Fallback
+      const dynamicModels = await listAvailableGeminiModels(cleanKey);
+      const rankedDynamic = dynamicModels.filter(m => /^gemini/.test(m) && !priorityModels.includes(m));
+      for (const m of rankedDynamic) {
+        try {
+          const endpoint = `${API_BASE}/models/${m}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+          const r = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const d = await r.json();
+          if (r.ok && d?.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return { text: d.candidates[0].content.parts[0].text, usedModel: m };
+          }
+        } catch(_) {}
+      }
+
+      throw new Error(lastError || 'تعذر الاتصال بجميع نماذج Google Gemini');
+    }
+
     async function testCurrentApiKey() {
       const key = state.apiKey.trim();
       if (!key) {
@@ -1670,43 +1866,14 @@
       }
       showToast('جاري فحص الاتصال مع Google...');
       try {
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${state.selectedModel}:generateContent?key=${encodeURIComponent(key)}`;
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "hi" }] }] })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert(`✅ الاتصال ناجح 100%! السيرفر يعمل ومفتاحك نشط مع نموذج ${state.selectedModel}.`);
-        } else {
-          // If selected model failed, try auto-fallback to stable models
-          const stableCandidates = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
-          let fallbackSuccess = null;
-          for (const m of stableCandidates) {
-            try {
-              const testEp = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`;
-              const testRes = await fetch(testEp, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "hi" }] }] })
-              });
-              if (testRes.ok) {
-                fallbackSuccess = m;
-                break;
-              }
-            } catch(e){}
-          }
-
-          if (fallbackSuccess) {
-            state.selectedModel = fallbackSuccess;
-            StorageEngine.set(KEY_MODEL, fallbackSuccess);
-            renderApp();
-            alert(`✅ تم استكشاف نموذج مستقر ونشط لحسابك (${fallbackSuccess}) وتحديده تلقائياً! الاتصال شغال 100%.`);
-          } else {
-            alert(`❌ تنبيه من Google: ${data?.error?.message || 'المفتاح غير صالح أو الحصة المجانية انتهت مؤقتاً'}`);
-          }
+        const payload = { contents: [{ role: "user", parts: [{ text: "أجب بكلمة واحدة: متصل" }] }] };
+        const result = await callGeminiCascade(payload, key);
+        if (result.usedModel !== state.selectedModel) {
+          state.selectedModel = result.usedModel;
+          StorageEngine.set(KEY_MODEL, result.usedModel);
+          renderApp();
         }
+        alert(`✅ الاتصال ناجح 100%! السيرفر يعمل ومفتاحك نشط مع نموذج: ${result.usedModel}`);
       } catch(e) {
         alert(`❌ فشل الاتصال: ${e.message}`);
       }
@@ -1729,26 +1896,52 @@
 
     function updateCustomGoal() {
       state.goalConfig.mode = 'custom';
+      state.userName = document.getElementById('set-name-input').value.trim() || 'عبدالله';
       state.goalConfig.targetCalories = Number(document.getElementById('goal-target-calories').value) || 2000;
       state.goalConfig.proteinRatio = Number(document.getElementById('goal-protein-ratio').value) || 35;
       state.goalConfig.carbsRatio = Number(document.getElementById('goal-carbs-ratio').value) || 40;
       state.goalConfig.fatsRatio = Number(document.getElementById('goal-fats-ratio').value) || 25;
+      StorageEngine.set('su3rah_username', state.userName);
       StorageEngine.set(KEY_GOAL, state.goalConfig);
       renderApp();
     }
 
-    // IMAGE HANDLERS
-    function handleImageFileSelect(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
+    // ==========================================
+    // CLIENT IMAGE COMPRESSION & HANDLERS
+    // ==========================================
+    function compressImageFile(file, maxDimension = 800) {
+      return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e) => {
-          state.imagePreviewData = e.target.result;
+        reader.onerror = () => reject(reader.error);
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleImageFileSelect(input) {
+      if (input.files && input.files[0]) {
+        try {
+          showToast('جاري ضغط ومعالجة الصورة...');
+          state.imagePreviewData = await compressImageFile(input.files[0], 800);
           document.getElementById('image-preview-element').src = state.imagePreviewData;
           document.getElementById('image-preview-wrapper').classList.remove('hidden');
           document.getElementById('image-placeholder-wrapper').classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
+        } catch(e) {
+          alert('تعذر قراءة الصورة المضغوطة');
+        }
       }
     }
 
@@ -1759,26 +1952,14 @@
       document.getElementById('image-placeholder-wrapper').classList.remove('hidden');
     }
 
-    // ----------------------------------------------------------------------
-    // ROBUST CONTINUOUS SPEECH RECOGNITION (FIXED DUPLICATE WORDS BUG!)
-    // ----------------------------------------------------------------------
+    // ==========================================
+    // SPEECH RECOGNITION (No Duplication)
+    // ==========================================
     async function toggleFieldVoice(targetInput, isNumberOnly = false) {
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRec) {
-        alert('خاصية الصوت تتطلب متصفح Chrome.');
+        alert('خاصية الصوت تتطلب متصفحاً يدعم Web Speech API (مثل Chrome).');
         return;
-      }
-
-      if (!state.userWantsRecording && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          stream.getTracks().forEach(track => track.stop());
-        } catch (err) {
-          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            alert('تم حظر الميكروفون من إعدادات المتصفح. يرجى تفعيل إذن الميكروفون.');
-            return;
-          }
-        }
       }
 
       if (state.userWantsRecording) {
@@ -1874,23 +2055,11 @@
         const last = digitMatches[digitMatches.length - 1];
         return last.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
       }
-      const words = transcript.trim().split(/\s+/);
-      const map = {
-        'صفر': 0, 'واحد': 1, 'اثنين': 2, 'تلاتة': 3, 'ثلاثة': 3, 'اربعة': 4, 'أربعة': 4,
-        'خمسة': 5, 'ستة': 6, 'سبعة': 7, 'تمنية': 8, 'ثمانية': 8, 'تسعة': 9, 'عشرة': 10,
-        'عشرين': 20, 'ثلاثين': 30, 'تلاتين': 30, 'اربعين': 40, 'أربعين': 40,
-        'خمسين': 50, 'ستين': 60, 'سبعين': 70, 'ثمانين': 80, 'تمنين': 80, 'تسعين': 90,
-        'مية': 100, 'مائة': 100, 'ميتين': 200, 'مائتين': 200, 'ثلاثمائة': 300,
-        'اربعمية': 400, 'خمسمية': 500, 'ستمية': 600, 'سبعمية': 700, 'ثمانمائة': 800, 'تسعمائة': 900
-      };
-      for (let i = words.length - 1; i >= 0; i--) {
-        if (map[words[i]] !== undefined) return map[words[i]];
-      }
       return null;
     }
 
     function parseMagicVoiceSentence(sentence) {
-      const lower = sentence.toLowerCase();
+      const lower = sentence.toLowerCase().replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
       
       const calMatch = lower.match(/(\d+)\s*(سعرة|كالوري|حرارية|cal)/);
       if (calMatch) setVal('manual-calories', calMatch[1]);
@@ -1938,7 +2107,9 @@
       }
     }
 
-    // MANUAL MEAL SUBMISSION (SUPPORTS EDITING)
+    // ==========================================
+    // MANUAL MEAL SUBMISSION
+    // ==========================================
     function handleManualMealSubmit(e) {
       e.preventDefault();
       const title = document.getElementById('manual-title').value.trim() || 'وجبة مخصصة';
@@ -1968,7 +2139,7 @@
       });
 
       closeMealModal();
-      Sound.mealAdded(); // تشغيل صوت الإضافة الناعم
+      Sound.mealAdded();
       showToast(state.isEditing ? 'تم تحديث الوجبة والماكروز بنجاح!' : 'تم حفظ الوجبة والماكروز والصورة بنجاح!');
     }
 
@@ -1987,7 +2158,7 @@
 
       const cleanKey = state.apiKey.trim();
       if (!cleanKey) {
-        alert('⚠️ تنبيه: لم يتم إدخال مفتاح Gemini API بعد!\nيرجى فتح صفحة (الإعدادات) ولصق مفتاحك الخاص لتفعيل التحليل السحابي الذكي، أو استخدم خيار (إدخال يدوي بالأرقام).');
+        alert('⚠️ تنبيه: لم يتم إدخال مفتاح Gemini API بعد!\nيرجى فتح صفحة (الإعدادات) ولصق مفتاحك لتفعيل التحليل السحابي الذكي، أو استخدم خيار (إدخال يدوي بالأرقام).');
         return;
       }
 
@@ -2024,53 +2195,12 @@
 
       const payload = {
         contents: [{ role: "user", parts }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 800
-        }
+        generationConfig: { temperature: 0.2, maxOutputTokens: 800 }
       };
 
-      // Cascade Priority: try selected model first, then stable backups
-      const candidateModels = Array.from(new Set([
-        state.selectedModel,
-        'gemini-3.8-flash',
-        'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-1.5-flash'
-      ]));
-
       try {
-        let resData = null;
-        let usedModel = '';
-        let lastError = '';
-
-        for (const m of candidateModels) {
-          try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(cleanKey)}`;
-            const r = await fetch(endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            const d = await r.json();
-            if (r.ok) {
-              resData = d;
-              usedModel = m;
-              break;
-            } else {
-              lastError = d?.error?.message || `HTTP ${r.status}`;
-            }
-          } catch(e) {
-            lastError = e.message;
-          }
-        }
-
-        if (!resData) {
-          throw new Error(lastError || 'تعذر الاتصال بنماذج Google Gemini');
-        }
-
-        const rawText = resData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        let cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const result = await callGeminiCascade(payload, cleanKey);
+        let cleaned = result.text.replace(/```json/gi, '').replace(/```/g, '').trim();
         const match = cleaned.match(/\{[\s\S]*\}/);
         if (match) cleaned = match[0];
         const parsed = JSON.parse(cleaned);
@@ -2082,13 +2212,13 @@
           carbohydrates_g: Number(parsed.carbohydrates_g || 0),
           fats_g: Number(parsed.fats_g || 0),
           notes: parsed.notes,
-          source: `Gemini (${usedModel})`
+          source: `Gemini (${result.usedModel})`
         });
         Sound.mealAdded();
-        showToast(`تم التحليل بنجاح بواسطة ${usedModel}!`);
+        showToast(`تم التحليل بنجاح بواسطة ${result.usedModel}!`);
         closeMealModal();
       } catch(err) {
-        alert(`❌ تنبيه من Gemini: ${err.message}\nإذا كانت الكوتا منتهية، يمكنك استخدام خيار (إدخال يدوي بالأرقام) مباشرة.`);
+        alert(`❌ تنبيه من Gemini: ${err.message}\nيمكنك استخدام خيار (إدخال يدوي بالأرقام) مباشرة.`);
       } finally {
         btnSubmit.disabled = false;
         btnSubmit.innerHTML = '<span>✨ تحليل وتسجيل بالذكاء الاصطناعي</span>';
@@ -2144,7 +2274,7 @@
     }
 
     // ==========================================
-    // CHAT ENGINE (WITH SOUND & PUSH NOTIFICATIONS)
+    // CHAT ENGINE
     // ==========================================
     async function sendChatMessage() {
       const input = document.getElementById('input-chat-text');
@@ -2189,10 +2319,11 @@
         return;
       }
 
-      const promptContext = `أنت نموذج ${state.selectedModel} من Google Gemini، تعمل كـ "كابتن Nutri-Coach" في تطبيق سُعرة.
-تحدث بالعربية بأسلوب ذكي، تشجيعي، ورياضي دقيق كـ Gemini تماماً. أجب مباشرة على سؤال المستخدم بالتفصيل دون تكرار عبارات محفوظة.
-بيانات المستخدم اليومية (${state.selectedDate}):
-- الهدف: ${GOAL_PRESETS[state.goalConfig.mode]?.label}.
+      const promptContext = `أنت نموذج ${state.selectedModel} من Google Gemini، تعمل كـ "كابتن Nutri-Coach" الرياضي في تطبيق سُعرة.
+تحدث بالعربية بأسلوب ذكي، تشجيعي، ورياضي دقيق. أجب مباشرة على سؤال المستخدم بالتفصيل العملي.
+بيانات المستخدم (${state.userName}):
+- التاريخ: ${state.selectedDate}
+- الهدف: ${GOAL_PRESETS[state.goalConfig.mode]?.label} (${targetCal} سعرة).
 - المستهلك اليوم: ${consumed.cal} سعرة.
 - المتبقي لليوم: ${remCal} سعرة.
 - البروتين المتبقي: ${remP}غ.
@@ -2202,69 +2333,27 @@
 
       const payload = {
         contents: [{ role: "user", parts: [{ text: promptContext }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 500 }
+        generationConfig: { temperature: 0.4, maxOutputTokens: 600 }
       };
 
-      // Cascade through backup models if primary is busy or quota 0
-      const candidateModels = Array.from(new Set([
-        state.selectedModel,
-        'gemini-3.8-flash',
-        'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-1.5-flash'
-      ]));
-
       try {
-        let reply = null;
-        let lastError = '';
-        let successfulModel = '';
-
-        for (const m of candidateModels) {
-          try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(cleanKey)}`;
-            const r = await fetch(endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            const d = await r.json();
-            if (r.ok && d?.candidates?.[0]?.content?.parts?.[0]?.text) {
-              reply = d.candidates[0].content.parts[0].text;
-              successfulModel = m;
-              break;
-            } else {
-              lastError = d?.error?.message || `HTTP ${r.status}`;
-            }
-          } catch(e) {
-            lastError = e.message;
-          }
+        const result = await callGeminiCascade(payload, cleanKey);
+        if (result.usedModel !== state.selectedModel) {
+          state.selectedModel = result.usedModel;
+          StorageEngine.set(KEY_MODEL, result.usedModel);
+          renderApp();
         }
 
-        if (reply) {
-          if (successfulModel !== state.selectedModel) {
-            state.selectedModel = successfulModel;
-            StorageEngine.set(KEY_MODEL, successfulModel);
-            renderApp();
-          }
-          session.messages.push({ role: 'assistant', text: reply });
+        session.messages.push({ role: 'assistant', text: result.text.trim() });
+        Sound.coachReply();
 
-          // 1. Play coach reply chime
-          Sound.coachReply();
-
-          // 2. Trigger browser notification if user minimized or switched tab
-          if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-            try {
-              new Notification('مدرب سُعرة 🤖', {
-                body: reply.slice(0, 100) + '...',
-                icon: 'icon.png'
-              });
-            } catch (_) {}
-          }
-        } else {
-          session.messages.push({
-            role: 'assistant',
-            text: `❌ خطأ في الاتصال بسيرفر Google Gemini (${lastError}):\nيرجى فحص المفتاح في الإعدادات أو اختيار نموذج آخر.`
-          });
+        if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification('مدرب سُعرة 🤖', {
+              body: result.text.trim().slice(0, 100) + '...',
+              icon: 'icon.png'
+            });
+          } catch (_) {}
         }
       } catch(err) {
         session.messages.push({
@@ -2278,9 +2367,9 @@
       }
     }
 
-    // ----------------------------------------------------
-    // STORY CARD GENERATOR
-    // ----------------------------------------------------
+    // ==========================================
+    // STORY CARD GENERATOR (600 x 900)
+    // ==========================================
     function openShareStoryModal() {
       const modal = document.getElementById('modal-share-story');
       modal.classList.remove('hidden');
@@ -2294,7 +2383,8 @@
       modal.classList.remove('flex');
     }
 
-    function drawStoryCard() {
+    async function drawStoryCard() {
+      await document.fonts.ready;
       const canvas = document.getElementById('story-canvas');
       const ctx = canvas.getContext('2d');
       const w = 600;
@@ -2319,8 +2409,8 @@
       ctx.fillText('سُعرة', w/2, 110);
 
       ctx.fillStyle = '#c88a58';
-      ctx.font = '18px Cairo, sans-serif';
-      ctx.fillText(`إنجاز عبدالله الرياضي • ${state.selectedDate}`, w/2, 155);
+      ctx.font = '18px Tajawal, sans-serif';
+      ctx.fillText(`إنجاز ${state.userName} الرياضي • ${state.selectedDate}`, w/2, 155);
 
       const mealsForDate = state.meals.filter(m => m.date === state.selectedDate);
       const consumed = mealsForDate.reduce((acc, m) => {
@@ -2348,34 +2438,33 @@
       ctx.arc(w/2, 360, 120, -Math.PI / 2, (-Math.PI / 2) + (2 * Math.PI * (pct / 100)));
       ctx.stroke();
 
-      // Big Calories text
       ctx.fillStyle = '#f4ede4';
-      ctx.font = 'bold 65px Cairo, sans-serif';
+      ctx.font = 'bold 65px Tajawal, sans-serif';
       ctx.fillText(`${consumed.cal}`, w/2, 360);
 
       ctx.fillStyle = '#c5a37a';
-      ctx.font = '20px Cairo, sans-serif';
+      ctx.font = '20px Tajawal, sans-serif';
       ctx.fillText(`من ${targetCal} سعرة (${pct}%)`, w/2, 405);
 
       const targetP = Math.round((targetCal * (state.goalConfig.proteinRatio / 100)) / 4);
       const targetC = Math.round((targetCal * (state.goalConfig.carbsRatio / 100)) / 4);
       const targetF = Math.round((targetCal * (state.goalConfig.fatsRatio / 100)) / 9);
 
-      drawMacroBox(ctx, 60, 560, 140, 110, 'بروتين', `${consumed.p}g`, `من ${targetP}g`, '#7dd3fc');
-      drawMacroBox(ctx, 230, 560, 140, 110, 'كارب', `${consumed.c}g`, `من ${targetC}g`, '#fbbf24');
-      drawMacroBox(ctx, 400, 560, 140, 110, 'دهون', `${consumed.f}g`, `من ${targetF}g`, '#f87171');
+      drawMacroBox(ctx, 60, 560, 140, 110, 'بروتين', `${Math.round(consumed.p)}g`, `من ${targetP}g`, '#38bdf8');
+      drawMacroBox(ctx, 230, 560, 140, 110, 'كارب', `${Math.round(consumed.c)}g`, `من ${targetC}g`, '#fbbf24');
+      drawMacroBox(ctx, 400, 560, 140, 110, 'دهون', `${Math.round(consumed.f)}g`, `من ${targetF}g`, '#f87171');
 
       ctx.fillStyle = '#f4ede4';
-      ctx.font = 'bold 22px Cairo, sans-serif';
+      ctx.font = 'bold 22px Tajawal, sans-serif';
       ctx.fillText(`🔥 الالتزام: ${calculateStreak()} أيام متواصلة!`, w/2, 740);
 
       ctx.fillStyle = '#c5a37a';
-      ctx.font = '16px Cairo, sans-serif';
+      ctx.font = '16px Tajawal, sans-serif';
       ctx.fillText('كل وجبة محسوبة بدقة مع الذكاء الاصطناعي 🥗', w/2, 780);
 
       ctx.fillStyle = '#ede3d5';
-      ctx.font = '14px Cairo, sans-serif';
-      ctx.fillText('تم التوليد عبر تطبيق سُعرة', w/2, 845);
+      ctx.font = '14px Tajawal, sans-serif';
+      ctx.fillText('NutriLens AI • سُعرة', w/2, 845);
     }
 
     function drawMacroBox(ctx, x, y, bw, bh, title, val, sub, color) {
@@ -2388,15 +2477,15 @@
       ctx.stroke();
 
       ctx.fillStyle = color;
-      ctx.font = 'bold 18px Cairo, sans-serif';
+      ctx.font = 'bold 18px Tajawal, sans-serif';
       ctx.fillText(title, x + bw/2, y + 32);
 
       ctx.fillStyle = '#f4ede4';
-      ctx.font = 'bold 26px Cairo, sans-serif';
+      ctx.font = 'bold 26px Tajawal, sans-serif';
       ctx.fillText(val, x + bw/2, y + 68);
 
       ctx.fillStyle = '#a89f91';
-      ctx.font = '13px Cairo, sans-serif';
+      ctx.font = '13px Tajawal, sans-serif';
       ctx.fillText(sub, x + bw/2, y + 95);
     }
 
@@ -2409,10 +2498,12 @@
       showToast('تم تحميل بطاقة الستوري بنجاح!');
     }
 
-    // PWA INSTALLATION
+    // ==========================================
+    // PWA & DATA WIPE
+    // ==========================================
     function triggerPwaInstall() {
       if (!deferredInstallPrompt) {
-        alert('لتثبيت تطبيق سُعرة على هاتفك: اضغط على خيارات المتصفح (⋮) ثم اضغط "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
+        alert('لتثبيت تطبيق سُعرة على جوالك: افتح خيارات المتصفح (⋮) ثم اضغط "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
         return;
       }
       deferredInstallPrompt.prompt();
@@ -2425,20 +2516,34 @@
       });
     }
 
+    async function wipeAllData() {
+      if (!confirm('⚠️ تحذير: سيتم مسح كافة سجلات الوجبات والمحادثات المخزنة على هاتفك نهائياً. هل أنت متأكد؟')) return;
+      await StorageEngine.clearAll();
+      state.meals = [];
+      state.chatSessions = [];
+      state.activeChatId = null;
+      startNewChatSession(false);
+      renderApp();
+      showToast('تم مسح جميع البيانات المحلية بنجاح.');
+    }
+
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // ==========================================
     // BOOTSTRAP APPLICATION
+    // ==========================================
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. Audio setting check
       state.audioMuted = localStorage.getItem(KEY_AUDIO_MUTED) === '1';
       const soundBtn = document.getElementById('btn-sound-toggle');
       if (soundBtn) soundBtn.innerText = state.audioMuted ? '🔇' : '🔊';
 
-      // 2. Load Storage
       await StorageEngine.init();
+
+      const savedName = await StorageEngine.get('su3rah_username', 'عبدالله');
+      state.userName = savedName || 'عبدالله';
 
       const savedMeals = await StorageEngine.get(KEY_MEALS, null);
       if (savedMeals && Array.isArray(savedMeals)) {
@@ -2493,11 +2598,19 @@
         navigator.storage.persist();
       }
 
-      // Initialize 11:00 PM Night Reminder
       initNightReminder();
+
+      // Refresh dashboard on tab focus
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          state.todayDate = getTodayDateString();
+          renderApp();
+        }
+      });
 
       renderApp();
     });
   </script>
 </body>
 </html>
+```
