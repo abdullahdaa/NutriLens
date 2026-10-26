@@ -6,16 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>سُعرة — حاسبة السعرات والماكروز الذكية</title>
 
-  <!-- PWA & Mobile Meta Tags (Relative & Embedded Data URIs) -->
-  <link rel="icon" id="app-favicon" type="image/png" />
-  <link rel="apple-touch-icon" id="app-apple-icon" />
-  <link rel="manifest" id="app-manifest" />
+  <!-- PWA & Mobile Meta Tags (Direct GitHub icon.png & manifest.json) -->
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <link rel="manifest" href="manifest.json" />
 
   <meta name="theme-color" content="#130c07" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="سُعرة" />
+
+  <!-- Official PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 
   <!-- Google Fonts: Cairo, Tajawal & El Messiri -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -117,10 +126,11 @@
   <header id="main-global-header" class="sticky top-0 z-40 bg-roast-900/95 backdrop-blur-md border-b border-roast-800 px-4 py-3">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       
-      <!-- Logo + Name -->
+      <!-- Brand Logo - Strict GitHub icon.png File -->
       <div class="flex items-center gap-3">
         <img 
           id="nav-brand-img" 
+          src="icon.png" 
           alt="سُعرة" 
           class="w-10 h-10 rounded-xl border border-warmBeige-400/30 shadow-md shadow-black/60 object-cover flex-shrink-0" 
         />
@@ -143,10 +153,14 @@
         </button>
       </nav>
 
-      <!-- Install Button (Clean Header, No Badges) -->
+      <!-- Action Items -->
       <div class="flex items-center gap-2">
+        <button onclick="openShareStoryModal()" class="flex items-center gap-1.5 bg-roast-850 border border-warmBeige-400/30 hover:border-caramel text-warmBeige-200 px-3 py-1.5 rounded-full text-xs font-semibold transition-all">
+          <span>📸</span>
+          <span class="hidden sm:inline">مشاركة الإنجاز</span>
+        </button>
         <button id="btn-install-pwa" onclick="triggerPwaInstall()" class="hidden items-center gap-1.5 bg-caramel text-roast-950 font-bold px-3.5 py-1.5 rounded-full text-xs shadow-md animate-pulse">
-          <span>📲 تثبيت التطبيق</span>
+          <span>📲 تثبيت</span>
         </button>
       </div>
 
@@ -414,19 +428,18 @@
         <!-- Gemini Top Bar -->
         <div class="bg-roast-900 border-b border-roast-800 px-4 py-3 flex items-center justify-between">
           
-          <!-- Back button -->
           <button onclick="switchTab('dashboard')" class="text-warmBeige-300 hover:text-warmBeige-100 flex items-center gap-1.5 text-xs font-bold bg-roast-850 px-3 py-1.5 rounded-xl border border-roast-800">
             <span>←</span>
             <span>الرئيسية</span>
           </button>
 
-          <!-- Model Selector Location #1 -->
+          <!-- Model Selector Location #1 (Updated Modern Lineup) -->
           <div class="relative">
             <select id="chat-top-model-select" onchange="onChatModelChange(this.value)" class="bg-roast-850 border border-warmBeige-400/30 text-warmBeige-100 font-bold text-xs rounded-full px-4 py-1.5 focus:outline-none focus:border-caramel appearance-none pr-7 cursor-pointer text-center">
-              <option value="gemini-2.5-flash" selected>⚡ Gemini 2.5 Flash (الموصى به)</option>
-              <option value="gemini-2.5-pro">🚀 Gemini 2.5 Pro (الأقوى)</option>
-              <option value="gemini-2.0-flash">🌪️ Gemini 2.0 Flash (الخفيف)</option>
-              <option value="gemini-1.5-flash">🛡️ Gemini 1.5 Flash (الكلاسيكي)</option>
+              <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (المتوازن والأحدث)</option>
+              <option value="gemini-3.1-pro-preview">🚀 Gemini 3.1 Pro Preview (الأقوى)</option>
+              <option value="gemini-2.5-flash">🌪️ Gemini 2.5 Flash</option>
+              <option value="gemini-2.0-flash">🛡️ Gemini 2.0 Flash</option>
             </select>
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-warmBeige-400 pointer-events-none text-[10px]">▼</span>
           </div>
@@ -503,7 +516,7 @@
         </button>
       </div>
 
-      <!-- Gemini API Key (With Real Verification Test) -->
+      <!-- Gemini API Key (With Real Verification Test & Auto Discovery) -->
       <div class="glass-card rounded-3xl p-6 border-l-4 border-l-protein">
         <div class="flex items-center gap-2.5 mb-2">
           <span class="text-caramel text-lg">🔑</span>
@@ -558,7 +571,7 @@
 
   </main>
 
-  <!-- ================= ADD MEAL MODAL (WITH MICS EVERYWHERE) ================= -->
+  <!-- ================= ADD / EDIT MEAL MODAL (DUAL MODE + EDITING SUPPORT) ================= -->
   <div id="modal-add-meal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
     <div class="glass-modal w-full max-w-lg rounded-3xl p-6 relative max-h-[92vh] overflow-y-auto border border-warmBeige-400/20">
       <button type="button" onclick="closeMealModal()" class="absolute top-5 left-5 text-warmBeige-400 hover:text-warmBeige-100 p-1 text-lg font-bold">
@@ -570,8 +583,8 @@
           ✨
         </div>
         <div>
-          <h3 class="font-extrabold text-lg text-warmBeige-50">إضافة وجبة جديدة</h3>
-          <p class="text-xs text-caramel font-semibold">تحكم كامل بالماكروز والصوت والصور</p>
+          <h3 id="modal-header-title" class="font-extrabold text-lg text-warmBeige-50">إضافة وجبة جديدة</h3>
+          <p id="modal-header-desc" class="text-xs text-caramel font-semibold">تحكم كامل بالماكروز والصوت والصور</p>
         </div>
       </div>
 
@@ -585,7 +598,7 @@
         </button>
       </div>
 
-      <!-- Shared Image Upload -->
+      <!-- Shared Image Upload (Available for Both Manual and AI & Edit Modes!) -->
       <div class="mb-4">
         <label class="block text-xs font-bold text-warmBeige-300 mb-1.5">صورة الوجبة (اختياري - كاميرا أو رفع ملف)</label>
         <div class="relative border-2 border-dashed border-roast-800 hover:border-caramel rounded-2xl p-4 text-center cursor-pointer bg-roast-900/60 transition-colors">
@@ -603,7 +616,7 @@
         </div>
       </div>
 
-      <!-- 1. MANUAL ENTRY FORM -->
+      <!-- 1. MANUAL ENTRY / EDIT FORM -->
       <form id="form-manual-entry" onsubmit="handleManualMealSubmit(event)" class="hidden space-y-4">
         
         <!-- Magic Spoken Meal Parser -->
@@ -679,7 +692,7 @@
           <button type="button" onclick="closeMealModal()" class="px-4 py-2 text-xs font-bold text-warmBeige-400 hover:text-warmBeige-100">
             إلغاء
           </button>
-          <button type="submit" class="bg-caramel hover:bg-caramel-hover text-roast-950 font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg shadow-caramel/20 transition-all">
+          <button type="submit" id="btn-save-manual-submit" class="bg-caramel hover:bg-caramel-hover text-roast-950 font-bold text-xs px-6 py-2.5 rounded-xl shadow-lg shadow-caramel/20 transition-all">
             حفظ الوجبة يدوياً في السجل 💾
           </button>
         </div>
@@ -688,14 +701,14 @@
       <!-- 2. AI ANALYSIS FORM -->
       <div id="form-ai-entry" class="space-y-4">
         
-        <!-- Model Selection inside Meal Modal -->
+        <!-- Model Selection inside Meal Modal (Location #2) -->
         <div class="bg-roast-900 p-2.5 rounded-2xl border border-roast-800 flex items-center justify-between">
           <label class="text-xs font-bold text-warmBeige-300">موديل التحليل:</label>
           <select id="modal-model-select" onchange="onModalModelChange(this.value)" class="bg-roast-950 border border-warmBeige-400/20 text-caramel font-bold text-xs rounded-xl px-3 py-1.5 focus:outline-none">
-            <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (الموصى به)</option>
-            <option value="gemini-2.5-pro">Gemini 2.5 Pro (الأقوى)</option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash (الخفيف)</option>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash (الكلاسيكي)</option>
+            <option value="gemini-3.8-flash" selected>Gemini 3.8 Flash (الأحدث)</option>
+            <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview (الأقوى)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
           </select>
         </div>
 
@@ -739,7 +752,7 @@
             إلغاء
           </button>
           <button type="button" id="btn-submit-ai" onclick="analyzeMealWithAI()" class="flex items-center gap-2 bg-gradient-to-r from-caramel to-warmBeige-500 hover:from-caramel-hover text-roast-950 font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-caramel/20">
-            <span>✨ تحليل وتسجيل بالذكاء الاصطناعي</span>
+            <span id="btn-submit-ai-label">✨ تحليل وتسجيل بالذكاء الاصطناعي</span>
           </button>
         </div>
       </div>
@@ -845,7 +858,7 @@
       todayDate: getTodayDateString(),
       selectedDate: getTodayDateString(),
       apiKey: '',
-      selectedModel: 'gemini-2.5-flash',
+      selectedModel: 'gemini-3.8-flash',
       goalConfig: {
         mode: 'cut',
         targetCalories: 2000,
@@ -859,6 +872,8 @@
       activeChatId: null,
       entryMode: 'ai',
       imagePreviewData: null,
+      isEditing: false,
+      editingMealId: null,
       userWantsRecording: false,
       recordingTarget: null,
       isTargetNumberOnly: false,
@@ -868,71 +883,6 @@
 
     let deferredInstallPrompt = null;
     let speechRecognizer = null;
-    let REAL_PNG_IMAGE_DATA = null;
-
-    // Generate high-resolution authentic PNG logo in memory
-    function generateAuthenticBrandPng() {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-
-        ctx.fillStyle = '#130c07';
-        ctx.fillRect(0, 0, 512, 512);
-
-        const grad = ctx.createRadialGradient(256, 260, 20, 256, 260, 250);
-        grad.addColorStop(0, '#22160e');
-        grad.addColorStop(1, '#130c07');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 512, 512);
-
-        ctx.fillStyle = '#f6eee5';
-        ctx.font = 'bold 150px "El Messiri", "Cairo", serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('سُعرة', 256, 280);
-
-        REAL_PNG_IMAGE_DATA = canvas.toDataURL('image/png');
-        
-        const navImg = document.getElementById('nav-brand-img');
-        if (navImg) navImg.src = REAL_PNG_IMAGE_DATA;
-
-        const fav = document.getElementById('app-favicon');
-        if (fav) fav.href = REAL_PNG_IMAGE_DATA;
-
-        const apple = document.getElementById('app-apple-icon');
-        if (apple) apple.href = REAL_PNG_IMAGE_DATA;
-
-        // Dynamic Manifest with PNG Data URL
-        const manifestObj = {
-          name: "سُعرة AI",
-          short_name: "سُعرة",
-          start_url: window.location.href,
-          scope: "./",
-          display: "standalone",
-          orientation: "portrait",
-          background_color: "#130c07",
-          theme_color: "#130c07",
-          dir: "rtl",
-          lang: "ar",
-          icons: [
-            {
-              src: REAL_PNG_IMAGE_DATA,
-              sizes: "192x192 512x512",
-              type: "image/png",
-              purpose: "any maskable"
-            }
-          ]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-        const manifestUrl = URL.createObjectURL(manifestBlob);
-        const manifestEl = document.getElementById('app-manifest');
-        if (manifestEl) manifestEl.href = manifestUrl;
-      } catch(e) {
-        console.warn('Canvas logo fallback:', e);
-      }
-    }
 
     // Hardened Storage Engine (IndexedDB + LocalStorage)
     const StorageEngine = {
@@ -941,7 +891,7 @@
         if (!('indexedDB' in window)) return null;
         return new Promise((resolve) => {
           try {
-            const req = indexedDB.open('Su3rahNativeDB_v8', 1);
+            const req = indexedDB.open('Su3rahNativeDB_v9', 1);
             req.onupgradeneeded = (e) => {
               const db = e.target.result;
               if (!db.objectStoreNames.contains('data_store')) {
@@ -1005,6 +955,42 @@
 
     function getFormattedDate(d) {
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    // Dynamic Discovery of Available Models for the User's API Key
+    async function discoverAvailableGeminiModel(apiKey) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.models || !Array.isArray(data.models)) return null;
+
+        const genModels = data.models
+          .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+          .map(m => m.name.replace(/^models\//, ''));
+
+        const priorityList = [
+          'gemini-3.8-flash',
+          'gemini-3.1-pro-preview',
+          'gemini-2.5-flash',
+          'gemini-2.0-flash',
+          'gemini-1.5-flash'
+        ];
+
+        for (const p of priorityList) {
+          if (genModels.includes(p)) return p;
+        }
+
+        const anyFlash = genModels.find(m => m.includes('flash'));
+        if (anyFlash) return anyFlash;
+        const anyPro = genModels.find(m => m.includes('pro'));
+        if (anyPro) return anyPro;
+
+        return genModels[0] || null;
+      } catch (e) {
+        console.warn('Auto model discovery error:', e);
+        return null;
+      }
     }
 
     // UI RENDERERS
@@ -1134,6 +1120,7 @@
       if (el) el.value = v;
     }
 
+    // Render Meals with Edit (✏️) and Delete (✕) Buttons
     function renderMealCards(mealsList) {
       const container = document.getElementById('meals-container');
       if (!container) return;
@@ -1142,7 +1129,7 @@
           <div class="col-span-full glass-card rounded-2xl p-8 text-center flex flex-col items-center justify-center">
             <div class="w-14 h-14 rounded-2xl bg-roast-850 flex items-center justify-center text-warmBeige-400/40 mb-3 text-2xl">🔥</div>
             <h4 class="font-bold text-warmBeige-200 text-sm">لا توجد وجبات مسجلة في هذا اليوم</h4>
-            <p class="text-xs text-warmBeige-400/70 max-w-sm mt-1">اضغط على زر "+ إضافة وجبة" لإدخال الماكروز يدوياً أو بالذكاء الاصطناعي.</p>
+            <p class="text-xs text-warmBeige-400/70 max-w-sm mt-1">اضغط على زر "+ إضافة وجبة" لإدخال الماكروز يدوياً أو بالذكاء الاصطناعي مع إمكانية إرفاق صورة.</p>
           </div>
         `;
         return;
@@ -1156,7 +1143,15 @@
                 <span class="text-[11px] font-mono text-warmBeige-200 bg-roast-800 px-2 py-0.5 rounded-md border border-warmBeige-400/20">${meal.time}</span>
                 <h4 class="font-bold text-warmBeige-50 text-sm sm:text-base">${escapeHtml(meal.title)}</h4>
               </div>
-              <button onclick="deleteMeal('${meal.id}')" class="text-warmBeige-400/60 hover:text-fats p-1 text-sm font-bold">✕</button>
+              <div class="flex items-center gap-1.5">
+                <button onclick="openEditMealModal('${meal.id}')" title="تعديل الوجبة" class="text-xs bg-roast-800 hover:bg-roast-700 text-warmBeige-300 hover:text-caramel px-2.5 py-1 rounded-lg border border-warmBeige-400/20 font-bold transition-all flex items-center gap-1">
+                  <span>✏️</span>
+                  <span>تعديل</span>
+                </button>
+                <button onclick="deleteMeal('${meal.id}')" title="حذف الوجبة" class="text-warmBeige-400/60 hover:text-fats p-1 text-sm font-bold">
+                  ✕
+                </button>
+              </div>
             </div>
             ${meal.image ? `<div class="mt-2.5 rounded-xl overflow-hidden max-h-48 w-full border border-roast-800"><img src="${meal.image}" class="w-full h-full object-cover"/></div>` : ''}
             ${meal.notes ? `<div class="text-xs text-warmBeige-200 bg-roast-900/90 p-2.5 rounded-xl mt-2.5 border border-roast-800 flex flex-col gap-1">
@@ -1393,16 +1388,78 @@
       renderApp();
     }
 
-    // MODAL CONTROLS
+    // MODAL CONTROLS & EDIT MODE
     function openMealModal() {
+      // Fresh new meal mode
+      state.isEditing = false;
+      state.editingMealId = null;
+
+      document.getElementById('modal-header-title').innerText = 'إضافة وجبة جديدة';
+      document.getElementById('modal-header-desc').innerText = 'تحكم كامل بالماكروز والصوت والصور';
+      document.getElementById('btn-save-manual-submit').innerText = 'حفظ الوجبة يدوياً في السجل 💾';
+      document.getElementById('btn-submit-ai-label').innerText = '✨ تحليل وتسجيل بالذكاء الاصطناعي';
+
+      // Reset fields
+      setVal('manual-title', '');
+      setVal('manual-calories', '');
+      setVal('manual-protein', '');
+      setVal('manual-carbs', '');
+      setVal('manual-fats', '');
+      setVal('manual-notes', '');
+      setVal('ai-description', '');
+      setVal('ai-weight', '');
+      removeSelectedImage();
+
       const modal = document.getElementById('modal-add-meal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
+
+    function openEditMealModal(mealId) {
+      const meal = state.meals.find(m => m.id === mealId);
+      if (!meal) return;
+
+      state.isEditing = true;
+      state.editingMealId = mealId;
+
+      document.getElementById('modal-header-title').innerText = 'تعديل الوجبة والماكروز ✏️';
+      document.getElementById('modal-header-desc').innerText = 'تعديل الأرقام والصور والماكروز المسجلة';
+      document.getElementById('btn-save-manual-submit').innerText = 'حفظ التعديلات 💾';
+      document.getElementById('btn-submit-ai-label').innerText = '✨ إعادة تحليل وتحديث بالذكاء';
+
+      // Pre-fill fields
+      setVal('manual-title', meal.title || '');
+      setVal('manual-calories', meal.calories || 0);
+      setVal('manual-protein', meal.protein || 0);
+      setVal('manual-carbs', meal.carbs || 0);
+      setVal('manual-fats', meal.fats || 0);
+      setVal('manual-notes', meal.notes || '');
+      setVal('ai-description', meal.title || '');
+
+      // Handle Image in Edit Mode
+      if (meal.image) {
+        state.imagePreviewData = meal.image;
+        document.getElementById('image-preview-element').src = meal.image;
+        document.getElementById('image-preview-wrapper').classList.remove('hidden');
+        document.getElementById('image-placeholder-wrapper').classList.add('hidden');
+      } else {
+        removeSelectedImage();
+      }
+
+      // Default to manual mode so numbers are visible right away
+      setEntryMode('manual');
+
+      const modal = document.getElementById('modal-add-meal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
     function closeMealModal() {
       const modal = document.getElementById('modal-add-meal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+      state.isEditing = false;
+      state.editingMealId = null;
       if (state.userWantsRecording) stopVoiceRecording();
     }
 
@@ -1419,7 +1476,7 @@
         btnAi.className = "flex-1 py-2 rounded-xl text-xs font-bold transition-all text-warmBeige-300 hover:text-warmBeige-100";
         formManual.classList.remove('hidden');
         formAi.classList.add('hidden');
-        badgeIcon.innerText = '✍️';
+        badgeIcon.innerText = state.isEditing ? '✏️' : '✍️';
       } else {
         btnAi.className = "flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-caramel text-roast-950 shadow-md";
         btnManual.className = "flex-1 py-2 rounded-xl text-xs font-bold transition-all text-warmBeige-300 hover:text-warmBeige-100";
@@ -1468,7 +1525,7 @@
       showToast('تم حفظ المفتاح بنجاح في جهازك.');
     }
 
-    // Direct Gemini Connection Test
+    // Direct Gemini Connection Test with Dynamic Discovery
     async function testCurrentApiKey() {
       const key = state.apiKey.trim();
       if (!key) {
@@ -1487,7 +1544,16 @@
         if (res.ok) {
           alert(`✅ الاتصال ناجح 100%! السيرفر يعمل ومفتاحك نشط مع نموذج ${state.selectedModel}.`);
         } else {
-          alert(`❌ خطأ من Google: ${data?.error?.message || 'المفتاح غير صالح أو غير مفعل'}`);
+          // Attempt Auto-Discovery
+          const discovered = await discoverAvailableGeminiModel(key);
+          if (discovered) {
+            state.selectedModel = discovered;
+            StorageEngine.set(KEY_MODEL, discovered);
+            renderApp();
+            alert(`✅ تم استكشاف نموذج صالح لحسابك وتحديده تلقائياً: (${discovered}). الاتصال نشط الآن!`);
+          } else {
+            alert(`❌ خطأ من Google: ${data?.error?.message || 'المفتاح غير صالح أو غير مفعل'}`);
+          }
         }
       } catch(e) {
         alert(`❌ فشل الاتصال: ${e.message}`);
@@ -1726,7 +1792,7 @@
       }
     }
 
-    // MANUAL MEAL SUBMISSION
+    // MANUAL MEAL SUBMISSION (SUPPORTS EDITING)
     function handleManualMealSubmit(e) {
       e.preventDefault();
       const title = document.getElementById('manual-title').value.trim() || 'وجبة مخصصة';
@@ -1755,20 +1821,11 @@
         source: 'إدخال يدوي ✍️'
       });
 
-      document.getElementById('manual-title').value = '';
-      document.getElementById('manual-calories').value = '';
-      document.getElementById('manual-protein').value = '';
-      document.getElementById('manual-carbs').value = '';
-      document.getElementById('manual-fats').value = '';
-      document.getElementById('manual-notes').value = '';
-
       closeMealModal();
-      showToast('تم حفظ الوجبة والماكروز والصورة بنجاح!');
+      showToast(state.isEditing ? 'تم تحديث الوجبة والماكروز بنجاح!' : 'تم حفظ الوجبة والماكروز والصورة بنجاح!');
     }
 
-    // ==========================================
-    // SCIENTIFIC AI MEAL ANALYSIS
-    // ==========================================
+    // AI MEAL ANALYSIS (WITH AUTO MODEL DISCOVERY FALLBACK)
     async function analyzeMealWithAI() {
       const desc = document.getElementById('ai-description').value.trim();
       const weight = document.getElementById('ai-weight').value.trim();
@@ -1826,10 +1883,10 @@
 
       const candidateModels = [
         state.selectedModel,
+        'gemini-3.8-flash',
+        'gemini-3.1-pro-preview',
         'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-1.5-flash',
-        'gemini-2.5-pro'
+        'gemini-2.0-flash'
       ];
 
       try {
@@ -1858,8 +1915,28 @@
           }
         }
 
+        // If candidates failed, perform dynamic discovery on the user's account
         if (!resData) {
-          throw new Error(lastError || 'تعذر الاتصال بخوادم Google Gemini');
+          const autoModel = await discoverAvailableGeminiModel(cleanKey);
+          if (autoModel) {
+            state.selectedModel = autoModel;
+            StorageEngine.set(KEY_MODEL, autoModel);
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${autoModel}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+            const r = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const d = await r.json();
+            if (r.ok) {
+              resData = d;
+              usedModel = autoModel;
+            }
+          }
+        }
+
+        if (!resData) {
+          throw new Error(lastError || 'تعذر الاتصال بنماذج Google Gemini');
         }
 
         const rawText = resData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -1888,6 +1965,28 @@
     }
 
     function addNewMeal(mealData) {
+      if (state.isEditing && state.editingMealId) {
+        // UPDATE EXISTING MEAL IN PLACE
+        const index = state.meals.findIndex(m => m.id === state.editingMealId);
+        if (index !== -1) {
+          state.meals[index].title = mealData.title || state.meals[index].title;
+          state.meals[index].calories = Math.round(Number(mealData.calories) || 0);
+          state.meals[index].protein = Math.round(Number(mealData.protein_g) || 0);
+          state.meals[index].carbs = Math.round(Number(mealData.carbohydrates_g) || 0);
+          state.meals[index].fats = Math.round(Number(mealData.fats_g) || 0);
+          state.meals[index].notes = mealData.notes || state.meals[index].notes;
+          state.meals[index].source = mealData.source || state.meals[index].source;
+          state.meals[index].image = state.imagePreviewData || null;
+
+          StorageEngine.set(KEY_MEALS, state.meals);
+          state.isEditing = false;
+          state.editingMealId = null;
+          renderApp();
+          return;
+        }
+      }
+
+      // ADD NEW MEAL
       const now = new Date();
       const timeString = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
@@ -1916,7 +2015,7 @@
     }
 
     // ==========================================
-    // CHAT ENGINE (FULLSCREEN GEMINI CONVERSATION)
+    // CHAT ENGINE (WITH DYNAMIC AUTO-DISCOVERY FALLBACK)
     // ==========================================
     async function sendChatMessage() {
       const input = document.getElementById('input-chat-text');
@@ -1978,16 +2077,34 @@
       };
 
       try {
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${state.selectedModel}:generateContent?key=${encodeURIComponent(cleanKey)}`;
-        const r = await fetch(endpoint, {
+        let endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${state.selectedModel}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+        let r = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        const d = await r.json();
+        let d = await r.json();
+
+        // If model failed or is no longer available, auto-discover!
+        if (!r.ok && (r.status === 404 || (d.error && d.error.message && d.error.message.includes('no longer available')))) {
+          const autoModel = await discoverAvailableGeminiModel(cleanKey);
+          if (autoModel && autoModel !== state.selectedModel) {
+            state.selectedModel = autoModel;
+            StorageEngine.set(KEY_MODEL, autoModel);
+            endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${autoModel}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+            r = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            d = await r.json();
+          }
+        }
+
         if (!r.ok) {
           throw new Error(d?.error?.message || `كود الخطأ: ${r.status}`);
         }
+
         const reply = d?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!reply) throw new Error('لم يقم النموذج بإرجاع نص');
         session.messages.push({ role: 'assistant', text: reply });
@@ -2155,10 +2272,6 @@
 
     // BOOTSTRAP APPLICATION
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. Generate real authentic PNG Logo in memory
-      generateAuthenticBrandPng();
-
-      // 2. Load Storage
       await StorageEngine.init();
 
       const savedMeals = await StorageEngine.get(KEY_MEALS, null);
@@ -2187,8 +2300,8 @@
       const savedKey = await StorageEngine.get(KEY_API_KEY, '');
       state.apiKey = savedKey || '';
 
-      const savedModel = await StorageEngine.get(KEY_MODEL, 'gemini-2.5-flash');
-      state.selectedModel = savedModel || 'gemini-2.5-flash';
+      const savedModel = await StorageEngine.get(KEY_MODEL, 'gemini-3.8-flash');
+      state.selectedModel = savedModel || 'gemini-3.8-flash';
 
       const savedSessions = await StorageEngine.get(KEY_CHAT_SESSIONS, null);
       if (savedSessions && Array.isArray(savedSessions) && savedSessions.length > 0) {
