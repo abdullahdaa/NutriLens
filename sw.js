@@ -1,11 +1,11 @@
-/* سُعرة — Service Worker (app-shell cache) — V7
+/* سُعرة — Service Worker (app-shell cache) — V8
  * - index.html / navigations: network-first (updates arrive immediately), cache fallback offline.
  * - Other same-origin files + fonts / Tailwind / barcode-reader CDN: stale-while-revalidate.
  * - API calls are NEVER intercepted or cached: Gemini (googleapis.com), USDA (api.nal.usda.gov),
  *   Open Food Facts, DeepSeek.
  * - This worker never touches IndexedDB or localStorage. It only deletes its OWN old caches.
  */
-const VERSION = 'v7.0.0';
+const VERSION = 'v8.0.0';
 const SHELL_CACHE = `su3rah-shell-${VERSION}`;
 const RUNTIME_CACHE = `su3rah-runtime-${VERSION}`;
 const OWN_CACHE_PREFIXES = ['su3rah-shell-', 'su3rah-runtime-'];

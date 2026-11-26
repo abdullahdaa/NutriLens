@@ -1,0 +1,20 @@
+{
+  "id": "./index.html",
+  "name": "سُعرة",
+  "short_name": "سُعرة",
+  "description": "متتبع السعرات والماكروز الذكي بأرقام USDA الموثوقة ومدرب تغذية Gemini — بياناتك محفوظة على جهازك فقط.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0B10",
+  "theme_color": "#0A0B10",
+  "categories": ["health", "fitness", "food"],
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png", "sizes": "2048x2048", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

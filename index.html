@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   ============================================================================
-  سُعرة (NutriLens AI) — V7 «Midnight Gold»
+  سُعرة (NutriLens AI) — V8 «Royal Roast»
   ----------------------------------------------------------------------------
   - SPA خفيف (Vanilla JS + Tailwind CDN + IndexedDB) يعمل على GitHub Pages.
   - حماية البيانات: لا تُعاد تسمية أي مخزن قديم؛ البيانات الجديدة بمفاتيح جديدة فقط.
@@ -12,25 +12,25 @@
   - لا توجد أي مفاتيح API مكتوبة في الكود — تُحفظ في الإعدادات على جهازك فقط.
   ============================================================================
 -->
-<html lang="ar" dir="rtl" data-theme="midnight">
+<html lang="ar" dir="rtl" data-theme="roast">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>سُعرة — NutriLens AI</title>
   <meta name="description" content="سُعرة: متتبع السعرات والماكروز الذكي بأرقام USDA الموثوقة ومدرب Gemini، يعمل محلياً على جهازك." />
-  <meta name="theme-color" content="#0A0B10" />
+  <meta name="theme-color" content="#0E0907" />
   <meta name="color-scheme" content="dark" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="سُعرة" />
 
-  <!-- Theme before first paint (no flash). New key only: su3rah_theme -->
+  <!-- Theme before first paint (no flash). V8 key only: su3rah_theme_v8 (Royal Roast is the default) -->
   <script>
     (function () {
-      var T = { midnight: '#0A0B10', emerald: '#07100D', plum: '#0E0A14', sapphire: '#070B14', copper: '#0C0C0D' };
-      var t = 'midnight';
-      try { var s = String(localStorage.getItem('su3rah_theme') || '').replace(/"/g, ''); if (s && T[s]) t = s; } catch (_) {}
+      var T = { roast: '#0E0907', midnight: '#0A0B10', emerald: '#07100D', plum: '#0E0A14', sapphire: '#070B14', copper: '#0C0C0D' };
+      var t = 'roast';
+      try { var s = String(localStorage.getItem('su3rah_theme_v8') || '').replace(/"/g, ''); if (s && T[s]) t = s; } catch (_) {}
       document.documentElement.setAttribute('data-theme', t);
       var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', T[t]);
     })();
@@ -75,14 +75,25 @@
   </script>
 
   <style>
-    /* ================= THEME TOKENS (5 dark themes, AA-checked) ================= */
-    :root, [data-theme="midnight"] {
+    /* ================= THEME TOKENS (6 dark themes, AA-checked) ================= */
+    /* 1. Royal Roast (default): deep espresso + caramel-gold, cream text that matches the logo */
+    :root, [data-theme="roast"] {
+      --bg-rgb: 14 9 7; --surface-1-rgb: 23 16 12; --surface-2-rgb: 32 22 15; --surface-3-rgb: 43 30 21;
+      --primary-rgb: 217 160 102; --accent-rgb: 240 194 123; --text-rgb: 246 235 221; --text-muted-rgb: 201 181 159;
+      --protein-rgb: 102 200 240; --carbs-rgb: 236 210 92; --fats-rgb: 242 124 140;
+      --success-rgb: 116 222 146; --danger-rgb: 248 113 113; --warn-rgb: 251 191 36; --on-primary-rgb: 26 14 6; --line-rgb: 246 235 221;
+      --primary-hi: #F0C27B; --primary-lo: #A8703A;
+      --aurora-1: rgba(217, 160, 102, .30); --aurora-2: rgba(240, 194, 123, .20); --aurora-3: rgba(176, 92, 30, .30); --aurora-4: rgba(240, 194, 123, .12);
+      --dust: 240 194 123;
+    }
+    [data-theme="midnight"] {
       --bg-rgb: 10 11 16; --surface-1-rgb: 18 20 27; --surface-2-rgb: 26 29 38; --surface-3-rgb: 36 40 54;
       --primary-rgb: 226 184 101; --accent-rgb: 240 217 168; --text-rgb: 246 235 221; --text-muted-rgb: 180 170 157;
       --protein-rgb: 94 200 240; --carbs-rgb: 242 193 78; --fats-rgb: 240 122 138;
       --success-rgb: 74 222 128; --danger-rgb: 248 113 113; --warn-rgb: 251 191 36; --on-primary-rgb: 22 17 10; --line-rgb: 246 235 221;
       --primary-hi: #F4DCA6; --primary-lo: #B98C3E;
-      --aurora-1: rgba(226, 184, 101, .16); --aurora-2: rgba(94, 200, 240, .07); --aurora-3: rgba(240, 122, 138, .06);
+      --aurora-1: rgba(226, 184, 101, .22); --aurora-2: rgba(94, 200, 240, .10); --aurora-3: rgba(240, 122, 138, .09); --aurora-4: rgba(244, 220, 166, .10);
+      --dust: 244 220 166;
     }
     [data-theme="emerald"] {
       --bg-rgb: 7 16 13; --surface-1-rgb: 14 26 22; --surface-2-rgb: 21 36 31; --surface-3-rgb: 30 49 42;
@@ -90,7 +101,8 @@
       --protein-rgb: 98 198 242; --carbs-rgb: 233 196 92; --fats-rgb: 242 137 154;
       --success-rgb: 134 239 172; --danger-rgb: 248 113 113; --warn-rgb: 251 191 36; --on-primary-rgb: 4 19 13; --line-rgb: 234 245 239;
       --primary-hi: #A7F3D0; --primary-lo: #0F9F70;
-      --aurora-1: rgba(52, 211, 153, .13); --aurora-2: rgba(212, 175, 106, .08); --aurora-3: rgba(98, 198, 242, .05);
+      --aurora-1: rgba(52, 211, 153, .18); --aurora-2: rgba(212, 175, 106, .12); --aurora-3: rgba(98, 198, 242, .08); --aurora-4: rgba(167, 243, 208, .08);
+      --dust: 212 175 106;
     }
     [data-theme="plum"] {
       --bg-rgb: 14 10 20; --surface-1-rgb: 23 17 31; --surface-2-rgb: 33 24 48; --surface-3-rgb: 44 33 66;
@@ -98,7 +110,8 @@
       --protein-rgb: 103 200 240; --carbs-rgb: 242 197 92; --fats-rgb: 247 133 157;
       --success-rgb: 110 231 160; --danger-rgb: 248 113 113; --warn-rgb: 251 191 36; --on-primary-rgb: 21 13 34; --line-rgb: 243 236 248;
       --primary-hi: #DDCCFC; --primary-lo: #8B5CF6;
-      --aurora-1: rgba(183, 148, 246, .16); --aurora-2: rgba(232, 180, 160, .08); --aurora-3: rgba(103, 200, 240, .05);
+      --aurora-1: rgba(183, 148, 246, .22); --aurora-2: rgba(232, 180, 160, .12); --aurora-3: rgba(103, 200, 240, .07); --aurora-4: rgba(221, 204, 252, .09);
+      --dust: 232 180 160;
     }
     [data-theme="sapphire"] {
       --bg-rgb: 7 11 20; --surface-1-rgb: 13 20 36; --surface-2-rgb: 20 32 53; --surface-3-rgb: 28 43 70;
@@ -106,7 +119,8 @@
       --protein-rgb: 79 216 200; --carbs-rgb: 242 193 78; --fats-rgb: 240 122 138;
       --success-rgb: 74 222 128; --danger-rgb: 248 113 113; --warn-rgb: 251 191 36; --on-primary-rgb: 6 16 31; --line-rgb: 232 240 250;
       --primary-hi: #BFDDFF; --primary-lo: #3B82F6;
-      --aurora-1: rgba(108, 180, 255, .15); --aurora-2: rgba(201, 212, 227, .06); --aurora-3: rgba(79, 216, 200, .05);
+      --aurora-1: rgba(108, 180, 255, .20); --aurora-2: rgba(201, 212, 227, .09); --aurora-3: rgba(79, 216, 200, .08); --aurora-4: rgba(191, 221, 255, .08);
+      --dust: 201 212 227;
     }
     [data-theme="copper"] {
       --bg-rgb: 12 12 13; --surface-1-rgb: 21 21 23; --surface-2-rgb: 30 30 33; --surface-3-rgb: 41 41 45;
@@ -114,13 +128,15 @@
       --protein-rgb: 94 200 240; --carbs-rgb: 242 193 78; --fats-rgb: 242 122 154;
       --success-rgb: 74 222 128; --danger-rgb: 248 113 113; --warn-rgb: 251 191 36; --on-primary-rgb: 23 12 6; --line-rgb: 245 238 232;
       --primary-hi: #F3BE9C; --primary-lo: #B5602F;
-      --aurora-1: rgba(224, 137, 90, .14); --aurora-2: rgba(241, 217, 191, .06); --aurora-3: rgba(94, 200, 240, .04);
+      --aurora-1: rgba(224, 137, 90, .20); --aurora-2: rgba(241, 217, 191, .09); --aurora-3: rgba(181, 96, 47, .16); --aurora-4: rgba(243, 190, 156, .08);
+      --dust: 241 217 191;
     }
     :root {
       --bg: rgb(var(--bg-rgb)); --surface-1: rgb(var(--surface-1-rgb)); --surface-2: rgb(var(--surface-2-rgb)); --surface-3: rgb(var(--surface-3-rgb));
       --primary: rgb(var(--primary-rgb)); --accent: rgb(var(--accent-rgb)); --text: rgb(var(--text-rgb)); --text-muted: rgb(var(--text-muted-rgb));
       --protein: rgb(var(--protein-rgb)); --carbs: rgb(var(--carbs-rgb)); --fats: rgb(var(--fats-rgb));
-      --success: rgb(var(--success-rgb)); --danger: rgb(var(--danger-rgb)); --warn: rgb(var(--warn-rgb)); --on-primary: rgb(var(--on-primary-rgb));
+      --success: rgb(var(--success-rgb)); --danger: rgb(var(--danger-rgb)); --warn: rgb(var(--warn-rgb)); --warning: var(--warn); --on-primary: rgb(var(--on-primary-rgb));
+      --orb-1: var(--aurora-1); --orb-2: var(--aurora-2); --orb-3: var(--aurora-3); --orb-4: var(--aurora-4);
       --border: rgb(var(--line-rgb) / .08); --border-strong: rgb(var(--primary-rgb) / .32);
       --primary-glow: rgb(var(--primary-rgb) / .45);
       --ring-gradient: linear-gradient(135deg, var(--primary-hi), var(--primary) 50%, var(--primary-lo));
@@ -136,14 +152,25 @@
       -webkit-font-smoothing: antialiased; padding-bottom: calc(7.5rem + var(--safe-b));
     }
     @media (min-width: 768px) { body { padding-bottom: 4rem; } }
-    /* Aurora ambient glow (slow) */
-    .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .aurora i { position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform; }
-    .aurora i:nth-child(1) { width: 70vmax; height: 50vmax; top: -22vmax; right: -18vmax; background: var(--aurora-1); animation: drift1 38s ease-in-out infinite alternate; }
-    .aurora i:nth-child(2) { width: 55vmax; height: 45vmax; top: 30vh; left: -25vmax; background: var(--aurora-2); animation: drift2 46s ease-in-out infinite alternate; }
-    .aurora i:nth-child(3) { width: 50vmax; height: 40vmax; bottom: -20vmax; right: 5vmax; background: var(--aurora-3); animation: drift1 52s ease-in-out infinite alternate-reverse; }
-    @keyframes drift1 { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-8vmax, 6vmax, 0) scale(1.12); } }
-    @keyframes drift2 { from { transform: translate3d(0, 0, 0) scale(1.05); } to { transform: translate3d(9vmax, -5vmax, 0) scale(.95); } }
+    /* ---------- Animated ambient background (all themes) ----------
+       Soft glowing orbs (radial gradients, no filter blur) that slowly drift and morph (20–40 s loops),
+       a few floating gold-dust particles and subtle grain. Transform/opacity only → GPU-composited.
+       Paused when the tab is hidden (html.bg-paused) and static with prefers-reduced-motion. */
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; contain: strict;
+      background: radial-gradient(120% 70% at 50% -10%, rgb(var(--primary-rgb) / .07), transparent 60%), var(--bg); }
+    .ambient .orb { position: absolute; border-radius: 50%; will-change: transform; transform: translate3d(0, 0, 0); backface-visibility: hidden; }
+    .ambient .orb:nth-child(1) { width: 78vmax; height: 78vmax; top: -34vmax; right: -26vmax; background: radial-gradient(closest-side, var(--orb-1), transparent); animation: orbA 34s ease-in-out infinite alternate; }
+    .ambient .orb:nth-child(2) { width: 62vmax; height: 62vmax; top: 22vh; left: -30vmax; background: radial-gradient(closest-side, var(--orb-2), transparent); animation: orbB 27s ease-in-out infinite alternate; }
+    .ambient .orb:nth-child(3) { width: 70vmax; height: 70vmax; bottom: -36vmax; right: -12vmax; background: radial-gradient(closest-side, var(--orb-3), transparent); animation: orbC 39s ease-in-out infinite alternate; }
+    .ambient .orb:nth-child(4) { width: 40vmax; height: 40vmax; top: 38vh; right: 8vw; background: radial-gradient(closest-side, var(--orb-4), transparent); animation: orbD 22s ease-in-out infinite alternate; }
+    @keyframes orbA { 0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1, 1); } 50% { transform: translate3d(-9vmax, 7vmax, 0) rotate(25deg) scale(1.14, .9); } 100% { transform: translate3d(-4vmax, 12vmax, 0) rotate(50deg) scale(.94, 1.1); } }
+    @keyframes orbB { 0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1.05, .95); } 50% { transform: translate3d(10vmax, -6vmax, 0) rotate(-20deg) scale(.9, 1.12); } 100% { transform: translate3d(14vmax, 4vmax, 0) rotate(-40deg) scale(1.1, 1); } }
+    @keyframes orbC { 0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1, 1.08); } 50% { transform: translate3d(-8vmax, -9vmax, 0) rotate(30deg) scale(1.12, .92); } 100% { transform: translate3d(6vmax, -4vmax, 0) rotate(60deg) scale(.96, 1); } }
+    @keyframes orbD { 0% { transform: translate3d(0, 0, 0) scale(.9); opacity: .7; } 50% { transform: translate3d(-12vw, -10vh, 0) scale(1.15, .95); opacity: 1; } 100% { transform: translate3d(6vw, -18vh, 0) scale(1); opacity: .8; } }
+    .ambient .dust { position: absolute; bottom: -12px; width: 3px; height: 3px; border-radius: 50%; background: rgb(var(--dust) / .9); box-shadow: 0 0 6px 1px rgb(var(--dust) / .55);
+      opacity: 0; will-change: transform, opacity; animation: dustUp var(--d, 26s) linear infinite; animation-delay: var(--delay, 0s); }
+    @keyframes dustUp { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 12% { opacity: var(--o, .55); } 85% { opacity: var(--o, .55); } 100% { transform: translate3d(var(--dx, 20px), -105vh, 0); opacity: 0; } }
+    html.bg-paused .ambient .orb, html.bg-paused .ambient .dust { animation-play-state: paused; }
     /* Subtle grain */
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .045; mix-blend-mode: overlay;
@@ -321,11 +348,6 @@
     .fav-on { color: var(--primary) !important; }
     .fav-on .ico { fill: currentColor; }
 
-    /* ---------- Water glass ---------- */
-    .water-glass .wave { transition: transform 1s var(--ease); }
-    .water-glass .wavepath { animation: waveMove 3.5s linear infinite; }
-    @keyframes waveMove { from { transform: translateX(0); } to { transform: translateX(-40px); } }
-
     /* ---------- Chat ---------- */
     .bubble { position: relative; border-radius: 20px; padding: .8rem 1rem; font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-wrap: break-word; }
     .bubble-col { max-width: 86%; }
@@ -378,9 +400,10 @@
 
     /* ---------- Splash (≤1.2 s) ---------- */
     #splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
-      background: radial-gradient(520px 380px at 50% 42%, rgb(var(--primary-rgb) / .18), transparent 70%), var(--bg); transition: opacity .5s var(--ease), visibility .5s; }
+      background: radial-gradient(520px 380px at 50% 42%, rgb(var(--primary-rgb) / .18), transparent 70%), var(--bg); transition: opacity .3s var(--ease), visibility .3s; }
     #splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-    #splash .logo { width: 112px; height: 112px; border-radius: 30px; box-shadow: 0 0 0 1px var(--border-strong), 0 0 60px -6px var(--primary-glow); animation: splashLogo .9s var(--ease) both; }
+    #splash .logo { width: 112px; height: 112px; border-radius: 30px; box-shadow: 0 0 0 1px var(--border-strong), 0 0 60px -6px var(--primary-glow); animation: splashLogo .9s var(--ease) both, splashGlow 1.6s .6s ease-in-out infinite alternate; }
+    @keyframes splashGlow { from { box-shadow: 0 0 0 1px var(--border-strong), 0 0 50px -8px var(--primary-glow); } to { box-shadow: 0 0 0 1px var(--border-strong), 0 0 90px 4px var(--primary-glow); } }
     #splash .word { font-family: 'El Messiri', serif; font-size: 2.2rem; animation: splashIn .8s .2s var(--ease) both; }
     #splash .tag { font-size: 11px; letter-spacing: .3em; color: var(--text-muted); animation: splashIn .8s .3s var(--ease) both; }
     @keyframes splashLogo { from { opacity: 0; transform: scale(.82); filter: blur(6px); } 60% { opacity: 1; filter: blur(0); } to { opacity: 1; transform: scale(1); } }
@@ -400,7 +423,8 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
-      .aurora i, .skeleton::after, .typing i, .ring-pulse, .water-glass .wavepath { animation: none !important; }
+      .ambient .orb, .ambient .dust, .skeleton::after, .typing i, .ring-pulse, #splash .logo { animation: none !important; }
+      .ambient .dust { opacity: .35 !important; transform: translate3d(0, calc(-1 * var(--y, 40vh)), 0) !important; }
     }
   </style>
 <script>
@@ -470,7 +494,22 @@
 </head>
 
 <body>
-  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="ambient" id="ambient-bg" aria-hidden="true"><div class="orb"></div><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+  <script>
+    /* Gold dust particles + pause the ambient animation while the tab is hidden */
+    (function () {
+      var bg = document.getElementById('ambient-bg'); if (!bg) return;
+      var n = window.innerWidth < 640 ? 9 : 14;
+      for (var i = 0; i < n; i++) {
+        var d = document.createElement('i'); d.className = 'dust';
+        var size = (1.5 + Math.random() * 2.5).toFixed(1);
+        d.style.cssText = 'left:' + (Math.random() * 100).toFixed(1) + '%;width:' + size + 'px;height:' + size + 'px;--d:' + (20 + Math.random() * 18).toFixed(1) + 's;--delay:-' + (Math.random() * 30).toFixed(1) + 's;--dx:' + Math.round((Math.random() - .5) * 80) + 'px;--o:' + (.25 + Math.random() * .45).toFixed(2) + ';--y:' + Math.round(10 + Math.random() * 80) + 'vh';
+        bg.appendChild(d);
+      }
+      var sync = function () { document.documentElement.classList.toggle('bg-paused', document.hidden); };
+      document.addEventListener('visibilitychange', sync); sync();
+    })();
+  </script>
 
   <!-- ================= SPLASH (≤1.2 s) ================= -->
   <div id="splash" role="status" aria-label="جاري تحميل سُعرة">
@@ -478,7 +517,7 @@
     <div class="word gold-text">سُعرة</div>
     <div class="tag">NUTRILENS · AI</div>
   </div>
-  <script>setTimeout(function () { var s = document.getElementById('splash'); if (s) s.classList.add('hide'); }, 2500);</script>
+  <script>setTimeout(function () { var s = document.getElementById('splash'); if (s) s.classList.add('hide'); }, 900);</script>
 
   <!-- ================= ICON SPRITE (Lucide-style thin line, coloured by currentColor) ================= -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -533,6 +572,10 @@
       <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
       <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
       <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></symbol>
+      <symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.7 4.5a2 2 0 0 0 2 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></symbol>
+      <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+      <symbol id="i-cup" viewBox="0 0 24 24"><path d="M5 8h14l-1.5 12.2A2 2 0 0 1 15.5 22h-7a2 2 0 0 1-2-1.8z"/><path d="M5 8 6 3h12l1 5"/><path d="M6 13h12"/></symbol>
       <symbol id="i-date" viewBox="0 0 24 24"><path d="M12 7c3 0 5 3.2 5 7.5S15 21 12 21s-5-2.2-5-6.5S9 7 12 7z"/><path d="M12 7c0-2 1-3.5 3-4.5M10 11c-.5 1.5-.5 3.5 0 5"/></symbol>
       <symbol id="i-banana" viewBox="0 0 24 24"><path d="M4 13c3.5-2 8-2 10 2a5.5 5.5 0 0 1 8 5"/><path d="M5.15 17.89c5.52-1.52 8.65-6.89 7-12C11.55 4 11.5 2 13 2c3.22 0 5 5.5 5 8 0 6.5-4.2 12-10.49 12C5.11 22 2 22 2 20c0-1.5 1.14-1.55 3.15-2.11Z"/></symbol>
       <symbol id="i-scoop" viewBox="0 0 24 24"><path d="M8 2h8M9 2v2.79a4 4 0 0 1-.67 2.22l-.66.98A4 4 0 0 0 7 10.21V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.79a4 4 0 0 0-.67-2.22l-.66-.98A4 4 0 0 1 15 4.79V2"/><path d="M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/></symbol>
@@ -664,43 +707,16 @@
       <!-- Ramadan split -->
       <section id="ramadan-card" class="hidden lux-card rounded-3xl p-5"></section>
 
-      <!-- Water + quick snacks -->
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="lux-card rounded-3xl p-4 flex items-center gap-4" id="water-card">
-          <button type="button" onclick="addWater(1)" class="water-glass relative flex-shrink-0 press" aria-label="أضف كوب ماء 250 مل" title="أضف كوب">
-            <svg viewBox="0 0 64 84" class="w-16 h-[84px]" aria-hidden="true">
-              <defs><clipPath id="glassClip"><path d="M8 6h48l-5.5 70a4 4 0 0 1-4 3.7H17.5a4 4 0 0 1-4-3.7z"/></clipPath></defs>
-              <g clip-path="url(#glassClip)">
-                <rect x="0" y="0" width="64" height="84" fill="rgb(var(--protein-rgb) / .06)"/>
-                <g class="wave" id="water-wave" style="transform:translateY(84px)">
-                  <path class="wavepath" d="M0 6 Q10 0 20 6 T40 6 T60 6 T80 6 T100 6 T120 6 V90 H0Z" fill="rgb(var(--protein-rgb) / .55)"/>
-                  <rect x="0" y="8" width="130" height="90" fill="rgb(var(--protein-rgb) / .55)"/>
-                </g>
-              </g>
-              <path d="M8 6h48l-5.5 70a4 4 0 0 1-4 3.7H17.5a4 4 0 0 1-4-3.7z" fill="none" stroke="rgb(var(--protein-rgb) / .8)" stroke-width="1.6"/>
-              <path d="M14 14l3 52" stroke="rgb(255 255 255 / .25)" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-2">
-              <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-protein"><use href="#i-drop"/></svg>الماء</h3>
-              <span class="text-[11px] text-muted num"><span id="water-ml">0</span> مل</span>
-            </div>
-            <p class="text-2xl font-black text-ink num mt-1"><span id="water-count">0</span><span class="text-sm text-muted font-bold"> / <span id="water-target">8</span> أكواب</span></p>
-            <div class="flex items-center gap-2 mt-2">
-              <button type="button" onclick="addWater(1)" class="btn-gold text-xs px-3 py-1.5 rounded-xl inline-flex items-center gap-1"><svg class="ico"><use href="#i-plus"/></svg>كوب 250 مل</button>
-              <button type="button" onclick="addWater(-1)" class="icon-btn !w-8 !h-8" aria-label="إنقاص كوب"><svg class="ico"><use href="#i-minus"/></svg></button>
-            </div>
-          </div>
-        </div>
+      <!-- Smart auto-save suggestion (one at a time) -->
+      <section id="autosave-suggest" class="hidden" aria-live="polite"></section>
 
-        <div class="lux-card rounded-3xl p-4">
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-primary"><use href="#i-zap"/></svg>سناك سريع</h3>
-            <span class="text-[10px] text-muted">قيم USDA · لمسة واحدة</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2" id="quick-snacks"></div>
+      <!-- Quick snacks (exactly three: Sukkari date, protein scoop, banana) -->
+      <section class="lux-card rounded-3xl p-4" id="quick-snacks-card">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-primary"><use href="#i-zap"/></svg>سناك سريع</h3>
+          <button type="button" onclick="switchTab('settings');setTimeout(()=>{const e=document.getElementById('snack-settings');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},120)" class="text-[10px] text-muted hover:text-primary inline-flex items-center gap-1"><svg class="ico"><use href="#i-sliders"/></svg>تعديل القيم</button>
         </div>
+        <div class="grid grid-cols-3 gap-2" id="quick-snacks"></div>
       </section>
 
       <!-- Favourites -->
@@ -888,9 +904,9 @@
           <div>
             <p class="eyebrow" dir="ltr">Appearance</p>
             <h2 id="h-theme" class="section-title text-2xl font-bold text-ink mt-1">المظهر</h2>
-            <p class="text-xs text-muted mt-1">خمس سمات داكنة فاخرة — يتغير كل شيء فوراً.</p>
+            <p class="text-xs text-muted mt-1">ست سمات داكنة فاخرة — يتغير كل شيء فوراً، مع خلفية متحركة هادئة.</p>
           </div>
-          <div id="theme-picker" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" role="radiogroup" aria-label="اختيار السمة"></div>
+          <div id="theme-picker" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" role="radiogroup" aria-label="اختيار السمة"></div>
         </section>
 
         <!-- ===== AI ===== -->
@@ -1012,18 +1028,25 @@
           <div>
             <p class="eyebrow" dir="ltr">Nutrition Data</p>
             <h2 id="h-food" class="section-title text-2xl font-bold text-ink mt-1">بيانات التغذية</h2>
-            <p class="text-xs text-muted mt-1">ترتيب البحث: أطعمتي ← الجدول العربي ← USDA ← الباركود ← تقدير (يُعلَّم باللون الأصفر).</p>
+            <p class="text-xs text-muted mt-1">ترتيب البحث: منتجاتي ← أطعمتي والمفضلة ← الجدول العربي ← USDA ← الباركود ← تقدير (يُعلَّم باللون الأصفر).</p>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="lux-card rounded-3xl p-5 space-y-3">
+            <div class="lux-card rounded-3xl p-5 space-y-3" id="snack-settings">
               <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-primary"><use href="#i-zap"/></svg>السناك السريع</h3>
-              <p class="text-[11px] text-muted">التمر والموز من USDA. عدّل سكوب البروتين ليطابق ملصق منتجك.</p>
-              <div class="grid grid-cols-2 gap-2">
-                <div><label class="label" for="snack-date-g">وزن حبة التمر (جم)</label><input id="snack-date-g" type="number" step="0.5" class="field font-mono" onchange="saveSnackConfig()" /></div>
-                <div><label class="label" for="snack-banana-g">وزن الموزة (جم، بدون قشر)</label><input id="snack-banana-g" type="number" step="1" class="field font-mono" onchange="saveSnackConfig()" /></div>
+              <div class="tile rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between gap-2"><p class="text-xs font-bold text-ink flex items-center gap-1"><svg class="ico text-primary"><use href="#i-date"/></svg>تمر سكري (حبة واحدة)</p><span id="snack-date-pill"></span></div>
+                <div class="grid grid-cols-5 gap-1.5">
+                  <div><label class="label !text-[10px]" for="snack-date-g">جم/حبة</label><input id="snack-date-g" type="number" step="0.5" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
+                  <div><label class="label !text-[10px]" for="date-kcal">سعرة/100</label><input id="date-kcal" type="number" step="1" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
+                  <div><label class="label !text-[10px] !text-protein" for="date-p">بروتين</label><input id="date-p" type="number" step="0.01" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
+                  <div><label class="label !text-[10px] !text-carbs" for="date-c">كارب</label><input id="date-c" type="number" step="0.01" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
+                  <div><label class="label !text-[10px] !text-fats" for="date-f">دهون</label><input id="date-f" type="number" step="0.01" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
+                </div>
+                <p id="snack-date-src" class="text-[10px] text-muted leading-relaxed"></p>
+                <button type="button" onclick="resetDateSnack()" class="text-[10px] text-muted hover:text-primary">استعادة القيم الافتراضية</button>
               </div>
               <div class="tile rounded-2xl p-3 space-y-2">
-                <p class="text-xs font-bold text-ink">سكوب البروتين (من الملصق)</p>
+                <div class="flex items-center justify-between gap-2"><p class="text-xs font-bold text-ink flex items-center gap-1"><svg class="ico text-primary"><use href="#i-scoop"/></svg>سكوب بروتين (الواي حقي)</p><span id="snack-scoop-pill"></span></div>
                 <div class="grid grid-cols-5 gap-1.5">
                   <div><label class="label !text-[10px]" for="scoop-g">جم</label><input id="scoop-g" type="number" step="0.5" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
                   <div><label class="label !text-[10px]" for="scoop-kcal">سعرة</label><input id="scoop-kcal" type="number" step="1" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
@@ -1031,17 +1054,23 @@
                   <div><label class="label !text-[10px] !text-carbs" for="scoop-c">كارب</label><input id="scoop-c" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
                   <div><label class="label !text-[10px] !text-fats" for="scoop-f">دهون</label><input id="scoop-f" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" onchange="saveSnackConfig()" /></div>
                 </div>
-                <label class="flex items-center gap-2 text-[11px] text-muted"><input type="checkbox" id="scoop-use-label" onchange="saveSnackConfig()" class="w-4 h-4" /> استخدم قيم الملصق (وإلا تُستخدم قيم USDA لمسحوق بروتين الواي)</label>
+                <p id="snack-scoop-src" class="text-[10px] text-muted leading-relaxed"></p>
+                <label class="btn-ghost text-[11px] px-3 py-2 rounded-xl font-bold cursor-pointer inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-camera"/></svg>صوّر ملصق البروتين لتعبئة القيم
+                  <input id="scoop-label-input" type="file" accept="image/*" capture="environment" class="hidden" onchange="scoopFromLabel(this)" />
+                </label>
+              </div>
+              <div class="tile rounded-2xl p-3 space-y-2">
+                <div class="flex items-center justify-between gap-2"><p class="text-xs font-bold text-ink flex items-center gap-1"><svg class="ico text-primary"><use href="#i-banana"/></svg>موزة متوسطة</p><span id="snack-banana-pill"></span></div>
+                <div class="grid grid-cols-2 gap-2"><div><label class="label !text-[10px]" for="snack-banana-g">الوزن بدون قشر (جم)</label><input id="snack-banana-g" type="number" step="1" class="field font-mono text-xs" onchange="saveSnackConfig()" /></div></div>
+                <p id="snack-banana-src" class="text-[10px] text-muted leading-relaxed"></p>
               </div>
             </div>
             <div class="lux-card rounded-3xl p-5 space-y-3">
               <div class="flex items-center justify-between gap-2">
-                <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-primary"><use href="#i-chef"/></svg>وصفاتي وأطعمتي</h3>
+                <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-primary"><use href="#i-chef"/></svg>وصفاتي</h3>
                 <button onclick="openRecipeEditor()" class="btn-gold text-[11px] px-3 py-1.5 rounded-xl inline-flex items-center gap-1"><svg class="ico"><use href="#i-plus"/></svg>وصفة جديدة</button>
               </div>
               <div id="recipes-list" class="space-y-2"></div>
-              <div class="hairline"></div>
-              <div id="myfoods-list" class="space-y-2"></div>
             </div>
           </div>
           <div class="lux-card rounded-3xl p-5">
@@ -1051,6 +1080,34 @@
             </div>
             <p class="text-[11px] text-muted mb-3">كل صنف يحمل مصدره. الأصناف المعلَّمة «يحتاج تحقق» قيمها تقريبية — صححها من ملصق منتجك. الأطباق المركبة وصفات من مكونات USDA.</p>
             <div id="arabic-foods-table" class="space-y-2 max-h-[460px] overflow-y-auto pr-1"></div>
+          </div>
+        </section>
+
+        <!-- ===== MY PRODUCTS ===== -->
+        <section class="space-y-4" aria-labelledby="h-products" id="products-section">
+          <div>
+            <p class="eyebrow" dir="ltr">My Products</p>
+            <h2 id="h-products" class="section-title text-2xl font-bold text-ink mt-1">منتجاتي</h2>
+            <p class="text-xs text-muted mt-1">منتجاتك التي تشتريها دائماً (حليب، لبن، زبادي...). قيمها من ملصقك هي المرجع الأول قبل الجدول العربي و USDA.</p>
+          </div>
+          <div class="lux-card rounded-3xl p-5 space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openProductEditor()" class="btn-gold text-xs px-4 py-2.5 rounded-xl inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-plus"/></svg>منتج جديد</button>
+              <label class="btn-ghost text-xs px-4 py-2.5 rounded-xl font-bold cursor-pointer inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-label"/></svg>من صورة الملصق
+                <input id="product-label-quick" type="file" accept="image/*" capture="environment" class="hidden" onchange="productFromLabelPhoto(this, true)" />
+              </label>
+              <button onclick="scanBarcodeForProduct()" class="btn-ghost text-xs px-4 py-2.5 rounded-xl font-bold inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-barcode"/></svg>من الباركود</button>
+            </div>
+            <div class="relative">
+              <input id="products-search" type="search" oninput="renderProductsList()" placeholder="ابحث في منتجاتي..." aria-label="بحث في منتجاتي" class="field !pr-9" />
+              <svg class="ico absolute right-3 top-1/2 -translate-y-1/2 text-muted"><use href="#i-search"/></svg>
+            </div>
+            <div id="products-list" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
+            <div class="hairline"></div>
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+              <div><p class="text-xs font-bold text-ink flex items-center gap-1"><svg class="ico text-primary"><use href="#i-cup"/></svg>حجم «الكوب»</p><p class="text-[10px] text-muted">يُستخدم عند كتابة «كوب حليب». السوائل: 1 مل ≈ 1 جم ما لم يحدد الملصق الكثافة.</p></div>
+              <div class="flex items-center gap-2"><input id="units-cup-ml" type="number" min="50" max="1000" step="10" class="field !w-24 text-center font-mono" onchange="saveUnits()" aria-label="حجم الكوب بالمل" /><span class="text-xs text-muted">مل</span></div>
+            </div>
           </div>
         </section>
 
@@ -1083,7 +1140,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="lux-card rounded-3xl p-5 space-y-3">
               <h3 class="font-bold text-ink flex items-center gap-1.5"><svg class="ico text-primary"><use href="#i-download"/></svg>نسخة احتياطية</h3>
-              <p class="text-[11px] text-muted leading-relaxed">ملف JSON يضم الوجبات والمحادثات والأهداف والوزن والماء والمفضلة والوصفات والإعدادات. الاستيراد <strong class="text-ink">يدمج</strong> حسب المعرّف ولا يستبدل، مع لقطة تراجع تلقائية قبل الدمج.</p>
+              <p class="text-[11px] text-muted leading-relaxed">ملف JSON يضم الوجبات والمحادثات والأهداف والوزن والمفضلة والوصفات ومنتجاتي والإعدادات. الاستيراد <strong class="text-ink">يدمج</strong> حسب المعرّف ولا يستبدل، مع لقطة تراجع تلقائية قبل الدمج.</p>
               <label class="flex items-center gap-2 text-xs text-ink cursor-pointer"><input type="checkbox" id="backup-include-keys" class="w-4 h-4" /> تضمين مفاتيح API في الملف (احذر عند مشاركته)</label>
               <div class="flex flex-wrap gap-2">
                 <button onclick="exportAllData()" class="btn-gold text-xs px-4 py-2.5 rounded-xl inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-download"/></svg>تصدير كل البيانات</button>
@@ -1121,7 +1178,7 @@
           <button onclick="wipeAllData()" class="btn-danger font-bold text-xs px-4 py-2.5 rounded-xl self-start sm:self-auto inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-trash"/></svg>مسح الكل</button>
         </section>
 
-        <p class="text-center text-[10px] text-muted/70 pb-2">سُعرة V7 · بياناتك على جهازك فقط</p>
+        <p class="text-center text-[10px] text-muted/70 pb-2">سُعرة V8 · بياناتك على جهازك فقط</p>
       </div>
     </div>
   </main>
@@ -1319,7 +1376,10 @@
       <button type="button" onclick="addConfirmItemPrompt()" class="mt-3 chip"><svg class="ico"><use href="#i-plus"/></svg>إضافة مكوّن</button>
       <div id="confirm-warnings" class="space-y-2 mt-3"></div>
       <div id="confirm-totals" class="mt-4 rounded-2xl p-4 tile"></div>
-      <label id="confirm-save-myfood-wrap" class="hidden flex items-center gap-2 text-xs text-ink mt-3"><input type="checkbox" id="confirm-save-myfood" class="w-4 h-4" /> احفظ في «أطعمتي» لاستخدامه لاحقاً</label>
+      <div id="confirm-product-wrap" class="mt-3 flex flex-wrap items-center gap-2">
+        <button type="button" id="btn-confirm-save-product" onclick="saveConfirmAsProduct()" class="chip"><svg class="ico text-primary"><use href="#i-package"/></svg>احفظ كمنتج من منتجاتي</button>
+        <span id="confirm-product-note" class="text-[10px] text-muted"></span>
+      </div>
       <div class="pt-4 mt-4 flex items-center justify-between gap-3 border-t border-line/10">
         <button type="button" onclick="closeConfirm()" class="px-4 py-2 text-xs font-bold text-muted hover:text-ink">إلغاء</button>
         <button type="button" id="btn-confirm-save" onclick="saveConfirmedMeal()" class="btn-gold text-sm px-6 py-3 rounded-xl inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-check"/></svg>حفظ الوجبة</button>
@@ -1345,6 +1405,66 @@
       <div class="pt-4 mt-4 flex items-center justify-between gap-3 border-t border-line/10">
         <button type="button" id="btn-recipe-delete" onclick="deleteRecipe()" class="hidden btn-danger text-xs px-3 py-2 rounded-xl font-bold">حذف</button>
         <button type="button" onclick="saveRecipe()" class="btn-gold text-sm px-6 py-3 rounded-xl ms-auto">حفظ الوصفة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PRODUCT EDITOR (My Products) ================= -->
+  <div id="modal-product" class="hidden fixed inset-0 z-[57] items-end sm:items-center justify-center sm:p-4 modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="product-title">
+    <div class="glass-modal sheet w-full max-w-lg rounded-[28px] p-5 sm:p-6 relative max-h-[94vh] overflow-y-auto">
+      <button type="button" onclick="closeProductEditor()" class="icon-btn absolute top-5 left-5 !w-9 !h-9" aria-label="إغلاق"><svg class="ico"><use href="#i-x"/></svg></button>
+      <h3 id="product-title" class="font-bold text-xl text-ink mb-1 flex items-center gap-2"><svg class="ico text-primary"><use href="#i-package"/></svg><span id="product-title-text">منتج جديد</span></h3>
+      <p class="text-xs text-muted mb-4">القيم لكل 100 جم أو 100 مل كما في ملصقك — راجعها وعدّلها قبل الحفظ.</p>
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <label class="border border-dashed border-primary/30 hover:border-primary rounded-2xl p-2.5 text-center cursor-pointer bg-bg/50 flex flex-col items-center press">
+          <input id="product-label-input" type="file" accept="image/*" capture="environment" onchange="productFromLabelPhoto(this, false)" class="hidden" />
+          <svg class="ico ico-lg text-primary mb-1"><use href="#i-label"/></svg><span class="text-[10px] font-semibold text-ink">صوّر الملصق</span>
+        </label>
+        <button type="button" onclick="scanBarcodeForProduct()" class="border border-dashed border-primary/30 hover:border-primary rounded-2xl p-2.5 text-center bg-bg/50 flex flex-col items-center press">
+          <svg class="ico ico-lg text-primary mb-1"><use href="#i-barcode"/></svg><span class="text-[10px] font-semibold text-ink">الباركود</span>
+        </button>
+        <label class="border border-dashed border-primary/30 hover:border-primary rounded-2xl p-2.5 text-center cursor-pointer bg-bg/50 flex flex-col items-center press">
+          <input id="product-photo-input" type="file" accept="image/*" capture="environment" onchange="productPhoto(this)" class="hidden" />
+          <svg class="ico ico-lg text-primary mb-1"><use href="#i-camera"/></svg><span class="text-[10px] font-semibold text-ink">صورة المنتج</span>
+        </label>
+      </div>
+      <div id="product-skeleton" class="hidden rounded-2xl p-3 tile space-y-2 mb-3"><div class="skeleton h-4 w-1/2"></div><div class="skeleton h-3 w-full"></div><p class="text-[11px] text-primary">يقرأ الأرقام المطبوعة فقط...</p></div>
+      <div class="flex items-start gap-3 mb-3">
+        <div id="product-thumb" class="w-16 h-16 rounded-2xl tile flex items-center justify-center text-muted flex-shrink-0 overflow-hidden"><svg class="ico ico-lg"><use href="#i-package"/></svg></div>
+        <div class="flex-1 min-w-0 space-y-2">
+          <div><label class="label" for="product-name">اسم المنتج</label><input id="product-name" class="field font-bold" placeholder="مثال: حليب المراعي كامل الدسم" /></div>
+          <div><label class="label" for="product-brand">العلامة التجارية</label><input id="product-brand" class="field" placeholder="مثال: المراعي" /></div>
+        </div>
+      </div>
+      <label class="label" for="product-keywords">كلمات مفتاحية (مفصولة بفاصلة)</label>
+      <input id="product-keywords" class="field mb-3" placeholder="حليب، milk، حليب المراعي" />
+      <div class="flex items-center justify-between mb-1.5"><span class="label !mb-0">القيم الغذائية لكل 100</span>
+        <div class="seg !p-0.5 !rounded-xl"><button type="button" id="product-basis-g" onclick="setProductBasis('g')" class="!py-1 !px-3 !text-[11px]">جم</button><button type="button" id="product-basis-ml" onclick="setProductBasis('ml')" class="!py-1 !px-3 !text-[11px]">مل</button></div>
+      </div>
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mb-3">
+        <div><label class="label !text-[10px]" for="product-kcal">سعرات</label><input id="product-kcal" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" oninput="productSanity()" /></div>
+        <div><label class="label !text-[10px] !text-protein" for="product-p">بروتين</label><input id="product-p" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" oninput="productSanity()" /></div>
+        <div><label class="label !text-[10px] !text-carbs" for="product-c">كارب</label><input id="product-c" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" oninput="productSanity()" /></div>
+        <div><label class="label !text-[10px] !text-fats" for="product-f">دهون</label><input id="product-f" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" oninput="productSanity()" /></div>
+        <div><label class="label !text-[10px]" for="product-sugar">سكر</label><input id="product-sugar" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" placeholder="—" /></div>
+        <div><label class="label !text-[10px]" for="product-fiber">ألياف</label><input id="product-fiber" type="number" step="0.1" class="field !px-1.5 text-center font-mono text-xs" placeholder="—" /></div>
+      </div>
+      <p id="product-sanity" class="hidden text-[11px] text-warn mb-3"></p>
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <div><label class="label" for="product-serving">حجم الحصة</label><input id="product-serving" type="number" step="1" class="field font-mono" placeholder="مثال: 240" /></div>
+        <div><label class="label" for="product-unit">الوحدة</label>
+          <select id="product-unit" class="field text-xs"><option value="ml">مل</option><option value="g">جم</option><option value="cup">كوب</option><option value="piece">حبة / علبة</option></select></div>
+        <div><label class="label" for="product-density">الكثافة (جم/مل)</label><input id="product-density" type="number" step="0.01" class="field font-mono" placeholder="1" /></div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div><label class="label" for="product-barcode">الباركود (اختياري)</label><input id="product-barcode" inputmode="numeric" class="field font-mono" dir="ltr" placeholder="6281007..." /></div>
+        <div><label class="label" for="product-source">المصدر</label>
+          <select id="product-source" class="field text-xs"><option value="label">صورة الملصق</option><option value="barcode">باركود</option><option value="manual">إدخال يدوي</option></select></div>
+      </div>
+      <label class="flex items-center gap-2 text-xs text-ink mb-1 cursor-pointer"><input type="checkbox" id="product-default" class="w-4 h-4" /> المنتج الافتراضي لكلماته المفتاحية (عند تطابق أكثر من منتج)</label>
+      <div class="pt-4 mt-3 flex items-center justify-between gap-3 border-t border-line/10">
+        <button type="button" id="btn-product-delete" onclick="deleteProduct()" class="hidden btn-danger text-xs px-3 py-2 rounded-xl font-bold">حذف</button>
+        <button type="button" id="btn-product-save" onclick="saveProduct()" class="btn-gold text-sm px-6 py-3 rounded-xl ms-auto inline-flex items-center gap-1.5"><svg class="ico"><use href="#i-check"/></svg>حفظ المنتج</button>
       </div>
     </div>
   </div>
@@ -1436,6 +1556,8 @@
     const KEY_USDA_KEY = 'su3rah_usda_api_key';
     const KEY_DS_VERIFIED = 'su3rah_deepseek_verified';
     const KEY_CHAT_MODEL = 'su3rah_chat_model_v7';
+    // V8 keys — NEW keys only (additive). The V7 theme key above is left untouched.
+    const KEY_THEME_V8 = 'su3rah_theme_v8';
 
     const IDB_NAME = 'Su3rahNativeDB_v12';
     const IDB_STORE = 'data_store';
@@ -1461,6 +1583,7 @@
     const OFF_BASE = 'https://world.openfoodfacts.org/api/v2/product';
 
     const THEMES = {
+      roast: { name: 'بني ملكي', en: 'Royal Roast', bg: '#0E0907', s: '#20160F', p: '#D9A066', a: '#F0C27B', t: '#F6EBDD', m: ['#66C8F0', '#ECD25C', '#F27C8C'] },
       midnight: { name: 'ليل وذهب', en: 'Midnight Gold', bg: '#0A0B10', s: '#1A1D26', p: '#E2B865', a: '#F0D9A8', t: '#F6EBDD', m: ['#5EC8F0', '#F2C14E', '#F07A8A'] },
       emerald: { name: 'زمرد أسود', en: 'Emerald Noir', bg: '#07100D', s: '#15241F', p: '#34D399', a: '#D4AF6A', t: '#EAF5EF', m: ['#62C6F2', '#E9C45C', '#F2899A'] },
       plum: { name: 'بنفسجي ملكي', en: 'Royal Plum', bg: '#0E0A14', s: '#211830', p: '#B794F6', a: '#E8B4A0', t: '#F3ECF8', m: ['#67C8F0', '#F2C55C', '#F7859D'] },
@@ -1500,12 +1623,13 @@
     // ==========================================
     // THEMES
     // ==========================================
+    const DEFAULT_THEME = 'roast';
     function applyTheme(name, save = true) {
-      if (!THEMES[name]) name = 'midnight';
+      if (!THEMES[name]) name = DEFAULT_THEME;
       document.documentElement.setAttribute('data-theme', name);
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', THEMES[name].bg);
       state.theme = name;
-      if (save) { try { localStorage.setItem(KEY_THEME, name); } catch (_) {} StorageEngine.set(KEY_THEME, name, { mirror: false }); }
+      if (save) { try { localStorage.setItem(KEY_THEME_V8, name); } catch (_) {} StorageEngine.set(KEY_THEME_V8, name, { mirror: false }); }
       renderThemePicker();
       if (state.booted) { renderApp(); if (!$id('modal-share-story').classList.contains('hidden')) drawStoryCard(); }
     }
@@ -1594,13 +1718,13 @@
       usdaKey: '',
       selectedModel: DEFAULT_MODEL,           // Gemini model for meal understanding / photos
       chatModel: { provider: 'gemini', model: DEFAULT_MODEL },
-      theme: document.documentElement.getAttribute('data-theme') || 'midnight',
+      theme: document.documentElement.getAttribute('data-theme') || 'roast',
       audioMuted: false,
       goalConfig: { mode: 'cut', targetCalories: 2000, tdeeBase: 2400, proteinRatio: 35, carbsRatio: 40, fatsRatio: 25 },
       meals: [],
       chatSessions: [],
       activeChatId: null,
-      x: {},                                   // V7 extras (water, weight, favourites, recipes ...)
+      x: {},                                   // extras (weight, favourites, recipes, products ...)
       entryMode: 'ai',
       imagePreviewData: null,
       mealImages: [],
@@ -2119,7 +2243,8 @@
     // Never overwrite a key we could not read: unverified keys are re-read and merged before writing.
     // ==========================================
     const EXTRAS = {
-      water: { key: 'su3rah_water_log', type: 'map', d: () => ({}) },
+      water: { key: 'su3rah_water_log', type: 'map', d: () => ({}) },          // legacy V7 data: no UI any more, kept untouched + exported
+
       weight: { key: 'su3rah_weight_log', type: 'list', d: () => [] },
       favorites: { key: 'su3rah_favorites', type: 'list', d: () => [] },
       myFoods: { key: 'su3rah_my_foods', type: 'list', d: () => [] },
@@ -2130,7 +2255,11 @@
       ramadan: { key: 'su3rah_ramadan', type: 'obj', d: () => ({ on: false, iftar: '18:00', suhoor: '03:30', split: 60, remind: true }) },
       celebrations: { key: 'su3rah_celebrations', type: 'map', d: () => ({}) },
       counters: { key: 'su3rah_counters', type: 'obj', d: () => ({}) },
-      weekly: { key: 'su3rah_weekly_insight', type: 'obj', d: () => ({}) }
+      weekly: { key: 'su3rah_weekly_insight', type: 'obj', d: () => ({}) },
+      // V8 (new keys only)
+      products: { key: 'su3rah_my_products', type: 'list', d: () => [] },
+      logStats: { key: 'su3rah_food_log_stats', type: 'map', d: () => ({}) },
+      units: { key: 'su3rah_units', type: 'obj', d: () => ({ cupMl: 240 }) }
     };
     const ExtraStore = {
       verified: {},
@@ -2246,6 +2375,7 @@
         await StorageEngine.set(KEY_API_KEY, state.apiKey); await StorageEngine.set(KEY_DEEPSEEK_KEY, state.deepseekKey); await StorageEngine.set(KEY_USDA_KEY, state.usdaKey);
         if (s.extras && s.extras.snacks) { state.x.snacks = s.extras.snacks; await saveX('snacks'); }
         if (s.extras && s.extras.ramadan) { state.x.ramadan = s.extras.ramadan; await saveX('ramadan'); }
+        if (s.extras && s.extras.units) { state.x.units = s.extras.units; await saveX('units'); }
       }
       await persistMeals(); await persistChats(); StorageEngine.set(KEY_ACTIVE_CHAT_ID, state.activeChatId);
       s.undone = true; await StorageEngine.set(KEY_SNAPSHOT, s, { mirror: false });
@@ -2258,7 +2388,7 @@
     // ==========================================
     function buildBackupPayload(includeKeys) {
       const payload = {
-        app: 'su3rah', format: 2, appVersion: 'v7', exportedAt: new Date().toISOString(),
+        app: 'su3rah', format: 2, appVersion: 'v8', exportedAt: new Date().toISOString(),
         data: {
           meals: state.meals, chatSessions: state.chatSessions, activeChatId: state.activeChatId,
           goal: state.goalConfig, userName: state.userName, selectedModel: state.selectedModel, chatModel: state.chatModel, theme: state.theme, audioMuted: state.audioMuted,
@@ -2351,7 +2481,7 @@
       state.chatSessions = [...chatById.values()];
       let extrasCount = 0;
       if (extras) {
-        for (const name of ['water', 'weight', 'favorites', 'myFoods', 'recipes', 'arabicCustom', 'badges', 'celebrations']) {
+        for (const name of ['water', 'weight', 'favorites', 'myFoods', 'products', 'recipes', 'arabicCustom', 'badges', 'celebrations', 'logStats']) {
           if (!(name in extras)) continue;
           const r = mergeExtra(name, extras[name]);
           if (r.added.length || r.replaced.length) { ops.extras[name] = r; extrasCount += r.added.length + r.replaced.length; await saveX(name); }
@@ -2365,6 +2495,7 @@
         if (d.v5Insights && !StorageEngine.lsGet('su3rah_v5_insights')) localStorage.setItem('su3rah_v5_insights', JSON.stringify(d.v5Insights));
         if (extras && extras.snacks && typeof extras.snacks === 'object') { state.x.snacks = { ...state.x.snacks, ...extras.snacks }; await saveX('snacks'); }
         if (extras && extras.ramadan && typeof extras.ramadan === 'object') { state.x.ramadan = { ...state.x.ramadan, ...extras.ramadan }; await saveX('ramadan'); }
+        if (extras && extras.units && typeof extras.units === 'object') { state.x.units = { ...state.x.units, ...extras.units }; await saveX('units'); }
         if (d.theme && THEMES[d.theme]) applyTheme(d.theme);
         ops.settingsChanged = true;
       }
@@ -2752,7 +2883,7 @@
     // ==========================================
     const SOURCE_META = {
       usda: { cls: 'pill-trusted', label: 'USDA' }, barcode: { cls: 'pill-trusted', label: 'باركود' }, label: { cls: 'pill-trusted', label: 'ملصق' },
-      myfood: { cls: 'pill-trusted', label: 'أطعمتي' }, table: { cls: 'pill-table', label: 'جدولي' }, recipe: { cls: 'pill-table', label: 'وصفة' },
+      myfood: { cls: 'pill-trusted', label: 'أطعمتي' }, product: { cls: 'pill-trusted', label: 'منتجاتي' }, table: { cls: 'pill-table', label: 'جدولي' }, recipe: { cls: 'pill-table', label: 'وصفة' },
       estimate: { cls: 'pill-estimate', label: 'تقديري' }, manual: { cls: 'pill-neutral', label: 'يدوي' }
     };
     const pill = (kind, title = '') => { const m = SOURCE_META[kind] || { cls: 'pill-neutral', label: kind || 'سُعرة' }; return `<span class="pill ${m.cls}" title="${escapeHtml(title)}">${escapeHtml(m.label)}</span>`; };
@@ -2849,8 +2980,8 @@
 
       setElText('count-meals-today', mealsForDate.length);
       renderMealCards(mealsForDate);
-      renderWater();
       renderQuickSnacks();
+      renderAutosaveSuggest();
       renderFavorites();
       renderRamadanCard();
 
@@ -2918,7 +3049,7 @@
             <summary class="cursor-pointer text-muted font-bold flex items-center justify-between gap-2"><span>المكونات (${meal.breakdown.length})</span>${confPill(meal.confidence)}</summary>
             <div class="mt-2 space-y-1.5">${meal.breakdown.map((it) => `
               <div class="flex items-center justify-between gap-2">
-                <span class="text-ink truncate">${escapeHtml(it.name_ar || it.name || '')} <span class="text-muted num">${Math.round(num(it.grams))} جم</span></span>
+                <span class="text-ink truncate">${escapeHtml(it.name_ar || it.name || '')} <span class="text-muted num">${Math.round(num(it.grams))} ${it.unit === 'ml' ? 'مل' : 'جم'}</span></span>
                 <span class="flex items-center gap-1.5 flex-shrink-0"><span class="num text-muted" dir="ltr">${Math.round(num(it.kcal))} kcal</span>${pill(it.source, it.sourceName || '')}</span>
               </div>`).join('')}</div>
           </details>` : '';
@@ -3059,7 +3190,7 @@
       if (tabName === 'settings') renderDataPanel();
     }
     function syncModalOpen() {
-      const any = ['modal-add-meal', 'modal-confirm', 'modal-recipe'].some((id) => { const el = $id(id); return el && !el.classList.contains('hidden'); });
+      const any = ['modal-add-meal', 'modal-confirm', 'modal-recipe', 'modal-product'].some((id) => { const el = $id(id); return el && !el.classList.contains('hidden'); });
       document.body.classList.toggle('modal-open', any);
     }
     function showModal(id) { const m = $id(id); m.classList.remove('hidden'); m.classList.add('flex'); syncModalOpen(); }
@@ -3092,6 +3223,7 @@
     }
     function closeMealModal() {
       hideModal('modal-add-meal');
+      if (state.barcodeTarget === 'product') { state.barcodeTarget = null; if (typeof stopBarcodeScan === 'function') stopBarcodeScan(); reopenProductDraft(); }
       state.isEditing = false; state.editingMealId = null;
       if (state.userWantsRecording) stopVoiceRecording();
       if (typeof stopBarcodeScan === 'function') stopBarcodeScan();
@@ -3263,7 +3395,7 @@
       try { const s = JSON.parse(localStorage.getItem('su3rah_v5_insights')); if (s && s.list && s.list.length) insights = s.list.slice(0, 3).map((i) => '- ' + (i.body || i.title)).join('\n'); } catch (_) {}
       const mealsList = ctx.meals.slice(0, 12).map((m) => `- ${m.time || ''} ${m.title}: ${Math.round(num(m.calories))} سعرة (بروتين ${r1(m.protein)} كارب ${r1(m.carbs)} دهون ${r1(m.fats)})`).join('\n') || '- لا شيء بعد';
       const wt = weightTrend();
-      const water = num((state.x.water || {})[state.selectedDate]);
+      const prods = (state.x.products || []).slice(0, 15).map((p) => { const sv = num(p.serving) || 100; const k = sv / 100; return `- ${p.name}${p.brand ? ' (' + p.brand + ')' : ''}: حصة ${sv} ${unitLabel(p.basis)} = ${Math.round(num(p.per100.kcal) * k)} سعرة، بروتين ${r1(num(p.per100.p) * k)}غ`; }).join('\n');
       const length = mode === 'voice' ? 'هذه مكالمة صوتية: رد بجملة أو جملتين قصيرتين فقط، بدون رموز أو قوائم.'
         : mode === 'detail' ? 'المستخدم طلب تفصيلاً: يمكنك الإطالة حتى 10 أسطر تقريباً، لكن بدون عناوين وبدون «الخلاصة».'
         : 'الطول: الدردشة العادية والتحيات 2-3 أسطر قصيرة. نصائح الأكل أو التمرين 5 أسطر كحد أقصى: الجواب المباشر أولاً (الأكل + الجرامات) ثم سبب واحد قصير.';
@@ -3280,9 +3412,10 @@
 - الهدف: ${GOAL_PRESETS[state.goalConfig.mode]?.label || 'مخصص'} — ${ctx.T.cal} سعرة، بروتين ${ctx.T.p}غ، كارب ${ctx.T.c}غ، دهون ${ctx.T.f}غ.
 - المستهلك: ${Math.round(ctx.t.cal)} سعرة، بروتين ${Math.round(ctx.t.p)}غ، كارب ${Math.round(ctx.t.c)}غ، دهون ${Math.round(ctx.t.f)}غ.
 - المتبقي: ${ctx.remCal} سعرة، بروتين ${ctx.remP}غ، كارب ${ctx.remC}غ، دهون ${ctx.remF}غ.
-- الماء: ${water} أكواب من 8.
 - وجبات اليوم:
 ${mealsList}
+- منتجاتي (منتجات يشتريها دائماً، اقترحها بالاسم عند المناسبة):
+${prods || '- لا توجد منتجات محفوظة.'}
 ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.change !== null ? `، التغير منذ ${wt.since}: ${wt.change > 0 ? '+' : ''}${wt.change} كجم` : ''}.` : '- الوزن: لا توجد قياسات.'}${insights ? `\n- أنماط سابقة:\n${insights}` : ''}`;
     }
     function buildChatMessages(session, ctx, mode) {
@@ -3640,6 +3773,8 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       while (state.meals.some((m) => m.id === newMeal.id)) newMeal.id += '_' + Math.random().toString(36).slice(2, 6);
       state.meals.unshift(newMeal);
       persistMeals();
+      try { recordFoodLog(newMeal); } catch (_) {}
+      haptic(15);   // light vibration when a meal is added
       if ($id('ai-description')) { $id('ai-description').value = ''; $id('ai-weight').value = ''; }
       if (!mealData.noImages) removeSelectedImage();
       renderApp();
@@ -3815,6 +3950,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if (!$id('modal-lightbox').classList.contains('hidden')) return closeLightbox();
+      if (!$id('modal-product').classList.contains('hidden')) return closeProductEditor();
       if (!$id('modal-recipe').classList.contains('hidden')) return closeRecipeEditor();
       if (!$id('modal-confirm').classList.contains('hidden')) return closeConfirm();
       if (!$id('modal-add-meal').classList.contains('hidden')) return closeMealModal();
@@ -3867,7 +4003,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       // Remember the last chosen chat model (Gemini 3.5 Flash Lite is the default)
       if (savedChatModel && typeof savedChatModel === 'object' && savedChatModel.provider) state.chatModel = { provider: savedChatModel.provider, model: savedChatModel.model };
       ensureChatModelValid();
-      try { let th = String(localStorage.getItem(KEY_THEME) || '').replace(/"/g, ''); if (!THEMES[th]) th = await StorageEngine.get(KEY_THEME, null); if (th && THEMES[th]) { applyTheme(th, false); try { localStorage.setItem(KEY_THEME, th); } catch (_) {} } } catch (_) {}
+      try { let th = String(localStorage.getItem(KEY_THEME_V8) || '').replace(/"/g, ''); if (!THEMES[th]) th = await StorageEngine.get(KEY_THEME_V8, null); if (!(th && THEMES[th])) th = DEFAULT_THEME; applyTheme(th, false); if (th !== DEFAULT_THEME) { try { localStorage.setItem(KEY_THEME_V8, th); } catch (_) {} } } catch (_) {}
 
       DataGuard.verified.chats = chatsRes.verified;
       state.chatSessions = chatsRes.list;
@@ -3875,6 +4011,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       if (savedActiveChatId) state.activeChatId = savedActiveChatId;
 
       DeepSeek.loadCachedModels();
+      try { await migrateMyFoodsToProducts(); } catch (_) {}
 
       // ---- Legacy rescue + first-run seed (strict: only when storage is confirmed empty AND the flag was never set) ----
       const anyExisting = mealsRes.existed || chatsRes.existed || state.hasSavedGoal || state.hasSavedName || !!state.apiKey || !!savedAI;
@@ -3925,7 +4062,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     // =====================================================================
     // ACCURATE NUTRITION ENGINE
     // The AI never invents calorie/macro numbers. Gemini only understands the meal
-    // (ingredients + grams). Numbers come from: My Foods → Arabic table → USDA → barcode/label,
+    // (ingredients + grams). Numbers come from: My Products → My Foods / favourites → Arabic table → USDA → barcode/label,
     // and only as a last resort an AI estimate clearly labelled "تقديري".
     // =====================================================================
 
@@ -3946,6 +4083,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       veg_oil: { d: 'Oil, canola', st: 'n/a', v: [884, 0, 0, 100] },
       ghee: { d: 'Butter oil, anhydrous', st: 'n/a', v: [876, 0.28, 0, 99.48] },
       dates_deglet: { d: 'Dates, deglet noor', st: 'raw', v: [282, 2.45, 75.03, 0.39] },
+      dates_medjool: { d: 'Dates, medjool', st: 'raw', v: [277, 1.81, 74.97, 0.15] },
       banana: { d: 'Bananas, raw', st: 'raw', v: [89, 1.09, 22.84, 0.33] },
       apple: { d: 'Apples, raw, with skin', st: 'raw', v: [52, 0.26, 13.81, 0.17] },
       bread_pita: { d: 'Bread, pita, white, enriched', st: 'cooked', v: [275, 9.1, 55.7, 1.2] },
@@ -4006,6 +4144,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       { id: 'khubz', ar: 'خبز عربي (بيتا)', match: ['خبز عربي', 'خبز بيتا', 'بيتا', 'خبز لبناني', 'رغيف'], en: 'pita bread', ref: 'bread_pita', piece: 60, src: 'USDA SR Legacy — Bread, pita, white' },
       { id: 'samouli', ar: 'خبز صامولي', match: ['صامولي', 'صامولى'], en: 'white bread roll', ref: 'bread_white', piece: 70, verify: true, src: 'قيمة الخبز الأبيض التجاري من USDA كبديل — يحتاج تحقق' },
       { id: 'tamees', ar: 'خبز تميس', match: ['تميس', 'تميز'], en: 'flatbread', ref: 'bread_pita', piece: 150, verify: true, src: 'قيمة خبز البيتا من USDA كبديل — يحتاج تحقق' },
+      { id: 'sukkari', ar: 'تمر سكري', match: ['تمر سكري', 'سكري', 'سكرى', 'تمر سكرى'], en: 'dates medjool', ref: 'dates_medjool', piece: 10, verify: true, src: 'USDA SR Legacy — Dates, medjool (FDC 168191): أقرب مرجع موثّق للتمر الطري — لا توجد قيم USDA خاصة بالسكري، يحتاج تحقق' },
       { id: 'tamr', ar: 'تمر', match: ['تمر', 'تمرة', 'تمرات', 'رطب'], not: ['هندي'], en: 'dates', ref: 'dates_deglet', piece: 8, src: 'USDA SR Legacy — Dates, deglet noor' },
       { id: 'hummus', ar: 'حمص (متبّل)', match: ['حمص', 'حمّص'], not: ['حب', 'مسلوق'], en: 'hummus', ref: 'hummus', src: 'USDA SR Legacy — Hummus, commercial' },
       { id: 'falafel', ar: 'فلافل', match: ['فلافل', 'طعمية'], en: 'falafel', ref: 'falafel', piece: 17, src: 'USDA SR Legacy — Falafel, home-prepared' },
@@ -4169,17 +4308,20 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
 
     // ---------- Understanding (Gemini → ingredients + grams only) ----------
     const ITEMS_SCHEMA = { type: 'OBJECT', properties: { title: { type: 'STRING' }, items: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
-      name_ar: { type: 'STRING' }, name_en: { type: 'STRING' }, grams: { type: 'NUMBER' }, state: { type: 'STRING', enum: ['raw', 'cooked', 'fried', 'n/a'] }, confidence: { type: 'NUMBER' } }, required: ['name_ar', 'name_en', 'grams', 'state'] } } }, required: ['items'] };
+      name_ar: { type: 'STRING' }, name_en: { type: 'STRING' }, grams: { type: 'NUMBER' }, unit: { type: 'STRING', enum: ['g', 'ml'] }, count: { type: 'NUMBER', nullable: true }, state: { type: 'STRING', enum: ['raw', 'cooked', 'fried', 'n/a'] }, confidence: { type: 'NUMBER' } }, required: ['name_ar', 'name_en', 'grams', 'state'] } } }, required: ['items'] };
     const UNDERSTAND_SYSTEM = `أنت محلل وجبات في تطبيق سُعرة. مهمتك الوحيدة فهم الوجبة: استخرج المكونات وأوزانها بالجرام.
 ممنوع منعاً باتاً كتابة أي سعرات أو بروتين أو كربوهيدرات أو دهون — الأرقام الغذائية يحسبها التطبيق من قواعد بيانات موثوقة.
 أعد JSON فقط بهذا الشكل:
-{"title":"اسم قصير للوجبة بالعربية","items":[{"name_ar":"اسم المكوّن بالعربية","name_en":"simple USDA search term","grams":0,"state":"raw|cooked|fried|n/a","confidence":0.0}]}
+{"title":"اسم قصير للوجبة بالعربية","items":[{"name_ar":"اسم المكوّن بالعربية","name_en":"simple USDA search term","grams":0,"unit":"g|ml","count":null,"state":"raw|cooked|fried|n/a","confidence":0.0}]}
 قواعد:
 - name_en مصطلح بحث إنجليزي بسيط لقاعدة USDA مثل: "rice white cooked" أو "chicken breast roasted" أو "olive oil" أو "egg whole boiled".
 - إذا ذكر المستخدم الأوزان فاستخدمها كما هي حرفياً. ملعقة كبيرة زيت = 13.5 جم، ملعقة صغيرة زيت = 4.5 جم، بيضة متوسطة = 50 جم، رغيف عربي = 60 جم.
 - state: "cooked" للمطبوخ/المشوي/المسلوق، "raw" للنيء أو الوزن قبل الطبخ أو الفواكه الطازجة، "fried" للمقلي، "n/a" للزيوت والصلصات والمشروبات.
 - الأطباق السعودية المركبة (كبسة، مندي، مقلوبة، جريش، مطازيز، شاورما) اكتبها مكوّناً واحداً باسم الطبق.
 - مع الصور: قدّر وزن الكمية الظاهرة بالجرام وافصل مكونات الطبق، ولا تكرر نفس الطبق من زوايا مختلفة.
+- السوائل (حليب، لبن، عصير...): اكتب الكمية بالمل في grams و unit = "ml". الكوب = 240 مل.
+- count: عدد الحبات أو العلب إذا ذكرها المستخدم بدون وزن (مثل "علبة لبن")، وإلا null.
+- اكتب name_ar كما قاله المستخدم مع اسم العلامة التجارية إن ذُكرت (مثل "حليب المراعي").
 - confidence من 0 إلى 1 لدقة تقدير الوزن.`;
     function parseItemsJson(text) {
       let cleaned = String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
@@ -4187,7 +4329,8 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const o = JSON.parse(cleaned);
       const items = (Array.isArray(o.items) ? o.items : []).map((it) => ({
         name_ar: String(it.name_ar || it.name || '').trim(), name_en: String(it.name_en || '').trim(), grams: Math.max(0, num(it.grams)),
-        state: ['raw', 'cooked', 'fried', 'n/a'].includes(it.state) ? it.state : 'n/a', confidence: Math.max(0, Math.min(1, it.confidence === undefined ? 0.7 : num(it.confidence)))
+        state: ['raw', 'cooked', 'fried', 'n/a'].includes(it.state) ? it.state : 'n/a', confidence: Math.max(0, Math.min(1, it.confidence === undefined ? 0.7 : num(it.confidence))),
+        unit: it.unit === 'ml' ? 'ml' : 'g', count: num(it.count) > 0 ? num(it.count) : null
       })).filter((it) => it.name_ar || it.name_en);
       if (!items.length) throw new Error('لم يتعرّف النموذج على مكونات');
       return { title: String(o.title || '').trim(), items };
@@ -4212,12 +4355,12 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const items = [];
       for (let part of parts) {
         part = part.replace(/^و\s*/, '');
-        let grams = null, mult = 1;
-        const m = part.match(/(\d+(?:\.\d+)?)\s*(كيلو|كغ|كجم|kg|جرامات|جرام|غرامات|غرام|جم|غم|grams?|g)(?![a-z])/i);
+        let grams = null, mult = 1, unit = 'g', count = null;
+        const m = part.match(/(\d+(?:\.\d+)?)\s*(كيلو|كغ|كجم|kg|جرامات|جرام|غرامات|غرام|جم|غم|grams?|g|مل|ملي|ml)(?![a-z\u0600-\u06FF])/i);
         const nCount = part.match(/(\d+(?:\.\d+)?)/);
         if (/نص|نصف/.test(part)) mult = 0.5; if (/ربع/.test(part)) mult = 0.25;
         let st = /نيء|ني\b|نيئ|قبل الطبخ|غير مطبوخ/.test(part) ? 'raw' : /مقلي|مقلية/.test(part) ? 'fried' : /مطبوخ|مشوي|مسلوق|مطهو|محمر|مشويه|مشوية|مسلوقة|مطبوخة|فرن/.test(part) ? 'cooked' : 'n/a';
-        const name = part.replace(/(\d+(?:\.\d+)?)\s*(كيلو|كغ|كجم|kg|جرامات|جرام|غرامات|غرام|جم|غم|grams?|g)?/gi, '').replace(/\b(ملعقة|ملاعق|ملعقه)\s*(كبيرة|كبيره|صغيرة|صغيره)?|حبة|حبات|حبه|كوب|اكواب|أكواب|رغيف|ارغفة|سكوب|نص|نصف|ربع|من|تقريبا|تقريباً/g, ' ').replace(/\s+/g, ' ').trim();
+        const name = part.replace(/(\d+(?:\.\d+)?)\s*(كيلو|كغ|كجم|kg|جرامات|جرام|غرامات|غرام|جم|غم|grams?|g|مل|ملي|ml)?(?![a-z\u0600-\u06FF])/gi, '').replace(/(?<![\u0600-\u06FF])(?:(?:ملعقة|ملاعق|ملعقه)\s*(?:كبيرة|كبيره|صغيرة|صغيره)?|حبات|حبة|حبه|اكواب|أكواب|كوب|كاسة|كاس|علبة|علبه|علب|عبوة|قارورة|رغيف|ارغفة|سكوب|نصف|نص|ربع|من|تقريباً|تقريبا)(?![\u0600-\u06FF])/g, ' ').replace(/\s+/g, ' ').trim();
         const table = matchArabic(name);
         const dict = AR_DICT.find(([re]) => re.test(name));
         const en = table ? table.en : dict ? dict[1] : name;
@@ -4225,12 +4368,13 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
         if (/oil|ghee/.test(en)) st = 'n/a';
         if (m) grams = num(m[1]) * (/كيلو|كغ|كجم|kg/i.test(m[2] || '') ? 1000 : 1);
         else if (/ملعق|ملاعق/.test(part)) { const small = /صغير/.test(part); const isOil = /oil|ghee|زيت|سمن/.test(en + name); grams = (nCount ? num(nCount[1]) : 1) * (isOil ? (small ? 4.5 : 13.5) : (small ? 5 : 15)) * mult; }
-        else if (/كوب|اكواب|أكواب/.test(part)) grams = (nCount ? num(nCount[1]) : 1) * (/rice/.test(en) ? 158 : 240) * mult;
+        else if (/كوب|اكواب|أكواب|كاسة|كاس/.test(part)) { grams = (nCount ? num(nCount[1]) : 1) * (/rice/.test(en) ? 158 : cupMl()) * mult; if (!/rice/.test(en)) unit = 'ml'; }
         else if (/سكوب/.test(part)) grams = (nCount ? num(nCount[1]) : 1) * 30 * mult;
-        else { const piece = (table && table.piece) || (dict && dict[2]) || null; if (piece) grams = (nCount ? num(nCount[1]) : 1) * piece * mult; }
+        else { count = (nCount ? num(nCount[1]) : 1) * mult; const piece = (table && table.piece) || (dict && dict[2]) || null; if (piece) grams = count * piece; }
         if (!grams) grams = 100;
         if (!name) continue;
-        items.push({ name_ar: name, name_en: en, grams: r1(grams), state: st, confidence: m ? 0.9 : 0.5 });
+        if (unit === 'g' && m && /مل|ml/i.test(m[2] || '')) unit = 'ml';
+        items.push({ name_ar: name, name_en: en, grams: r1(grams), unit, count, countFromParser: count !== null, state: st, confidence: m ? 0.9 : 0.5 });
       }
       return { title: src.slice(0, 40), items };
     }
@@ -4245,19 +4389,68 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     };
     const NEEDS_STATE = ['rice', 'pasta', 'oats', 'meat'];
 
-    // ---------- Resolution: My Foods / recipes → Arabic table → USDA (live, cached) → embedded USDA → estimate ----------
+    // ---------- MY PRODUCTS: keyword match (always first) ----------
+    function cupMl() { return Math.max(50, Math.min(1000, num((state.x.units || {}).cupMl) || 240)); }
+    const unitLabel = (u) => (u === 'ml' ? 'مل' : 'جم');
+    // Word-level Arabic normalisation (drops the article / common prefixes so «الحليب» = «بالحليب» = «حليب»)
+    const normWord = (w) => { w = normAr(w); return w.length >= 5 ? w.replace(/^(وبال|وال|بال|فال|كال|لل|ال)/, '') : w; };
+    const wordsOf = (str) => normAr(str).split(/[^a-z0-9\u0600-\u06FF]+/).map(normWord).filter(Boolean);
+    function productKeywords(p) { return [p.name, ...(Array.isArray(p.keywords) ? p.keywords : [])].map((k) => String(k || '').trim()).filter(Boolean); }
+    // Returns matching products, best first: specificity → default → most recently updated.
+    function matchProducts(it) {
+      const list = state.x.products || []; if (!list.length) return [];
+      const nameWords = new Set([...wordsOf(it.name_ar), ...wordsOf(it.name_en)]);
+      if (!nameWords.size) return [];
+      const hits = [];
+      list.forEach((p) => {
+        let score = 0;
+        productKeywords(p).forEach((k) => {
+          const kw = wordsOf(k); if (!kw.length) return;
+          if (kw.every((w) => nameWords.has(w))) score = Math.max(score, 100 + kw.length * 10 + k.length);      // keyword fully inside the item name
+          else if (k === p.name) { const nw = [...wordsOf(it.name_ar)]; if (nw.length && nw.every((w) => kw.includes(w))) score = Math.max(score, 50 + nw.length); }   // «حليب» → «حليب المراعي»
+        });
+        if (score) hits.push({ p, score });
+      });
+      return hits.sort((a, b) => (b.score - a.score) || ((b.p.isDefault ? 1 : 0) - (a.p.isDefault ? 1 : 0)) || (num(b.p.updatedAt) - num(a.p.updatedAt))).map((h) => h.p);
+    }
+    // Amount for a product: «علبة/حبة» → servings × serving size; ml↔g via the label density (default 1 ml ≈ 1 g).
+    function productAmount(it, p) {
+      const basis = p.basis === 'ml' ? 'ml' : 'g'; const dens = num(p.density) > 0 ? num(p.density) : 1;
+      let amt = num(it.grams); const unitIn = it.unit === 'ml' ? 'ml' : 'g';
+      const useServing = num(it.count) > 0 && num(p.serving) > 0 && (it.countFromParser || p.servingUnit === 'piece');
+      if (useServing) amt = num(it.count) * num(p.serving);
+      else if (unitIn !== basis) amt = basis === 'ml' ? amt / dens : amt * dens;
+      if (!amt) amt = num(p.serving) || 100;
+      return { amount: r1(amt), unit: basis };
+    }
+    function applyProduct(it, p, matches) {
+      const a = productAmount(it, p);
+      const alts = (matches || []).filter((x) => x.id !== p.id).map((x) => x.id);
+      return { ...it, grams: a.amount, unit: a.unit, per100: { kcal: num(p.per100.kcal), p: num(p.per100.p), c: num(p.per100.c), f: num(p.per100.f) }, source: 'product',
+        sourceName: `منتجاتي: ${p.name}${p.brand ? ' · ' + p.brand : ''}`, productId: p.id, productAlts: alts, state: 'n/a', verify: false, candidates: it.candidates || [] };
+    }
+
+    // ---------- Resolution: My Products → My Foods / recipes / favourites → Arabic table → USDA (live, cached) → embedded USDA → estimate ----------
     function matchMyFood(it) {
       const n = normAr(it.name_ar); const e = String(it.name_en || '').toLowerCase();
       const rec = (state.x.recipes || []).find((r) => n && (n.includes(normAr(r.name)) || normAr(r.name).includes(n)));
       if (rec && rec.per100) return { per100: rec.per100, source: 'recipe', sourceName: `وصفتي: ${rec.name}`, trusted: rec.trusted, recipeId: rec.id };
       const f = (state.x.myFoods || []).find((x) => (n && normAr(x.name_ar) === n) || (e && x.name_en && x.name_en.toLowerCase() === e));
       if (f) return { per100: f.per100, source: 'myfood', sourceName: `أطعمتي: ${f.name_ar}${f.origin ? ' (' + f.origin + ')' : ''}` };
+      // Favourites: a starred meal with the exact same name (macros per 100 g from its saved breakdown)
+      const fav = n && (state.x.favorites || []).find((x) => normAr(x.title) === n && Array.isArray(x.breakdown) && x.breakdown.length);
+      if (fav) {
+        const g = fav.breakdown.reduce((a, b) => a + num(b.grams), 0);
+        if (g > 0) return { per100: { kcal: r1(num(fav.calories) * 100 / g), p: r1(num(fav.protein) * 100 / g), c: r1(num(fav.carbs) * 100 / g), f: r1(num(fav.fats) * 100 / g) }, source: 'myfood', sourceName: `المفضلة: ${fav.title}`, grams: it.grams || g };
+      }
       return null;
     }
     let usdaErrorShown = false;
     async function resolveItem(it, opts = {}) {
       const out = { ...it, candidates: it.candidates || [], verify: false };
       if (!opts.skipLocal) {
+        const pm = matchProducts(it);
+        if (pm.length) return applyProduct(out, pm[0], pm);
         const mf = matchMyFood(it);
         if (mf) return { ...out, ...mf };
         const tb = matchArabic(it.name_ar);
@@ -4302,7 +4495,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       return items;
     }
     const itemTotals = (it) => { const k = num(it.grams) / 100, p = it.per100 || { kcal: 0, p: 0, c: 0, f: 0 }; return { kcal: p.kcal * k, p: p.p * k, c: p.c * k, f: p.f * k }; };
-    const isTrusted = (it) => ['usda', 'barcode', 'label', 'myfood'].includes(it.source) || (it.source === 'recipe' && it.trusted);
+    const isTrusted = (it) => ['usda', 'barcode', 'label', 'myfood', 'product'].includes(it.source) || (it.source === 'recipe' && it.trusted);
 
     // =====================================================================
     // CONFIRMATION CARD
@@ -4311,8 +4504,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     async function openConfirm({ title, items, origin = 'ai', myFood = null }) {
       Confirm.title = title || 'وجبة'; Confirm.items = items; Confirm.origin = origin; Confirm.myFood = myFood; Confirm.answered = {};
       $id('confirm-meal-title').value = Confirm.title;
-      $id('confirm-save-myfood-wrap').classList.toggle('hidden', !myFood);
-      $id('confirm-save-myfood').checked = !!myFood;
+      setElText('confirm-product-note', myFood ? 'احفظه كمنتج ليُستخدم تلقائياً كلما كتبت اسمه.' : '');
       renderConfirm();
       showModal('modal-confirm');
     }
@@ -4321,7 +4513,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const t = itemTotals(it);
       const max = Math.max(500, Math.ceil(num(it.grams) * 3 / 50) * 50);
       const cat = CAT(it);
-      const showState = NEEDS_STATE.includes(cat) && !['table', 'recipe', 'myfood', 'barcode', 'label'].includes(it.source);
+      const showState = NEEDS_STATE.includes(cat) && !['table', 'recipe', 'myfood', 'product', 'barcode', 'label'].includes(it.source);
       const mismatch = it.per100 && it.per100.kcal > 20 && Math.abs(it.per100.kcal - (it.per100.p * 4 + it.per100.c * 4 + it.per100.f * 9)) / it.per100.kcal > 0.15;
       return `
         <div class="tile rounded-2xl p-3" data-ci="${i}">
@@ -4332,15 +4524,17 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
             </div>
             <div class="flex items-center gap-1.5 flex-shrink-0">
               ${pill(it.source, it.sourceName)}
-              ${it.source !== 'barcode' && it.source !== 'label' ? `<button type="button" onclick="swapConfirmItem(${i})" class="icon-btn !w-7 !h-7" aria-label="تبديل المصدر أو المطابقة" title="مطابقة أخرى">${ic('swap')}</button>` : ''}
+              ${it.source !== 'barcode' && it.source !== 'label' ? `<button type="button" onclick="swapConfirmItem(${i})" class="icon-btn !w-7 !h-7 ${(it.productAlts || []).length ? '!text-primary !border-primary/40' : ''}" aria-label="تبديل المصدر أو المطابقة (منتجاتي / USDA)" title="مطابقة أخرى">${ic('swap')}</button>` : ''}
+              ${it.source !== 'product' && it.per100 ? `<button type="button" onclick="saveConfirmItemAsProduct(${i})" class="icon-btn !w-7 !h-7" aria-label="احفظ كمنتج من منتجاتي" title="احفظ كمنتج من منتجاتي">${ic('bookmark')}</button>` : ''}
               <button type="button" onclick="removeConfirmItem(${i})" class="icon-btn !w-7 !h-7 hover:!text-danger" aria-label="حذف المكوّن">${ic('x')}</button>
             </div>
           </div>
           ${it.verify ? `<p class="text-[10px] text-warn mt-1 inline-flex items-center gap-1">${ic('alert')}يحتاج تحقق — القيم تقريبية</p>` : ''}
+          ${(it.productAlts || []).length ? `<p class="text-[10px] text-primary mt-1 inline-flex items-center gap-1">${ic('package')}${it.productAlts.length + 1} منتجات تطابق — اضغط زر التبديل للاختيار</p>` : ''}
           <div class="flex items-center gap-2 mt-2">
             <input type="range" min="0" max="${max}" step="5" value="${num(it.grams)}" class="flex-1" aria-label="الجرامات" oninput="setConfirmGrams(${i}, this.value, 'range')" />
-            <input type="number" min="0" step="0.5" value="${r1(it.grams)}" class="field !w-20 !py-1.5 text-center font-mono num" aria-label="الجرامات" oninput="setConfirmGrams(${i}, this.value, 'num')" />
-            <span class="text-[11px] text-muted">جم</span>
+            <input type="number" min="0" step="0.5" value="${r1(it.grams)}" class="field !w-20 !py-1.5 text-center font-mono num" aria-label="الكمية" oninput="setConfirmGrams(${i}, this.value, 'num')" />
+            <span class="text-[11px] text-muted" data-unit>${unitLabel(it.unit)}</span>
           </div>
           ${showState ? `<div class="seg mt-2 !p-1"><button type="button" class="${it.state === 'raw' ? 'is-active' : ''}" onclick="setConfirmState(${i}, 'raw')">نيء (قبل الطبخ)</button><button type="button" class="${it.state !== 'raw' ? 'is-active' : ''}" onclick="setConfirmState(${i}, 'cooked')">مطبوخ</button></div>` : ''}
           <div class="flex items-center justify-between mt-2 text-[11px] font-mono num" dir="ltr">
@@ -4379,11 +4573,11 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     function renderConfirmQuestions() {
       const qs = [];
       Confirm.items.forEach((it, i) => {
-        if (NEEDS_STATE.includes(CAT(it)) && it.state === 'n/a' && !Confirm.answered['st' + i] && !['table', 'recipe', 'myfood', 'barcode', 'label'].includes(it.source))
+        if (NEEDS_STATE.includes(CAT(it)) && it.state === 'n/a' && !Confirm.answered['st' + i] && !['table', 'recipe', 'myfood', 'product', 'barcode', 'label'].includes(it.source))
           qs.push(`<div class="rounded-2xl p-3 border border-primary/30 bg-primary/5"><p class="text-xs font-bold text-ink mb-2">وزن «${escapeHtml(it.name_ar)}» نيء أم مطبوخ؟</p><div class="flex gap-2"><button class="chip" onclick="answerState(${i},'raw')">نيء (قبل الطبخ)</button><button class="chip" onclick="answerState(${i},'cooked')">مطبوخ</button></div></div>`);
       });
       const hasFat = Confirm.items.some((it) => CAT(it) === 'oil');
-      const cookedFood = Confirm.items.some((it) => (it.state === 'fried' || it.state === 'cooked') && !['rice', 'pasta', 'oats', 'oil'].includes(CAT(it)) && !['table', 'recipe', 'barcode', 'label'].includes(it.source));
+      const cookedFood = Confirm.items.some((it) => (it.state === 'fried' || it.state === 'cooked') && !['rice', 'pasta', 'oats', 'oil'].includes(CAT(it)) && !['table', 'recipe', 'barcode', 'label', 'product'].includes(it.source));
       if (!hasFat && cookedFood && !Confirm.answered.oil && Confirm.origin === 'ai')
         qs.push(`<div class="rounded-2xl p-3 border border-primary/30 bg-primary/5"><p class="text-xs font-bold text-ink mb-2">كم ملعقة زيت استُخدمت في الطبخ أو القلي؟</p><div class="flex flex-wrap gap-2">${[0, 0.5, 1, 2, 3].map((n) => `<button class="chip" onclick="answerOil(${n})">${n === 0 ? 'بدون زيت' : n === 0.5 ? 'نص ملعقة' : n + ' ملعقة'}</button>`).join('')}</div></div>`);
       $id('confirm-questions').innerHTML = qs.join('');
@@ -4419,15 +4613,26 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const it = Confirm.items[i]; const row = document.querySelector(`#confirm-items [data-ci="${i}"] .swap-box`); if (!row) return;
       row.classList.toggle('hidden'); if (row.classList.contains('hidden')) return;
       const list = (it.candidates || []).filter((c) => c.fdcId !== it.fdcId);
+      const matched = matchProducts(it).filter((p) => p.id !== it.productId);
+      const others = (state.x.products || []).filter((p) => p.id !== it.productId && !matched.includes(p)).slice(0, 6);
+      const prodBtn = (p) => `<button type="button" class="w-full text-right text-[11px] tile rounded-xl px-2.5 py-2 hover:border-primary/40 flex items-center justify-between gap-2" onclick="pickProductForItem(${i}, '${escapeHtml(p.id)}')"><span class="truncate inline-flex items-center gap-1.5">${ic('package', 'text-primary')}${escapeHtml(p.name)}${p.isDefault ? ` ${ic('star', 'text-primary ico-fill')}` : ''}</span><span class="num text-muted flex-shrink-0">${Math.round(num(p.per100.kcal))}/100${unitLabel(p.basis)}</span></button>`;
       row.innerHTML = `
+        ${matched.length || others.length ? `<p class="text-[10px] font-bold text-muted">منتجاتي</p>${matched.map(prodBtn).join('')}${others.map(prodBtn).join('')}${list.length ? '<p class="text-[10px] font-bold text-muted pt-1">USDA</p>' : ''}` : ''}
         ${list.map((c, k) => `<button type="button" class="w-full text-right text-[11px] tile rounded-xl px-2.5 py-2 hover:border-primary/40 flex items-center justify-between gap-2" onclick="pickCandidate(${i}, ${k})"><span class="truncate" dir="ltr">${escapeHtml(c.description)}</span><span class="num text-muted flex-shrink-0">${Math.round(c.per100.kcal)}/100g</span></button>`).join('')}
         <div class="flex gap-1.5"><input class="field !py-1.5 text-xs" dir="ltr" placeholder="${state.usdaKey ? 'ابحث في USDA بالإنجليزي' : 'أضف مفتاح USDA للبحث'}" value="${escapeHtml(it.name_en || '')}" data-swapq /><button type="button" class="btn-ghost text-[11px] px-3 rounded-xl font-bold" onclick="searchCandidate(${i}, this.previousElementSibling.value)">بحث</button></div>`;
       row._list = list;
     }
     function pickCandidate(i, k) {
       const box = document.querySelector(`#confirm-items [data-ci="${i}"] .swap-box`); const c = box && box._list && box._list[k]; if (!c) return;
-      Object.assign(Confirm.items[i], { per100: c.per100, source: 'usda', sourceName: c.description, fdcId: c.fdcId, verify: false });
+      Object.assign(Confirm.items[i], { per100: c.per100, source: 'usda', sourceName: c.description, fdcId: c.fdcId, verify: false, productId: null, productAlts: [] });
       renderConfirm();
+    }
+    function pickProductForItem(i, id) {
+      const it = Confirm.items[i]; const p = (state.x.products || []).find((x) => x.id === id); if (!it || !p) return;
+      const matches = matchProducts(it);
+      Confirm.items[i] = applyProduct({ ...it, count: null }, p, matches.includes(p) ? matches : [p, ...matches]);
+      renderConfirm();
+      showToast(`استُخدم «${p.name}»`, { icon: 'package', ms: 1800 });
     }
     async function searchCandidate(i, q) {
       const it = Confirm.items[i]; if (!q) return;
@@ -4446,17 +4651,10 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const T = confirmTotals();
       const trusted = Confirm.items.every(isTrusted), anyEst = Confirm.items.some((x) => x.source === 'estimate');
       const confidence = trusted ? 'high' : anyEst ? 'low' : 'medium';
-      const breakdown = Confirm.items.map((it) => { const t = itemTotals(it); return { name_ar: it.name_ar, name_en: it.name_en, grams: r1(it.grams), state: it.state, kcal: r1(t.kcal), p: r1(t.p), c: r1(t.c), f: r1(t.f), per100: it.per100, source: it.source, sourceName: it.sourceName || '', fdcId: it.fdcId || null, verify: !!it.verify }; });
+      const breakdown = Confirm.items.map((it) => { const t = itemTotals(it); return { name_ar: it.name_ar, name_en: it.name_en, grams: r1(it.grams), unit: it.unit === 'ml' ? 'ml' : 'g', productId: it.productId || null, state: it.state, kcal: r1(t.kcal), p: r1(t.p), c: r1(t.c), f: r1(t.f), per100: it.per100, source: it.source, sourceName: it.sourceName || '', fdcId: it.fdcId || null, verify: !!it.verify }; });
       const bySrc = {}; breakdown.forEach((b) => { bySrc[b.source] = (bySrc[b.source] || 0) + b.kcal; });
       const sourceKind = Object.entries(bySrc).sort((a, b) => b[1] - a[1])[0][0];
       const title = $id('confirm-meal-title').value.trim() || Confirm.title || 'وجبة';
-      if (Confirm.myFood && $id('confirm-save-myfood').checked) {
-        const mf = Confirm.myFood; const list = state.x.myFoods || (state.x.myFoods = []);
-        const ex = list.find((x) => (mf.barcode && x.barcode === mf.barcode) || normAr(x.name_ar) === normAr(mf.name_ar));
-        const rec = { id: ex ? ex.id : uid('food'), name_ar: mf.name_ar, name_en: mf.name_en || '', per100: mf.per100, barcode: mf.barcode || null, origin: mf.origin, servingG: mf.servingG || null, at: Date.now(), updatedAt: Date.now() };
-        if (ex) Object.assign(ex, rec); else list.unshift(rec);
-        saveX('myFoods');
-      }
       addNewMeal({ title, calories: Math.round(T.kcal), protein_g: T.p, carbohydrates_g: T.c, fats_g: T.f, notes: '', source: [...new Set(breakdown.map((b) => SOURCE_META[b.source]?.label || b.source))].join(' + '), sourceKind, breakdown, confidence });
       closeConfirm(); closeMealModal();
       Sound.mealAdded();
@@ -4558,6 +4756,9 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const code = AR_NUM(String(raw || '')).replace(/\D/g, '');
       if (code.length < 8 || code.length > 14) { barcodeStatus('رقم الباركود غير صالح (8–14 رقماً).', 'text-warn'); return; }
       bumpCounter('barcodeScans');
+      if (state.barcodeTarget === 'product') return productFromBarcode(code);
+      const prod = (state.x.products || []).find((x) => x.barcode === code);
+      if (prod) { haptic(20); const a = productAmount({ grams: num(prod.serving) || 100, unit: prod.basis }, prod); return openConfirm({ title: prod.name, origin: 'barcode', items: [applyProduct({ name_ar: prod.name, name_en: '', grams: a.amount, unit: a.unit, state: 'n/a' }, prod, [prod])] }); }
       const mine = (state.x.myFoods || []).find((x) => x.barcode === code);
       if (mine) { haptic(20); return openConfirm({ title: mine.name_ar, origin: 'barcode', items: [{ name_ar: mine.name_ar, name_en: mine.name_en, grams: mine.servingG || 100, state: 'n/a', per100: mine.per100, source: 'myfood', sourceName: `أطعمتي (باركود ${code})` }] }); }
       barcodeStatus(`يبحث عن ${code} في Open Food Facts...`, 'text-primary');
@@ -4571,7 +4772,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
         haptic(20);
         const grams = await askGrams(p.name, p.servingG || 100);
         if (grams === null) return;
-        openConfirm({ title: p.name, origin: 'barcode', myFood: { name_ar: p.name, per100: p.per100, barcode: code, origin: 'باركود', servingG: p.servingG },
+        openConfirm({ title: p.name, origin: 'barcode', myFood: { name_ar: p.name, brand: p.brand, per100: p.per100, barcode: code, origin: 'باركود', source: 'barcode', servingG: p.servingG },
           items: [{ name_ar: p.name, name_en: '', grams, state: 'n/a', per100: p.per100, source: 'barcode', sourceName: `Open Food Facts · ${code}${p.brand ? ' · ' + p.brand : ''}` }] });
         barcodeStatus('');
       } catch (e) { barcodeStatus(escapeHtml(e.message), 'text-danger'); }
@@ -4585,6 +4786,27 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     // =====================================================================
     // NUTRITION LABEL PHOTO (Gemini reads printed numbers only)
     // =====================================================================
+    // Reads ONLY the printed numbers of a nutrition-facts label (Gemini). Returns per-100 values + serving info.
+    async function readNutritionLabel(img) {
+      if (!state.apiKey) throw new Error('قراءة الملصق تحتاج مفتاح Gemini — أضفه من الإعدادات.');
+      const r = await geminiGenerate({ json: true, temperature: 0, maxTokens: 450, thinking: false, images: [img], model: state.selectedModel,
+        messages: [{ role: 'system', content: 'أنت قارئ ملصقات غذائية. اقرأ فقط الأرقام المطبوعة في جدول القيمة الغذائية. لا تقدّر ولا تخمّن أي رقم غير مطبوع. أعد JSON فقط: {"product_name":"","brand":"","basis":"per100g|per100ml|per_serving","serving_size_g":null,"serving_size_ml":null,"kcal":null,"kj":null,"protein_g":null,"carbs_g":null,"fat_g":null,"sugar_g":null,"fiber_g":null,"readable":true}. إذا وُجد عمود لكل 100 جم أو 100 مل فاستخدمه. إذا كانت الطاقة بالكيلوجول فقط ضعها في kj.' },
+          { role: 'user', content: 'اقرأ جدول القيمة الغذائية في الصورة وأعد JSON فقط.' }] });
+      const o = JSON.parse((String(r.text).replace(/```json|```/g, '').match(/\{[\s\S]*\}/) || ['{}'])[0]);
+      if (o.readable === false) throw new Error('الأرقام غير واضحة في الصورة — صوّر الجدول عن قرب وبإضاءة جيدة.');
+      const kcal = num(o.kcal) || (num(o.kj) ? num(o.kj) / 4.184 : 0);
+      const raw = { kcal, p: num(o.protein_g), c: num(o.carbs_g), f: num(o.fat_g), sugar: o.sugar_g == null ? null : num(o.sugar_g), fiber: o.fiber_g == null ? null : num(o.fiber_g) };
+      const basisUnit = o.basis === 'per100ml' || (!num(o.serving_size_g) && num(o.serving_size_ml)) ? 'ml' : 'g';
+      const serving = num(o.serving_size_g) || num(o.serving_size_ml) || null;
+      if (!raw.kcal && !raw.p && !raw.c && !raw.f) throw new Error('لم تُقرأ أي أرقام من الملصق.');
+      return { name: String(o.product_name || '').trim(), brand: String(o.brand || '').trim(), perServing: o.basis === 'per_serving', serving, unit: basisUnit, raw };
+    }
+    const scaleNut = (v, k) => (v == null ? null : r1(v * k));
+    function labelPer100(L, serving) {
+      if (!L.perServing) return { kcal: r1(L.raw.kcal), p: r1(L.raw.p), c: r1(L.raw.c), f: r1(L.raw.f), sugar: scaleNut(L.raw.sugar, 1), fiber: scaleNut(L.raw.fiber, 1) };
+      const k = 100 / serving;
+      return { kcal: r1(L.raw.kcal * k), p: r1(L.raw.p * k), c: r1(L.raw.c * k), f: r1(L.raw.f * k), sugar: scaleNut(L.raw.sugar, k), fiber: scaleNut(L.raw.fiber, k) };
+    }
     async function handleLabelPhoto(input) {
       const file = input && input.files && input.files[0]; if (input) input.value = '';
       if (!file) return;
@@ -4592,26 +4814,16 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       $id('label-skeleton').classList.remove('hidden');
       try {
         const img = await compressImageFile(file, 1400, 0.88);
-        const r = await geminiGenerate({ json: true, temperature: 0, maxTokens: 400, thinking: false, images: [img], model: state.selectedModel,
-          messages: [{ role: 'system', content: 'أنت قارئ ملصقات غذائية. اقرأ فقط الأرقام المطبوعة في جدول القيمة الغذائية. لا تقدّر ولا تخمّن أي رقم غير مطبوع. أعد JSON فقط: {"product_name":"","basis":"per100g|per_serving","serving_size_g":null,"kcal":null,"kj":null,"protein_g":null,"carbs_g":null,"fat_g":null,"readable":true}. إذا وُجد عمود لكل 100 جم فاستخدمه. إذا كانت الطاقة بالكيلوجول فقط ضعها في kj.' },
-            { role: 'user', content: 'اقرأ جدول القيمة الغذائية في الصورة وأعد JSON فقط.' }] });
-        const o = JSON.parse((String(r.text).replace(/```json|```/g, '').match(/\{[\s\S]*\}/) || ['{}'])[0]);
-        if (o.readable === false) throw new Error('الأرقام غير واضحة في الصورة — صوّر الجدول عن قرب وبإضاءة جيدة.');
-        let kcal = num(o.kcal) || (num(o.kj) ? num(o.kj) / 4.184 : 0);
-        let per100 = { kcal, p: num(o.protein_g), c: num(o.carbs_g), f: num(o.fat_g) };
-        let serving = num(o.serving_size_g) || null;
-        if (o.basis === 'per_serving') {
-          if (!serving) { const s = prompt('الأرقام مكتوبة للحصة الواحدة. كم وزن الحصة بالجرام؟ (مكتوب على الملصق)'); serving = num(AR_NUM(s || '')); if (!serving) throw new Error('لا يمكن التحويل لكل 100 جم بدون وزن الحصة.'); }
-          per100 = { kcal: per100.kcal * 100 / serving, p: per100.p * 100 / serving, c: per100.c * 100 / serving, f: per100.f * 100 / serving };
-        }
-        per100 = { kcal: r1(per100.kcal), p: r1(per100.p), c: r1(per100.c), f: r1(per100.f) };
-        if (!per100.kcal && !per100.p && !per100.c && !per100.f) throw new Error('لم تُقرأ أي أرقام من الملصق.');
+        const L = await readNutritionLabel(img);
+        let serving = L.serving;
+        if (L.perServing && !serving) { const sv = prompt('الأرقام مكتوبة للحصة الواحدة. كم وزن الحصة بالجرام؟ (مكتوب على الملصق)'); serving = num(AR_NUM(sv || '')); if (!serving) throw new Error('لا يمكن التحويل لكل 100 جم بدون وزن الحصة.'); }
+        const per100 = labelPer100(L, serving);
         bumpCounter('labelScans');
-        const name = (pendingBarcode && pendingBarcode.name) || String(o.product_name || '').trim() || 'منتج من الملصق';
+        const name = (pendingBarcode && pendingBarcode.name) || L.name || 'منتج من الملصق';
         const grams = await askGrams(name, serving || 100);
         if (grams === null) return;
-        openConfirm({ title: name, origin: 'label', myFood: { name_ar: name, per100, barcode: pendingBarcode ? pendingBarcode.code : null, origin: 'ملصق', servingG: serving },
-          items: [{ name_ar: name, name_en: '', grams, state: 'n/a', per100, source: 'label', sourceName: `ملصق القيمة الغذائية${o.basis === 'per_serving' ? ` (حصة ${serving} جم → لكل 100 جم)` : ' (لكل 100 جم)'}` }] });
+        openConfirm({ title: name, origin: 'label', myFood: { name_ar: name, brand: L.brand, per100, barcode: pendingBarcode ? pendingBarcode.code : null, origin: 'ملصق', source: 'label', servingG: serving, unit: L.unit, thumb: await compressImageFile(file, 160, 0.7).catch(() => null) },
+          items: [{ name_ar: name, name_en: '', grams, unit: L.unit, state: 'n/a', per100, source: 'label', sourceName: `ملصق القيمة الغذائية${L.perServing ? ` (حصة ${serving} → لكل 100)` : ' (لكل 100)'}` }] });
         pendingBarcode = null;
       } catch (e) { alert('تعذّرت قراءة الملصق:\n' + e.message); }
       finally { $id('label-skeleton').classList.add('hidden'); }
@@ -4694,53 +4906,60 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
     }
 
     // =====================================================================
-    // QUICK SNACKS (USDA values, cached) — only: date, protein scoop, banana
+    // QUICK SNACKS — exactly three: Sukkari date (1 piece), protein scoop (24 g protein), medium banana (USDA)
     // =====================================================================
-    const SNACK_DEFAULTS = { dateG: 8, bananaG: 118, scoop: { g: 30, kcal: 120, p: 24, c: 3, f: 1.5 }, useLabel: false };
+    const DATE_SRC = 'USDA SR Legacy — Dates, medjool (FDC 168191). لا توجد قيم USDA خاصة بالتمر السكري؛ هذا أقرب مرجع موثّق للتمر الطري. وزن الحبة 10 جم تقريبي (لحم بدون نواة) — يحتاج تحقق: زِن حبة من علبتك أو عدّل من ملصقها.';
+    const SNACK_DEFAULTS = { dateG: 10, date: { kcal: 277, p: 1.81, c: 74.97, f: 0.15 }, bananaG: 118, scoop: { g: 30, kcal: 120, p: 24, c: 3, f: 1.5 } };
     const Snacks = {
-      cfg() { const s = state.x.snacks || {}; return { ...SNACK_DEFAULTS, ...s, scoop: { ...SNACK_DEFAULTS.scoop, ...(s.scoop || {}) } }; },
+      cfg() {
+        const s = state.x.snacks || {};
+        return { ...SNACK_DEFAULTS, ...s, dateG: s.dateV8 ? num(s.dateG) || SNACK_DEFAULTS.dateG : SNACK_DEFAULTS.dateG, date: { ...SNACK_DEFAULTS.date, ...(s.date || {}) }, scoop: { ...SNACK_DEFAULTS.scoop, ...(s.scoop || {}) } };
+      },
       defs: {
-        date: { name: 'تمر', title: 'حبة تمر', icon: 'date', q: 'dates deglet noor', st: 'raw', ref: 'dates_deglet' },
-        scoop: { name: 'سكوب بروتين', title: 'سكوب بروتين', icon: 'scoop', q: 'beverages whey protein powder', st: 'n/a', ref: null },
-        banana: { name: 'موزة', title: 'موزة', icon: 'banana', q: 'bananas raw', st: 'raw', ref: 'banana' }
+        date: { name: 'تمر سكري', title: 'تمر سكري (حبة)', icon: 'date', q: 'dates medjool', st: 'raw' },
+        scoop: { name: 'سكوب بروتين', title: 'سكوب بروتين', icon: 'scoop', q: 'whey protein', st: 'n/a' },
+        banana: { name: 'موزة', title: 'موزة متوسطة', icon: 'banana', q: 'bananas raw', st: 'raw', ref: 'banana' }
       },
       values(k) {
-        const c = this.cfg(), d = this.defs[k], cached = (state.x.snacks && state.x.snacks.usda || {})[k];
-        if (k === 'scoop') {
-          if (c.useLabel || !cached) return { grams: c.scoop.g, per100: { kcal: c.scoop.kcal * 100 / c.scoop.g, p: c.scoop.p * 100 / c.scoop.g, c: c.scoop.c * 100 / c.scoop.g, f: c.scoop.f * 100 / c.scoop.g }, source: c.useLabel ? 'label' : 'estimate', sourceName: c.useLabel ? 'ملصق منتجك (الإعدادات)' : 'قيم ملصق نموذجية — حدّثها من الإعدادات' };
-          return { grams: c.scoop.g, per100: cached.per100, source: 'usda', sourceName: cached.description };
+        const c = this.cfg(), s = state.x.snacks || {};
+        if (k === 'date') {
+          const edited = !!s.dateEdited;
+          return { grams: c.dateG, per100: { ...c.date }, source: edited ? 'table' : 'usda', verify: !edited, sourceName: edited ? 'قيمك المعدّلة في الإعدادات (تمر سكري)' : DATE_SRC };
         }
-        const grams = k === 'date' ? c.dateG : c.bananaG;
-        if (cached) return { grams, per100: cached.per100, source: 'usda', sourceName: cached.description };
-        const r = USDA_REF[d.ref]; return { grams, per100: per100Of(r.v), source: 'usda', sourceName: `${r.d} (مرجع USDA مضمّن)` };
+        if (k === 'scoop') {
+          const g = Math.max(1, num(c.scoop.g) || 30), f = 100 / g;
+          const per100 = { kcal: num(c.scoop.kcal) * f, p: num(c.scoop.p) * f, c: num(c.scoop.c) * f, f: num(c.scoop.f) * f };
+          const known = !!(s.scoopEdited || s.useLabel);
+          return { grams: g, per100, source: known ? 'product' : 'estimate', sourceName: known ? 'الواي حقك — قيم الملصق من الإعدادات' : `${c.scoop.p} جم بروتين للسكوب؛ السعرات والكارب والدهون تقديرية حتى تعدّلها أو تصوّر الملصق في الإعدادات` };
+        }
+        const cached = (s.usda || {}).banana;
+        if (cached) return { grams: c.bananaG, per100: cached.per100, source: 'usda', sourceName: `USDA: ${cached.description}` };
+        const r = USDA_REF.banana; return { grams: c.bananaG, per100: per100Of(r.v), source: 'usda', sourceName: `USDA SR Legacy — ${r.d} (موزة متوسطة 118 جم)` };
       },
-      async refresh() {
+      async refresh() {   // only the banana comes from live USDA (cached 30 days)
         if (!state.usdaKey || navigator.onLine === false) return;
         const snacks = state.x.snacks || (state.x.snacks = {}); const usda = snacks.usda || (snacks.usda = {});
-        let changed = false;
-        for (const k of Object.keys(this.defs)) {
-          if (usda[k] && Date.now() - usda[k].at < 30 * 864e5) continue;
-          try { const res = await usdaSearch(this.defs[k].q, this.defs[k].st); if (res[0]) { usda[k] = { per100: res[0].per100, description: res[0].description, fdcId: res[0].fdcId, at: Date.now() }; changed = true; } } catch (_) { break; }
-        }
-        if (changed) { saveX('snacks'); renderQuickSnacks(); }
+        if (usda.banana && Date.now() - usda.banana.at < 30 * 864e5) return;
+        try { const res = await usdaSearch('bananas raw', 'raw'); const best = res.find((f) => /^bananas, raw$/i.test(f.description)) || res[0]; if (best) { usda.banana = { per100: best.per100, description: best.description, fdcId: best.fdcId, at: Date.now() }; saveX('snacks'); renderQuickSnacks(); } } catch (_) {}
       }
     };
     function renderQuickSnacks() {
       const box = $id('quick-snacks'); if (!box) return;
       setHtmlIfChanged(box, Object.entries(Snacks.defs).map(([k, d]) => {
         const v = Snacks.values(k); const kcal = Math.round(v.per100.kcal * v.grams / 100), p = r1(v.per100.p * v.grams / 100);
-        return `<button onclick="quickAddSnack('${k}')" data-snack="${k}" class="tile rounded-2xl p-2.5 flex flex-col items-center gap-1 press hover:border-primary/40 transition-colors" aria-label="أضف ${d.title}">
-          <span class="w-9 h-9 rounded-xl bg-primary/10 border border-primary/25 text-primary flex items-center justify-center">${ic(d.icon, 'ico-lg')}</span>
-          <span class="text-[11px] font-bold text-ink">${d.name}</span>
-          <span class="text-[10px] text-muted num">${kcal} سعرة${k === 'scoop' ? ` · ${p}g` : ''}</span>
+        return `<button onclick="quickAddSnack('${k}')" data-snack="${k}" class="tile rounded-2xl p-2.5 flex flex-col items-center gap-1 press hover:border-primary/40 transition-colors" aria-label="أضف ${d.title}" title="${escapeHtml(v.sourceName)}">
+          <span class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/25 text-primary flex items-center justify-center shadow-[0_0_16px_-6px_var(--primary-glow)]">${ic(d.icon, 'ico-lg')}</span>
+          <span class="text-[11px] font-bold text-ink text-center leading-tight">${d.name}</span>
+          <span class="text-[10px] text-muted num">${kcal} سعرة${k === 'scoop' ? ` · ${p}g بروتين` : ''}</span>
+          ${pill(v.source, v.sourceName)}
         </button>`;
       }).join(''));
     }
     function quickAddSnack(k) {
       const d = Snacks.defs[k]; const v = Snacks.values(k);
       const t = itemTotals(v);
-      const item = { name_ar: d.title, name_en: d.q, grams: v.grams, state: d.st, kcal: r1(t.kcal), p: r1(t.p), c: r1(t.c), f: r1(t.f), per100: v.per100, source: v.source, sourceName: v.sourceName };
-      addNewMeal({ title: d.title, calories: Math.round(t.kcal), protein_g: t.p, carbohydrates_g: t.c, fats_g: t.f, notes: '', source: SOURCE_META[v.source].label, sourceKind: v.source, breakdown: [item], confidence: isTrusted(v) ? 'high' : 'low', noImages: true });
+      const item = { name_ar: d.title, name_en: d.q, grams: v.grams, unit: 'g', state: d.st, kcal: r1(t.kcal), p: r1(t.p), c: r1(t.c), f: r1(t.f), per100: v.per100, source: v.source, sourceName: v.sourceName, verify: !!v.verify, snack: k };
+      addNewMeal({ title: d.title, calories: Math.round(t.kcal), protein_g: t.p, carbohydrates_g: t.c, fats_g: t.f, notes: '', source: SOURCE_META[v.source].label, sourceKind: v.source, breakdown: [item], confidence: isTrusted(v) ? (v.verify ? 'medium' : 'high') : 'low', noImages: true, date: state.todayDate });
       Sound.mealAdded();
       showToast(`تمت إضافة ${d.title} (${Math.round(t.kcal)} سعرة)`, { icon: d.icon });
     }
@@ -4751,26 +4970,52 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       showToast(`تمت إضافة ${name} (${cal} سعرة)`, { icon: 'zap' });
     }
     function saveSnackConfig() {
-      const s = state.x.snacks || (state.x.snacks = {});
-      s.dateG = Math.max(1, num($id('snack-date-g').value) || SNACK_DEFAULTS.dateG);
+      const s = state.x.snacks || (state.x.snacks = {}); const c = Snacks.cfg();
+      const dateNew = { kcal: num($id('date-kcal').value), p: num($id('date-p').value), c: num($id('date-c').value), f: num($id('date-f').value) };
+      const dg = Math.max(1, num($id('snack-date-g').value) || SNACK_DEFAULTS.dateG);
+      if (JSON.stringify(dateNew) !== JSON.stringify(c.date)) { s.date = dateNew; s.dateEdited = true; }
+      s.dateG = dg; s.dateV8 = true;
       s.bananaG = Math.max(1, num($id('snack-banana-g').value) || SNACK_DEFAULTS.bananaG);
-      s.scoop = { g: Math.max(1, num($id('scoop-g').value) || 30), kcal: num($id('scoop-kcal').value), p: num($id('scoop-p').value), c: num($id('scoop-c').value), f: num($id('scoop-f').value) };
-      s.useLabel = $id('scoop-use-label').checked;
-      saveX('snacks'); renderQuickSnacks(); showToast('تم حفظ إعدادات السناك', { icon: 'check' });
+      const scoopNew = { g: Math.max(1, num($id('scoop-g').value) || 30), kcal: num($id('scoop-kcal').value), p: num($id('scoop-p').value), c: num($id('scoop-c').value), f: num($id('scoop-f').value) };
+      if (JSON.stringify(scoopNew) !== JSON.stringify(c.scoop)) { s.scoop = scoopNew; s.scoopEdited = true; }
+      saveX('snacks'); renderQuickSnacks(); renderSnackSettings(); showToast('تم حفظ قيم السناك', { icon: 'check' });
+    }
+    function resetDateSnack() {
+      const s = state.x.snacks || (state.x.snacks = {});
+      delete s.date; delete s.dateEdited; s.dateG = SNACK_DEFAULTS.dateG; s.dateV8 = true;
+      saveX('snacks'); renderQuickSnacks(); renderSnackSettings(true); showToast('استُعيدت قيم التمر السكري الافتراضية', { icon: 'undo' });
+    }
+    function renderSnackSettings(force) {
+      const c = Snacks.cfg(); const put = force ? (id, v) => { const e = $id(id); if (e) e.value = v; } : setVal;
+      put('snack-date-g', c.dateG); put('date-kcal', c.date.kcal); put('date-p', c.date.p); put('date-c', c.date.c); put('date-f', c.date.f);
+      put('snack-banana-g', c.bananaG);
+      put('scoop-g', c.scoop.g); put('scoop-kcal', c.scoop.kcal); put('scoop-p', c.scoop.p); put('scoop-c', c.scoop.c); put('scoop-f', c.scoop.f);
+      ['date', 'scoop', 'banana'].forEach((k) => { const v = Snacks.values(k); const el = $id(`snack-${k}-pill`); if (el) el.innerHTML = pill(v.source, v.sourceName); const src = $id(`snack-${k}-src`); if (src) src.textContent = 'المصدر: ' + v.sourceName; });
+    }
+    async function scoopFromLabel(input) {
+      const file = input && input.files && input.files[0]; if (input) input.value = '';
+      if (!file) return;
+      try {
+        showToast('يقرأ ملصق البروتين...', { icon: 'label' });
+        const L = await readNutritionLabel(await compressImageFile(file, 1400, 0.88));
+        const c = Snacks.cfg(); let g = L.perServing ? (L.serving || c.scoop.g) : c.scoop.g;
+        const k = L.perServing ? 1 : g / 100;
+        const sc = { g: r1(g), kcal: Math.round(L.raw.kcal * k), p: r1(L.raw.p * k), c: r1(L.raw.c * k), f: r1(L.raw.f * k) };
+        const s = state.x.snacks || (state.x.snacks = {}); s.scoop = sc; s.scoopEdited = true;
+        saveX('snacks'); renderQuickSnacks(); renderSnackSettings(true); bumpCounter('labelScans');
+        showToast(`تمت قراءة الملصق: سكوب ${sc.g} جم = ${sc.kcal} سعرة و${sc.p} جم بروتين — راجع القيم`, { icon: 'check', ms: 6000 });
+      } catch (e) { alert('تعذّرت قراءة الملصق:\n' + e.message); }
     }
 
     // =====================================================================
     // SETTINGS: Arabic table editor, My Foods, recipes list, snacks form
     // =====================================================================
     async function renderSettingsExtras() {
-      const c = Snacks.cfg();
-      setVal('snack-date-g', c.dateG); setVal('snack-banana-g', c.bananaG);
-      setVal('scoop-g', c.scoop.g); setVal('scoop-kcal', c.scoop.kcal); setVal('scoop-p', c.scoop.p); setVal('scoop-c', c.scoop.c); setVal('scoop-f', c.scoop.f);
-      const ul = $id('scoop-use-label'); if (ul) ul.checked = !!c.useLabel;
+      renderSnackSettings();
       const rl = $id('recipes-list');
       if (rl) rl.innerHTML = (state.x.recipes || []).map((r) => `<button onclick="openRecipeEditor('${escapeHtml(r.id)}')" class="w-full tile rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-right hover:border-primary/40"><span class="text-xs font-bold text-ink truncate">${ic('chef', 'text-primary')} ${escapeHtml(r.name)}</span><span class="text-[10px] text-muted num">${Math.round(r.per100.kcal)}/100 جم</span></button>`).join('') || '<p class="text-[11px] text-muted">لا توجد وصفات بعد.</p>';
-      const ml = $id('myfoods-list');
-      if (ml) ml.innerHTML = `<p class="text-xs font-bold text-ink">أطعمتي (من الباركود والملصقات)</p>` + ((state.x.myFoods || []).map((f) => `<div class="tile rounded-xl px-3 py-2 flex items-center justify-between gap-2"><span class="text-xs text-ink truncate">${escapeHtml(f.name_ar)}${f.barcode ? ` <span class="text-muted font-mono">${escapeHtml(f.barcode)}</span>` : ''}</span><span class="flex items-center gap-1.5"><span class="text-[10px] text-muted num">${Math.round(f.per100.kcal)}/100</span><button class="icon-btn !w-7 !h-7" onclick="deleteMyFood('${escapeHtml(f.id)}')" aria-label="حذف">${ic('x')}</button></span></div>`).join('') || '<p class="text-[11px] text-muted">احفظ منتجاً من الباركود أو الملصق ليظهر هنا.</p>');
+      renderProductsList();
+      setVal('units-cup-ml', cupMl());
       renderArabicTableEditor();
       const cc = $id('usda-cache-count'); if (cc) { const n = await FoodCache.count(); cc.textContent = n ? `ذاكرة USDA المؤقتة: ${n} بحث محفوظ.` : ''; }
     }
@@ -4810,22 +5055,293 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
 
 
     // =====================================================================
-    // WATER TRACKER (new key su3rah_water_log, per day)
+    // MY PRODUCTS (new key su3rah_my_products) — my own brands are the standard
     // =====================================================================
-    const WATER_TARGET = 8;
-    function addWater(n) {
-      const w = state.x.water || (state.x.water = {});
-      const d = state.selectedDate;
-      const before = num(w[d]);
-      w[d] = Math.max(0, Math.min(20, before + n));
-      saveX('water'); renderWater();
-      if (n > 0) haptic(12);
-      if (n > 0 && before < WATER_TARGET && w[d] >= WATER_TARGET) { showToast('أحسنت! حققت هدف الماء اليوم', { icon: 'drop' }); setTimeout(checkAchievements, 300); }
+    const LIQUID_RE = /حليب|لبن|روب|عصير|ماء|مشروب|شراب|قهوة|شاي|كولا|بيبسي|مياه|milk|laban|juice|drink|water|coffee|tea|soda/i;
+    const PRODUCT_SRC = { label: { kind: 'label', label: 'ملصق' }, barcode: { kind: 'barcode', label: 'باركود' }, manual: { kind: 'manual', label: 'يدوي' } };
+    const ProductDraft = { id: null, thumb: null, basis: 'g', onSaved: null, keep: null };
+    const splitKeywords = (t) => String(t || '').split(/[,،؛;\n]+/).map((x) => x.trim()).filter(Boolean);
+    function fillProductForm(d) {
+      const put = (id, v) => { const e = $id(id); if (e) e.value = v == null ? '' : v; };
+      put('product-name', d.name || ''); put('product-brand', d.brand || ''); put('product-keywords', (d.keywords || []).join('، '));
+      const pp = d.per100 || {};
+      put('product-kcal', pp.kcal != null && pp.kcal !== '' ? r1(pp.kcal) : ''); put('product-p', pp.p != null ? r1(pp.p) : ''); put('product-c', pp.c != null ? r1(pp.c) : ''); put('product-f', pp.f != null ? r1(pp.f) : '');
+      put('product-sugar', pp.sugar != null ? r1(pp.sugar) : ''); put('product-fiber', pp.fiber != null ? r1(pp.fiber) : '');
+      put('product-serving', d.serving || ''); put('product-unit', d.servingUnit || (d.basis === 'ml' ? 'ml' : 'g')); put('product-density', d.density || '');
+      put('product-barcode', d.barcode || ''); put('product-source', d.source || 'manual');
+      $id('product-default').checked = !!d.isDefault;
+      ProductDraft.thumb = d.thumb || null; setProductBasis(d.basis === 'ml' ? 'ml' : 'g'); paintProductThumb(); productSanity();
     }
-    function renderWater() {
-      const n = num((state.x.water || {})[state.selectedDate]);
-      setElText('water-count', n); setElText('water-ml', n * 250); setElText('water-target', WATER_TARGET);
-      const wave = $id('water-wave'); if (wave) { const pct = Math.min(1, n / WATER_TARGET); wave.style.transform = `translateY(${84 - 6 - pct * 76}px)`; }
+    function collectProductForm() {
+      const v = (id) => ($id(id) ? $id(id).value : '');
+      const opt = (id) => (v(id) === '' ? null : r1(AR_NUM(v(id))));
+      return { id: ProductDraft.id, name: v('product-name').trim(), brand: v('product-brand').trim(), keywords: splitKeywords(v('product-keywords')),
+        per100: { kcal: num(AR_NUM(v('product-kcal'))), p: num(AR_NUM(v('product-p'))), c: num(AR_NUM(v('product-c'))), f: num(AR_NUM(v('product-f'))), sugar: opt('product-sugar'), fiber: opt('product-fiber') },
+        basis: ProductDraft.basis, serving: num(AR_NUM(v('product-serving'))) || null, servingUnit: v('product-unit') || 'g', density: num(AR_NUM(v('product-density'))) || null,
+        barcode: AR_NUM(v('product-barcode')).replace(/\D/g, '') || null, source: v('product-source') || 'manual', isDefault: $id('product-default').checked, thumb: ProductDraft.thumb };
+    }
+    function openProductEditor(id, prefill = null, onSaved = null) {
+      const p = id ? (state.x.products || []).find((x) => x.id === id) : null;
+      ProductDraft.id = p ? p.id : null; ProductDraft.onSaved = onSaved;
+      const d = p ? JSON.parse(JSON.stringify(p)) : { basis: prefill && prefill.basis ? prefill.basis : (LIQUID_RE.test((prefill && prefill.name) || '') ? 'ml' : 'g'), ...(prefill || {}) };
+      if (!p && d.name && !(d.keywords || []).length) d.keywords = suggestKeywords(d.name, d.brand);
+      setElText('product-title-text', p ? 'تعديل المنتج' : 'منتج جديد');
+      $id('btn-product-delete').classList.toggle('hidden', !p);
+      fillProductForm(d);
+      showModal('modal-product');
+    }
+    function closeProductEditor() { hideModal('modal-product'); ProductDraft.onSaved = null; }
+    function suggestKeywords(name, brand) {
+      const words = String(name || '').split(/\s+/).filter((w) => w.length > 1);
+      const out = [String(name || '').trim()];
+      // A branded product («حليب المراعي») becomes MY standard for the generic word too («حليب», «milk»).
+      if (brand && words[0] && words[0].length > 2) {
+        out.push(words[0]);
+        const en = Object.entries({ حليب: 'milk', لبن: 'laban', زبادي: 'yogurt', روب: 'yogurt', جبن: 'cheese', جبنة: 'cheese', عصير: 'juice', خبز: 'bread', تونة: 'tuna', شوفان: 'oats' }).find(([ar]) => normAr(words[0]) === normAr(ar));
+        if (en) out.push(en[1]);
+      }
+      if (brand && words[0]) out.push(`${words[0]} ${brand}`);
+      return [...new Set(out.map((x) => x.trim()).filter(Boolean))];
+    }
+    function setProductBasis(b) {
+      ProductDraft.basis = b === 'ml' ? 'ml' : 'g';
+      ['g', 'ml'].forEach((k) => { const el = $id('product-basis-' + k); if (el) el.classList.toggle('is-active', k === ProductDraft.basis); });
+    }
+    function productSanity() {
+      const el = $id('product-sanity'); if (!el) return;
+      const d = collectProductForm().per100; const calc = d.p * 4 + d.c * 4 + d.f * 9;
+      const bad = d.kcal > 20 && Math.abs(d.kcal - calc) / d.kcal > 0.15;
+      el.classList.toggle('hidden', !bad);
+      if (bad) el.textContent = `تنبيه: السعرات (${Math.round(d.kcal)}) لا تطابق P×4 + C×4 + F×9 = ${Math.round(calc)} بأكثر من 15% — راجع الأرقام.`;
+    }
+    function paintProductThumb() {
+      const box = $id('product-thumb'); if (!box) return;
+      const src = safeImg(ProductDraft.thumb);
+      box.innerHTML = src ? `<img src="${src}" alt="" class="w-full h-full object-cover" />` : ic('package', 'ico-lg');
+    }
+    async function productPhoto(input) {
+      const file = input && input.files && input.files[0]; if (input) input.value = '';
+      if (!file) return;
+      try { ProductDraft.thumb = await compressImageFile(file, 200, 0.75); paintProductThumb(); } catch (_) {}
+    }
+    async function productFromLabelPhoto(input, openFirst) {
+      const file = input && input.files && input.files[0]; if (input) input.value = '';
+      if (!file) return;
+      if (openFirst) openProductEditor(null);
+      const keep = collectProductForm();
+      $id('product-skeleton').classList.remove('hidden');
+      try {
+        const img = await compressImageFile(file, 1400, 0.88);
+        const L = await readNutritionLabel(img);
+        let serving = L.serving;
+        if (L.perServing && !serving) { const sv = prompt('الأرقام مكتوبة للحصة الواحدة. كم حجم الحصة (جم أو مل)؟'); serving = num(AR_NUM(sv || '')); if (!serving) throw new Error('لا يمكن التحويل لكل 100 بدون حجم الحصة.'); }
+        const per100 = labelPer100(L, serving);
+        const name = keep.name || L.name || '';
+        fillProductForm({ ...keep, name, brand: keep.brand || L.brand, keywords: keep.keywords.length ? keep.keywords : suggestKeywords(name, keep.brand || L.brand), per100, basis: L.unit, serving: serving || keep.serving,
+          servingUnit: keep.serving ? keep.servingUnit : L.unit, source: 'label', thumb: keep.thumb || await compressImageFile(file, 200, 0.75).catch(() => null) });
+        bumpCounter('labelScans');
+        showToast('قُرئت الأرقام المطبوعة — راجعها وعدّلها ثم احفظ', { icon: 'label', ms: 4500 });
+      } catch (e) { alert('تعذّرت قراءة الملصق:\n' + e.message); }
+      finally { $id('product-skeleton').classList.add('hidden'); }
+    }
+    function scanBarcodeForProduct() {
+      ProductDraft.keep = $id('modal-product').classList.contains('hidden') ? null : { form: collectProductForm(), onSaved: ProductDraft.onSaved, id: ProductDraft.id };
+      hideModal('modal-product');
+      state.barcodeTarget = 'product';
+      openMealModal(); setEntryMode('barcode');
+      setElText('modal-header-title', 'باركود منتج جديد'); setElText('modal-header-desc', 'امسح الباركود ليُعبّأ المنتج من Open Food Facts');
+      startBarcodeScan();
+    }
+    function reopenProductDraft(extra) {
+      const k = ProductDraft.keep; ProductDraft.keep = null;
+      if (k) { ProductDraft.id = k.id; ProductDraft.onSaved = k.onSaved; setElText('product-title-text', k.id ? 'تعديل المنتج' : 'منتج جديد'); $id('btn-product-delete').classList.toggle('hidden', !k.id); fillProductForm({ ...k.form, ...(extra || {}) }); showModal('modal-product'); }
+      else openProductEditor(null, extra || null);
+    }
+    async function productFromBarcode(code) {
+      state.barcodeTarget = null;
+      stopBarcodeScan(); hideModal('modal-add-meal');
+      let p = null;
+      try { barcodeStatus(`يبحث عن ${code}...`, 'text-primary'); p = await offLookup(code); } catch (e) { showToast(e.message, { icon: 'alert' }); }
+      const base = ProductDraft.keep ? ProductDraft.keep.form : {};
+      if (p && p.per100) {
+        reopenProductDraft({ barcode: code, name: base.name || p.name, brand: base.brand || p.brand, per100: p.per100, serving: base.serving || p.servingG, source: 'barcode', keywords: base.keywords && base.keywords.length ? base.keywords : suggestKeywords(p.name, p.brand) });
+        showToast('وُجد المنتج في Open Food Facts — راجع القيم ثم احفظ', { icon: 'barcode' });
+      } else {
+        reopenProductDraft({ barcode: code, name: base.name || (p && p.name) || '', source: 'label' });
+        showToast('لم نجد قيماً لهذا الباركود — صوّر جدول القيمة الغذائية', { icon: 'label', ms: 5000 });
+      }
+    }
+    function saveProduct() {
+      const d = collectProductForm();
+      if (!d.name) { alert('اكتب اسم المنتج.'); return; }
+      if (!(d.per100.kcal > 0 || d.per100.p > 0 || d.per100.c > 0 || d.per100.f > 0)) { alert('أدخل القيم الغذائية لكل 100 (من الملصق).'); return; }
+      const list = state.x.products || (state.x.products = []);
+      const ex = ProductDraft.id ? list.find((x) => x.id === ProductDraft.id) : (d.barcode ? list.find((x) => x.barcode === d.barcode) : null);
+      const keywords = [...new Set((d.keywords.length ? d.keywords : suggestKeywords(d.name, d.brand)).map((k) => k.trim()).filter(Boolean))];
+      const rec = { ...(ex || {}), id: ex ? ex.id : uid('prod'), name: d.name, brand: d.brand, keywords, per100: d.per100, basis: d.basis, serving: d.serving, servingUnit: d.servingUnit, density: d.density,
+        barcode: d.barcode, thumb: safeImg(d.thumb), source: d.source, isDefault: !!d.isDefault, at: ex ? ex.at : Date.now(), updatedAt: Date.now() };
+      if (rec.isDefault) {
+        const mine = new Set([rec.name, ...keywords].map(normAr));
+        list.forEach((x) => { if (x.id !== rec.id && x.isDefault && productKeywords(x).some((k) => mine.has(normAr(k)))) { x.isDefault = false; x.updatedAt = Date.now(); } });
+      }
+      if (ex) Object.assign(ex, rec); else list.unshift(rec);
+      saveX('products'); bumpCounter('productsSaved');
+      const cb = ProductDraft.onSaved; closeProductEditor();
+      renderProductsList();
+      showToast(`حُفظ «${rec.name}» في منتجاتي — سيُستخدم أولاً عند كتابة: ${keywords.slice(0, 3).join('، ')}`, { icon: 'package', ms: 5000 });
+      haptic(15); setTimeout(checkAchievements, 300);
+      if (typeof cb === 'function') cb(ex || rec);
+      return ex || rec;
+    }
+    function deleteProduct(id) {
+      id = id || ProductDraft.id; const list = state.x.products || []; const p = list.find((x) => x.id === id); if (!p) return;
+      if (!confirm(`حذف «${p.name}» من منتجاتي؟ (الوجبات المسجلة لن تتأثر)`)) return;
+      const idx = list.indexOf(p); state.x.products = list.filter((x) => x.id !== id); saveX('products');
+      if (!$id('modal-product').classList.contains('hidden')) closeProductEditor();
+      renderProductsList();
+      showToast(`حُذف «${p.name}»`, { icon: 'trash', action: { label: 'تراجع', fn: () => { const l = state.x.products || (state.x.products = []); if (!l.some((x) => x.id === p.id)) { l.splice(Math.min(idx, l.length), 0, p); saveX('products'); renderProductsList(); } } } });
+    }
+    function toggleDefaultProduct(id) {
+      const list = state.x.products || []; const p = list.find((x) => x.id === id); if (!p) return;
+      p.isDefault = !p.isDefault; p.updatedAt = Date.now();
+      if (p.isDefault) { const mine = new Set(productKeywords(p).map(normAr)); list.forEach((x) => { if (x !== p && x.isDefault && productKeywords(x).some((k) => mine.has(normAr(k)))) x.isDefault = false; }); }
+      saveX('products'); renderProductsList();
+      showToast(p.isDefault ? `«${p.name}» هو الافتراضي لكلماته` : 'أُلغي الافتراضي', { icon: 'star' });
+    }
+    function renderProductsList() {
+      const box = $id('products-list'); if (!box) return;
+      const q = normAr(($id('products-search') || {}).value || '');
+      const list = (state.x.products || []).filter((p) => !q || normAr([p.name, p.brand, ...(p.keywords || [])].join(' ')).includes(q));
+      if (!(state.x.products || []).length) { box.innerHTML = `<div class="md:col-span-2 tile rounded-2xl p-5 text-center text-xs text-muted">${ic('package', 'ico-lg text-primary')}<p class="mt-2">لا توجد منتجات بعد — صوّر ملصق حليبك أو لبنك المعتاد ليصبح هو المرجع.</p></div>`; return; }
+      box.innerHTML = list.map((p) => {
+        const id = escapeHtml(p.id); const sv = num(p.serving); const u = unitLabel(p.basis); const src = PRODUCT_SRC[p.source] || PRODUCT_SRC.manual;
+        return `<div class="tile rounded-2xl p-3 flex items-start gap-3" data-product="${id}">
+          <div class="w-12 h-12 rounded-xl bg-s3 flex items-center justify-center overflow-hidden flex-shrink-0 text-primary">${safeImg(p.thumb) ? `<img src="${safeImg(p.thumb)}" alt="" class="w-full h-full object-cover" />` : ic('package', 'ico-lg')}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5"><p class="text-sm font-bold text-ink truncate">${escapeHtml(p.name)}</p>${p.isDefault ? `<span class="pill pill-trusted">افتراضي</span>` : ''}</div>
+            <p class="text-[10px] text-muted truncate">${escapeHtml(p.brand || '')}${p.brand ? ' · ' : ''}${escapeHtml((p.keywords || []).slice(0, 4).join('، '))}</p>
+            <p class="text-[10px] font-mono num mt-1" dir="ltr"><span class="text-ink font-bold">${Math.round(num(p.per100.kcal))} kcal</span> <span class="text-protein">P ${r1(p.per100.p)}</span> <span class="text-carbs">C ${r1(p.per100.c)}</span> <span class="text-fats">F ${r1(p.per100.f)}</span> <span class="text-muted">/100${p.basis === 'ml' ? 'ml' : 'g'}</span></p>
+            <div class="flex items-center gap-1.5 mt-1.5">${pill('product')}${pill(src.kind)}${sv ? `<span class="text-[10px] text-muted num">حصة ${sv} ${u}</span>` : ''}</div>
+          </div>
+          <div class="flex flex-col gap-1 flex-shrink-0">
+            <button class="icon-btn !w-8 !h-8 ${p.isDefault ? 'fav-on' : ''}" onclick="toggleDefaultProduct('${id}')" aria-pressed="${!!p.isDefault}" aria-label="اجعله الافتراضي" title="الافتراضي">${ic('star')}</button>
+            <button class="icon-btn !w-8 !h-8" onclick="openProductEditor('${id}')" aria-label="تعديل المنتج" title="تعديل">${ic('pencil')}</button>
+            <button class="icon-btn !w-8 !h-8 hover:!text-danger" onclick="deleteProduct('${id}')" aria-label="حذف المنتج" title="حذف">${ic('trash')}</button>
+          </div>
+        </div>`;
+      }).join('') || '<p class="md:col-span-2 text-[11px] text-muted">لا نتائج مطابقة.</p>';
+    }
+    function saveUnits() {
+      const u = state.x.units || (state.x.units = {});
+      u.cupMl = Math.max(50, Math.min(1000, num($id('units-cup-ml').value) || 240));
+      saveX('units'); showToast(`الكوب = ${u.cupMl} مل`, { icon: 'cup' });
+    }
+    // Confirmation card → «احفظ كمنتج من منتجاتي»
+    function productPrefillFromItem(it, extra = {}) {
+      return { name: it.name_ar || it.name_en || '', brand: extra.brand || '', per100: { ...(it.per100 || {}) }, basis: it.unit === 'ml' || LIQUID_RE.test(it.name_ar || '') ? 'ml' : 'g',
+        serving: extra.servingG || r1(it.grams) || null, servingUnit: it.unit === 'ml' ? 'ml' : 'g', barcode: extra.barcode || null, thumb: extra.thumb || null,
+        source: it.source === 'barcode' ? 'barcode' : it.source === 'label' ? 'label' : 'manual' };
+    }
+    function saveConfirmItemAsProduct(i) {
+      const it = Confirm.items[i]; if (!it || !it.per100) return;
+      const mf = Confirm.myFood && Confirm.items.length === 1 ? Confirm.myFood : {};
+      openProductEditor(null, productPrefillFromItem(it, mf), (p) => { if (Confirm.items[i]) { Confirm.items[i] = applyProduct({ ...Confirm.items[i], count: null }, p, [p]); renderConfirm(); } });
+    }
+    function saveConfirmAsProduct() {
+      if (!Confirm.items.length) return;
+      if (Confirm.items.length === 1) return saveConfirmItemAsProduct(0);
+      showToast('اضغط زر الحفظ بجانب المكوّن الذي تريد حفظه كمنتج', { icon: 'bookmark', ms: 4000 });
+    }
+    // V7 «أطعمتي» → copied once into My Products (non-destructive: the old key is left untouched)
+    async function migrateMyFoodsToProducts() {
+      const c = state.x.counters || (state.x.counters = {});
+      if (c.myFoodsCopiedV8 || !(state.x.myFoods || []).length || !ExtraStore.verified.products) return;
+      const list = state.x.products || (state.x.products = []);
+      state.x.myFoods.forEach((f) => {
+        if (!f || !f.per100 || list.some((p) => (f.barcode && p.barcode === f.barcode) || normAr(p.name) === normAr(f.name_ar))) return;
+        list.push({ id: 'prod_' + safeId(f.id), name: f.name_ar, brand: '', keywords: suggestKeywords(f.name_ar), per100: { ...f.per100 }, basis: 'g', serving: f.servingG || null, servingUnit: 'g', density: null,
+          barcode: f.barcode || null, thumb: null, source: /ملصق/.test(f.origin || '') ? 'label' : f.barcode ? 'barcode' : 'manual', isDefault: false, at: num(f.at) || Date.now(), updatedAt: num(f.updatedAt) || Date.now(), fromMyFood: f.id });
+      });
+      c.myFoodsCopiedV8 = 1;
+      await saveX('products'); await saveX('counters');
+    }
+
+    // =====================================================================
+    // SMART AUTO-SAVE SUGGESTIONS (new key su3rah_food_log_stats)
+    // Same food logged 3+ times within 10 days → ONE suggestion card. «لا، شكراً» → not again for 30 days.
+    // =====================================================================
+    const AUTOSAVE = { windowMs: 10 * 864e5, need: 3, snoozeMs: 30 * 864e5 };
+    function autosaveKey(meal) {
+      const bd = Array.isArray(meal.breakdown) ? meal.breakdown : [];
+      if (bd.length && bd.every((b) => b.snack || b.productId || b.source === 'product')) return null;   // quick snacks / my products are already one tap
+      const n = normAr(meal.title || ''); return n ? 'm:' + n : null;
+    }
+    function recordFoodLog(meal) {
+      const key = autosaveKey(meal); if (!key) return;
+      const stats = state.x.logStats || (state.x.logStats = {});
+      const now = Date.now();
+      const e = stats[key] || { name: meal.title, hits: [] };
+      e.hits = (e.hits || []).filter((t) => now - t < AUTOSAVE.windowMs); e.hits.push(now);
+      e.name = meal.title; e.last = meal.id; e.updatedAt = now;
+      stats[key] = e; saveX('logStats');
+    }
+    function pendingSuggestion() {
+      const stats = state.x.logStats || {}; const now = Date.now();
+      const list = Object.entries(stats).filter(([, e]) => e && !e.done && num(e.snoozeUntil) < now && (e.hits || []).filter((t) => now - t < AUTOSAVE.windowMs).length >= AUTOSAVE.need);
+      const fresh = list.filter(([k, e]) => { const m = state.meals.find((x) => x.id === e.last) || state.meals.find((x) => 'm:' + normAr(x.title) === k); return m && !isFavorite(m); });
+      fresh.sort((a, b) => num(b[1].updatedAt) - num(a[1].updatedAt));
+      return fresh[0] || null;
+    }
+    function renderAutosaveSuggest() {
+      const box = $id('autosave-suggest'); if (!box) return;
+      const p = state.selectedDate === state.todayDate ? pendingSuggestion() : null;
+      if (!p) { box.classList.add('hidden'); setHtmlIfChanged(box, ''); return; }
+      const [key, e] = p; const n = (e.hits || []).filter((t) => Date.now() - t < AUTOSAVE.windowMs).length;
+      box.classList.remove('hidden');
+      setHtmlIfChanged(box, `
+        <div class="lux-card rounded-3xl p-4 !border-primary/40 overflow-hidden" data-suggest="${escapeHtml(key)}">
+          <div class="absolute -top-16 -left-10 w-48 h-48 rounded-full pointer-events-none" style="background:radial-gradient(circle, rgb(var(--primary-rgb) / .18), transparent 65%)" aria-hidden="true"></div>
+          <div class="relative flex items-start gap-3">
+            <span class="w-11 h-11 rounded-2xl bg-primary/15 border border-primary/30 text-primary flex items-center justify-center flex-shrink-0 shadow-[0_0_18px_-6px_var(--primary-glow)]">${ic('sparkles', 'ico-lg')}</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-bold text-ink">تضيفها دائماً — تبغى تحفظها؟</p>
+              <p class="text-xs text-muted mt-0.5"><strong class="text-primary">${escapeHtml(e.name)}</strong> · سجّلتها <span class="num">${n}</span> مرات خلال 10 أيام</p>
+              <div class="flex flex-wrap gap-2 mt-3">
+                <button type="button" onclick="autosaveAccept('fav')" class="btn-gold text-[11px] px-3 py-2 rounded-xl inline-flex items-center gap-1">${ic('star')}حفظ في المفضلة</button>
+                <button type="button" onclick="autosaveAccept('product')" class="btn-ghost text-[11px] px-3 py-2 rounded-xl font-bold inline-flex items-center gap-1">${ic('package')}حفظ كمنتج من منتجاتي</button>
+                <button type="button" onclick="autosaveDecline()" class="text-[11px] px-3 py-2 rounded-xl font-bold text-muted hover:text-ink">لا، شكراً</button>
+              </div>
+            </div>
+          </div>
+        </div>`);
+    }
+    function autosaveCurrent() { const p = pendingSuggestion(); if (!p) return null; const [key, e] = p; const meal = state.meals.find((x) => x.id === e.last) || state.meals.find((x) => 'm:' + normAr(x.title) === key); return { key, e, meal }; }
+    function autosaveDone(key, how) { const st = state.x.logStats || {}; if (st[key]) { st[key].done = how; st[key].updatedAt = Date.now(); saveX('logStats'); } renderAutosaveSuggest(); }
+    function autosaveAccept(kind) {
+      const c = autosaveCurrent(); if (!c || !c.meal) return;
+      if (kind === 'fav') {
+        const favs = state.x.favorites || (state.x.favorites = []);
+        if (!isFavorite(c.meal)) favs.unshift({ id: uid('fav'), key: favKey(c.meal), at: Date.now(), ...mealTemplate(c.meal) });
+        saveX('favorites'); autosaveDone(c.key, 'fav'); renderFavorites(); haptic(12);
+        showToast(`أُضيفت «${c.meal.title}» للمفضلة — لمسة واحدة لإعادة تسجيلها`, { icon: 'star' });
+        return;
+      }
+      const m = c.meal; const bd = Array.isArray(m.breakdown) ? m.breakdown : [];
+      let prefill;
+      if (bd.length === 1 && bd[0].per100) prefill = productPrefillFromItem(bd[0]);
+      else {
+        // Whole meal as one «piece»: per-100 values scaled so that 1 serving = the logged totals.
+        const g = bd.reduce((a, b) => a + num(b.grams), 0) || 100;
+        prefill = { name: m.title, basis: 'g', serving: Math.round(g), servingUnit: 'piece', source: 'manual',
+          per100: { kcal: r1(num(m.calories) * 100 / g), p: r1(num(m.protein) * 100 / g), c: r1(num(m.carbs) * 100 / g), f: r1(num(m.fats) * 100 / g) } };
+      }
+      prefill.name = prefill.name || m.title;
+      openProductEditor(null, prefill, () => autosaveDone(c.key, 'product'));
+    }
+    function autosaveDecline() {
+      const c = autosaveCurrent(); if (!c) return;
+      const st = state.x.logStats || {}; if (st[c.key]) { st[c.key].snoozeUntil = Date.now() + AUTOSAVE.snoozeMs; st[c.key].hits = []; st[c.key].updatedAt = Date.now(); saveX('logStats'); }
+      renderAutosaveSuggest(); showToast('تمام — لن نسألك عنها لمدة 30 يوماً', { icon: 'check' });
     }
 
     // =====================================================================
@@ -4956,8 +5472,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       const avg = (k) => logged.length ? Math.round(logged.reduce((a, x) => a + x[k], 0) / logged.length) : 0;
       const best = logged.slice().sort((a, b) => Math.abs(a.cal - T.cal) - Math.abs(b.cal - T.cal))[0] || null;
       const proteinHit = logged.filter((x) => x.p >= T.p).length;
-      const water = days.reduce((a, x) => a + num((state.x.water || {})[x.d]), 0);
-      return { days, logged: logged.length, avgCal: avg('cal'), avgP: avg('p'), avgC: avg('c'), avgF: avg('f'), best, proteinHit, water, T, weekKey: addDays(state.todayDate, -6) + '_' + state.todayDate };
+      return { days, logged: logged.length, avgCal: avg('cal'), avgP: avg('p'), avgC: avg('c'), avgF: avg('f'), best, proteinHit, T, weekKey: addDays(state.todayDate, -6) + '_' + state.todayDate };
     }
     function renderWeekly() {
       const box = $id('weekly-card'); if (!box) return;
@@ -4978,7 +5493,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
         <div class="flex items-end gap-1.5 h-24 mt-4 px-1" aria-label="سعرات الأسبوع">
           ${s.days.map((x) => { const h = x.cal ? Math.max(6, x.cal / max * 100) : 3; const over = x.cal > s.T.cal * 1.03; return `<button onclick="viewDateFromHistory('${x.d}')" class="flex-1 flex flex-col items-center gap-1 h-full justify-end" title="${x.d}: ${Math.round(x.cal)}"><span class="w-full rounded-t-lg" style="height:${h}%;background:${over ? 'var(--danger)' : 'var(--ring-gradient)'};opacity:${x.n ? 1 : .25}"></span><span class="text-[9px] text-muted">${escapeHtml(prettyDate(x.d, { weekday: 'narrow' }))}</span></button>`; }).join('')}
         </div>
-        <p id="weekly-insight" class="text-xs text-ink mt-3 leading-relaxed whitespace-pre-line min-h-[1.5em]">${ins ? escapeHtml(ins) : `<span class="text-muted">حققت هدف البروتين ${s.proteinHit} من ${s.logged || 0} أيام · شربت ${s.water} أكواب ماء.</span>`}</p>`;
+        <p id="weekly-insight" class="text-xs text-ink mt-3 leading-relaxed whitespace-pre-line min-h-[1.5em]">${ins ? escapeHtml(ins) : `<span class="text-muted">حققت هدف البروتين ${s.proteinHit} من ${s.logged || 0} أيام · متوسطك ${s.avgCal} سعرة.</span>`}</p>`;
     }
     async function generateWeeklyInsight() {
       const s = weekStats(); const el = $id('weekly-insight');
@@ -4987,7 +5502,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       try {
         const r = await geminiGenerate({ temperature: 0.5, maxTokens: 120, model: DEFAULT_MODEL,
           messages: [{ role: 'system', content: 'أنت مدرب تغذية. اكتب ملاحظة واحدة من سطرين فقط بالعربية بلهجة سعودية خفيفة عن أسبوع المستخدم: نقطة قوة ونصيحة عملية واحدة. بدون عناوين أو تفكير أو نص إنجليزي، وبدون إيموجي.' },
-            { role: 'user', content: `الهدف ${s.T.cal} سعرة و${s.T.p}غ بروتين. متوسط الأسبوع ${s.avgCal} سعرة و${s.avgP}غ بروتين، أيام مسجلة ${s.logged}/7، أيام تحقيق البروتين ${s.proteinHit}، الماء ${s.water} أكواب. الأيام: ${s.days.map((x) => `${x.d}:${Math.round(x.cal)}`).join(', ')}` }] });
+            { role: 'user', content: `الهدف ${s.T.cal} سعرة و${s.T.p}غ بروتين. متوسط الأسبوع ${s.avgCal} سعرة و${s.avgP}غ بروتين، أيام مسجلة ${s.logged}/7، أيام تحقيق البروتين ${s.proteinHit}، أفضل يوم ${s.best ? s.best.d : '—'}. الأيام: ${s.days.map((x) => `${x.d}:${Math.round(x.cal)}`).join(', ')}` }] });
         const text = sanitizeCoachReply(r.text).split('\n').slice(0, 2).join('\n');
         state.x.weekly = { key: s.weekKey, text, at: Date.now() }; saveX('weekly');
         renderWeekly();
@@ -5014,7 +5529,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
         ctx.fillStyle = P.m; ctx.font = '600 12px Tajawal, sans-serif'; ctx.fillText(prettyDate(x.d, { weekday: 'short' }), bx + bw / 2, 784);
       });
       const tY = 760 - s.T.cal / max * 200; ctx.strokeStyle = P.a + 'aa'; ctx.setLineDash([4, 6]); ctx.beginPath(); ctx.moveTo(60, tY); ctx.lineTo(W - 60, tY); ctx.stroke(); ctx.setLineDash([]);
-      const ins = state.x.weekly && state.x.weekly.key === s.weekKey ? state.x.weekly.text : `حققت البروتين ${s.proteinHit} أيام · ماء ${s.water} أكواب`;
+      const ins = state.x.weekly && state.x.weekly.key === s.weekKey ? state.x.weekly.text : `حققت البروتين ${s.proteinHit} أيام · متوسط ${s.avgCal} سعرة`;
       ctx.fillStyle = P.t; ctx.font = '600 15px Tajawal, sans-serif';
       String(ins).split('\n').slice(0, 2).forEach((line, i) => ctx.fillText(line.slice(0, 60), cx, 826 + i * 22));
       ctx.fillStyle = P.m; ctx.font = '600 11px Tajawal, sans-serif'; ctx.direction = 'ltr'; ctx.fillText('N U T R I L E N S   ·   A I', cx, 870);
@@ -5032,7 +5547,7 @@ ${wt ? `- الوزن: آخر قياس ${wt.last} كجم (${wt.lastDate})${wt.cha
       { id: 'first_barcode', icon: 'barcode', name: 'أول مسح باركود', desc: 'مسحت أول منتج', test: () => num((state.x.counters || {}).barcodeScans) >= 1 },
       { id: 'first_label', icon: 'label', name: 'قارئ الملصقات', desc: 'قرأت أول ملصق غذائي', test: () => num((state.x.counters || {}).labelScans) >= 1 },
       { id: 'first_recipe', icon: 'chef', name: 'الشيف', desc: 'أنشأت أول وصفة', test: () => (state.x.recipes || []).length >= 1 },
-      { id: 'hydrated', icon: 'drop', name: 'مرتوي', desc: 'هدف الماء 7 أيام', test: () => Object.values(state.x.water || {}).filter((n) => num(n) >= WATER_TARGET).length >= 7 },
+      { id: 'first_product', icon: 'package', name: 'منتجي الأول', desc: 'حفظت أول منتج في منتجاتي', test: () => (state.x.products || []).length >= 1 },
       { id: 'first_weight', icon: 'scale', name: 'على الميزان', desc: 'سجّلت وزنك أول مرة', test: () => (state.x.weight || []).length >= 1 },
       { id: 'meals100', icon: 'award', name: 'مئوية', desc: '100 وجبة مسجلة', test: () => state.meals.length >= 100 },
       { id: 'accurate', icon: 'shield', name: 'دقة USDA', desc: '10 وجبات بدقة عالية', test: () => state.meals.filter((m) => m.confidence === 'high').length >= 10 }

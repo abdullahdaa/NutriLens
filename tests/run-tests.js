@@ -1,7 +1,8 @@
-/* سُعرة V7 — end-to-end checks (Playwright, Chromium).
+/* سُعرة V8 — end-to-end checks (Playwright, Chromium).
  *
  *   node tests/run-tests.js                                # serves the repo locally and runs every check
- *   TW_CSS=/path/to/tailwind.css node tests/run-tests.js   # recommended: render with a locally built Tailwind so pixel layout /
+ *   TW_CSS=/path/to/tailwind.css node tests/run-tests.js   # recommended: render with a locally built Tailwind (npx tailwindcss with the
+ *                                                          # same colour config as index.html) so pixel layout /
  *                                                          # contrast checks run too (without it they are skipped)
  *   SHOTS=/some/dir node tests/run-tests.js                # optional: save screenshots
  *
@@ -126,13 +127,16 @@ function mockGemini(ctx, behaviour = {}) {
     const all = JSON.stringify(body.contents || []);
     let text, parts = null;
     if (/محلل وجبات/.test(sys)) {
-      if (/200 جرام رز مطبوخ/.test(all)) text = JSON.stringify({ title: 'رز ودجاج مشوي', items: [
+      if (/كوب حليب/.test(all)) text = JSON.stringify({ title: 'كوب حليب', items: [{ name_ar: 'حليب', name_en: 'milk whole', grams: 240, unit: 'ml', state: 'n/a', confidence: 0.9 }] });
+      else if (/شوفان بالموز/.test(all)) text = JSON.stringify({ title: 'شوفان بالموز', items: [{ name_ar: 'شوفان', name_en: 'oats', grams: 50, state: 'raw', confidence: 0.9 }, { name_ar: 'موز', name_en: 'bananas raw', grams: 100, state: 'raw', confidence: 0.9 }] });
+      else if (/200 جرام رز مطبوخ/.test(all)) text = JSON.stringify({ title: 'رز ودجاج مشوي', items: [
         { name_ar: 'رز أبيض مطبوخ', name_en: 'rice white cooked', grams: 200, state: 'cooked', confidence: 0.95 },
         { name_ar: 'صدر دجاج مشوي', name_en: 'chicken breast roasted', grams: 150, state: 'cooked', confidence: 0.95 },
         { name_ar: 'زيت زيتون', name_en: 'olive oil', grams: 13.5, state: 'n/a', confidence: 0.9 }] });
       else if (/inlineData/.test(all)) text = JSON.stringify({ title: 'طبق مصوّر', items: [{ name_ar: 'رز', name_en: 'rice white', grams: 180, state: 'n/a', confidence: 0.6 }, { name_ar: 'دجاج مقلي', name_en: 'chicken breast fried', grams: 120, state: 'fried', confidence: 0.6 }] });
       else text = JSON.stringify({ title: 'وجبة', items: [{ name_ar: 'موز', name_en: 'bananas raw', grams: 118, state: 'raw', confidence: 0.8 }] });
-    } else if (/قارئ ملصقات/.test(sys)) text = JSON.stringify({ product_name: 'بار شوفان بالبروتين', basis: 'per_serving', serving_size_g: 40, kcal: 160, kj: null, protein_g: 10, carbs_g: 22, fat_g: 3, readable: true });
+    } else if (/قارئ ملصقات/.test(sys) && behaviour.label) text = JSON.stringify(behaviour.label);
+    else if (/قارئ ملصقات/.test(sys)) text = JSON.stringify({ product_name: 'بار شوفان بالبروتين', basis: 'per_serving', serving_size_g: 40, kcal: 160, kj: null, protein_g: 10, carbs_g: 22, fat_g: 3, readable: true });
     else if (/تقدّر القيم الغذائية التقريبية/.test(sys)) text = JSON.stringify({ estimates: [{ name: 'x', kcal: 420, protein: 5, carbs: 55, fat: 20 }] });
     else if (/كابتن سُعرة/.test(sys)) {
       text = behaviour.leak ? LEAK_REPLY : 'هلا والله يا بطل! أموري تمام.\nوش ودك نشتغل عليه اليوم؟';
@@ -283,7 +287,7 @@ const SCAN_COLORS = () => {
     ok('migration: reload is stable (no duplicates, no sample)', await page.evaluate(() => state.meals.length) === 7);
     const hours = await page.evaluate(() => [su3rahHourOf({ time: '08:30 ص' }), su3rahHourOf({ time: '٠٩:١٥ م' }), su3rahHourOf({ time: '12:05 ص' }), su3rahHourOf({ time: '7:45 PM' })]);
     ok('hourOf parses localized old time strings', hours.join() === '8,21,0,19', JSON.stringify(hours));
-    await shot(page, '01-dashboard-midnight');
+    await shot(page, '01-dashboard-royal-roast');
     await ctx.close();
   }
 
@@ -315,7 +319,7 @@ const SCAN_COLORS = () => {
     await openApp(page);
     const s1 = await page.evaluate(() => ({ n: state.meals.length, seed: state.meals.some((m) => m.id === 'meal-init-1'), verified: DataGuard.verified.meals }));
     ok('slow IDB: no sample meal while IndexedDB is unreadable', !s1.seed && s1.n === 0 && s1.verified === false, JSON.stringify(s1));
-    await page.evaluate(() => { quickAddFood('موزة أثناء التعطل', 105, 1, 27, 0); addWater(2); });
+    await page.evaluate(() => { quickAddFood('موزة أثناء التعطل', 105, 1, 27, 0); });
     await page.waitForFunction(() => DataGuard.verified.meals === true, null, { timeout: 25000 });
     await page.waitForTimeout(600);
     const s2 = await page.evaluate(() => ({ n: state.meals.length, banana: state.meals.some((m) => m.title.includes('موزة أثناء')) }));
@@ -344,56 +348,83 @@ const SCAN_COLORS = () => {
     await ctx.close();
   }
 
-  // =============== 5. THEMES: 5 dark themes, no brown/white, readable, pre-paint ===============
+  // =============== 5. THEMES: 6 dark themes (Royal Roast default), animated background, nothing white, readable, pre-paint ===============
   {
     const ctx = await newContext(browser); mockAll(ctx);
     const page = await ctx.newPage(); watch(page, 'themes');
-    await seedLegacy(page, { usdaKey: 'USDA-OK' }); await openApp(page);
-    await page.evaluate(() => { quickAddSnack('banana'); toggleFavorite(safeId(state.meals[0].id)); addWater(3); });
-    const THEMES = { midnight: [10, 11, 16, '#0A0B10'], emerald: [7, 16, 13, '#07100D'], plum: [14, 10, 20, '#0E0A14'], sapphire: [7, 11, 20, '#070B14'], copper: [12, 12, 13, '#0C0C0D'] };
+    await seedLegacy(page, { usdaKey: 'USDA-OK', extraLs: { su3rah_theme: 'midnight' } }); await openApp(page);
+    const def = await page.evaluate(() => ({ attr: document.documentElement.dataset.theme, meta: document.querySelector('meta[name="theme-color"]').content, bg: getComputedStyle(document.body).backgroundColor, oldKey: localStorage.getItem('su3rah_theme') }));
+    ok('themes: Royal Roast is the default (espresso #0E0907), old V7 theme key left untouched', def.attr === 'roast' && def.meta === '#0E0907' && def.bg === 'rgb(14, 9, 7)' && def.oldKey === 'midnight', JSON.stringify(def));
+    const rr = await page.evaluate(() => ({ p: cssVar('--primary-rgb'), hi: cssVar('--primary-hi'), t: cssVar('--text-rgb'), s: [1, 2, 3].map((i) => cssVar(`--surface-${i}-rgb`)) }));
+    ok('themes: Royal Roast = caramel-gold #D9A066 / gold #F0C27B / cream #F6EBDD on espresso surfaces', rr.p === '217 160 102' && rr.hi === '#F0C27B' && rr.t === '246 235 221' && rr.s.join('|') === '23 16 12|32 22 15|43 30 21', JSON.stringify(rr));
+    const vars = await page.evaluate(() => ['--bg', '--surface-1', '--surface-2', '--surface-3', '--border', '--primary', '--primary-glow', '--accent', '--text', '--text-muted', '--protein', '--carbs', '--fats', '--success', '--warning', '--danger', '--ring-gradient', '--orb-1', '--orb-2', '--orb-3'].filter((v) => !cssVar(v)));
+    ok('themes: full CSS variable set defined (incl. --warning, --ring-gradient, --orb-1/2/3)', !vars.length, vars.join(','));
+    await page.evaluate(() => { quickAddSnack('banana'); toggleFavorite(safeId(state.meals[0].id)); });
+    const THEMES = { roast: [14, 9, 7, '#0E0907'], midnight: [10, 11, 16, '#0A0B10'], emerald: [7, 16, 13, '#07100D'], plum: [14, 10, 20, '#0E0A14'], sapphire: [7, 11, 20, '#070B14'], copper: [12, 12, 13, '#0C0C0D'] };
     for (const [name, [r, g, b, meta]] of Object.entries(THEMES)) {
       await page.evaluate((n) => applyTheme(n), name);
       await page.waitForTimeout(150);
-      const info = await page.evaluate(() => ({ attr: document.documentElement.getAttribute('data-theme'), meta: document.querySelector('meta[name="theme-color"]').content, ls: localStorage.getItem('su3rah_theme'), bg: getComputedStyle(document.body).backgroundColor, btn: getComputedStyle(document.querySelector('.dock-plus')).backgroundImage }));
-      ok(`theme ${name}: applied instantly (attr, saved key, meta theme-color, body bg)`, info.attr === name && info.ls === name && info.meta === meta && info.bg === `rgb(${r}, ${g}, ${b})`, JSON.stringify(info).slice(0, 160));
-      const issues = { brown: [], white: [], low: [] };
+      const info = await page.evaluate(() => ({ attr: document.documentElement.getAttribute('data-theme'), meta: document.querySelector('meta[name="theme-color"]').content, ls: localStorage.getItem('su3rah_theme_v8'), bg: getComputedStyle(document.body).backgroundColor,
+        orbs: [...document.querySelectorAll('#ambient-bg .orb')].map((o) => getComputedStyle(o).backgroundImage).filter((x) => /radial-gradient/.test(x)).length, dust: document.querySelectorAll('#ambient-bg .dust').length,
+        anim: getComputedStyle(document.querySelector('#ambient-bg .orb')).animationName, dur: parseFloat(getComputedStyle(document.querySelector('#ambient-bg .orb')).animationDuration) }));
+      ok(`theme ${name}: applied instantly (attr, saved under the new key, meta theme-color, body bg)`, info.attr === name && info.ls === name && info.meta === meta && info.bg === `rgb(${r}, ${g}, ${b})`, JSON.stringify(info).slice(0, 160));
+      ok(`theme ${name}: animated background — 4 glowing orbs + gold dust, slow 20–40 s loops`, info.orbs === 4 && info.dust >= 6 && /orb/.test(info.anim) && info.dur >= 20 && info.dur <= 40, JSON.stringify({ o: info.orbs, d: info.dust, a: info.anim, s: info.dur }));
+      const issues = { white: [], low: [] };
       for (const tab of ['dashboard', 'history', 'chat', 'command', 'settings']) {
         await page.evaluate((t) => switchTab(t), tab); await page.waitForTimeout(TW_CSS ? 250 : 60);
         const r2 = await page.evaluate(SCAN_COLORS);
-        issues.brown.push(...r2.brown.map((x) => tab + ':' + x)); issues.white.push(...r2.white.map((x) => tab + ':' + x)); issues.low.push(...r2.lowContrast.map((x) => tab + ':' + x));
+        issues.white.push(...r2.white.map((x) => tab + ':' + x)); issues.low.push(...r2.lowContrast.map((x) => tab + ':' + x));
       }
       await page.evaluate(() => { switchTab('dashboard'); openMealModal(); }); await page.waitForTimeout(150);
-      const rm = await page.evaluate(SCAN_COLORS); issues.brown.push(...rm.brown); issues.white.push(...rm.white); issues.low.push(...rm.lowContrast.map((x) => 'modal:' + x));
-      await page.evaluate(() => closeMealModal());
-      ok(`theme ${name}: nothing stays brown or white anywhere`, !issues.brown.length && !issues.white.length, [...issues.brown, ...issues.white].slice(0, 6).join(' | '));
-      if (TW_CSS) ok(`theme ${name}: all visible text passes WCAG AA contrast`, !issues.low.length, issues.low.slice(0, 6).join(' | '));
+      const rm = await page.evaluate(SCAN_COLORS); issues.white.push(...rm.white); issues.low.push(...rm.lowContrast.map((x) => 'modal:' + x));
+      await page.evaluate(() => { closeMealModal(); openProductEditor(null, { name: 'حليب' }); }); await page.waitForTimeout(150);
+      const rp = await page.evaluate(SCAN_COLORS); issues.white.push(...rp.white); issues.low.push(...rp.lowContrast.map((x) => 'product:' + x));
+      await page.evaluate(() => closeProductEditor());
+      ok(`theme ${name}: nothing white anywhere (tabs, meal sheet, product editor)`, !issues.white.length, issues.white.slice(0, 6).join(' | '));
+      if (TW_CSS) ok(`theme ${name}: all visible text passes WCAG AA contrast on top of the animated background`, !issues.low.length, issues.low.slice(0, 6).join(' | '));
       await shot(page, `03-theme-${name}`);
     }
-    // theme tokens AA (static check of the palette itself)
-    const tokens = await page.evaluate(() => {
+    const tokens = await page.evaluate((names) => {
       const out = {}; const lum = (rgb) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]); };
       const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
-      for (const n of Object.keys(THEMES)) { applyTheme(n, false); const v = (k) => cssVar(`--${k}-rgb`).split(/\s+/).map(Number);
-        out[n] = Math.min(...['bg', 'surface-1', 'surface-2', 'surface-3'].flatMap((s) => [cr(v('text'), v(s)), cr(v('text-muted'), v(s))]), cr(v('on-primary'), v('primary')));
-        out[n + '_macros'] = new Set([cssVar('--protein-rgb'), cssVar('--carbs-rgb'), cssVar('--fats-rgb')]).size === 3; }
-      applyTheme('midnight', false); return out; });
-    ok('themes: text / muted / on-primary tokens ≥ 4.5:1 on every surface in all 5 themes', Object.entries(tokens).filter(([k]) => !k.endsWith('_macros')).every(([, v]) => v >= 4.5), JSON.stringify(tokens));
-    ok('themes: macro colours stay distinct in all themes', Object.entries(tokens).filter(([k]) => k.endsWith('_macros')).every(([, v]) => v));
+      for (const n of names) { applyTheme(n, false); const v = (k) => cssVar(`--${k}-rgb`).split(/\s+/).map(Number);
+        out[n] = Math.min(...['bg', 'surface-1', 'surface-2', 'surface-3'].flatMap((s) => ['text', 'text-muted', 'primary', 'protein', 'carbs', 'fats'].map((k) => cr(v(k), v(s)))), cr(v('on-primary'), v('primary')));
+        const m = ['protein', 'carbs', 'fats'].map(v); out[n + '_macros'] = Math.min(...[[0, 1], [0, 2], [1, 2]].map(([i, j]) => m[i].reduce((a, x, k) => a + Math.abs(x - m[j][k]), 0))) > 90; }
+      applyTheme('roast', false); return out; }, Object.keys(THEMES));
+    ok('themes: text / muted / primary / macro colours ≥ 4.5:1 on every surface in all 6 themes', Object.entries(tokens).filter(([k]) => !k.endsWith('_macros')).every(([, v]) => v >= 4.5), JSON.stringify(tokens));
+    ok('themes: protein, carbs and fats colours stay clearly distinct in every theme', Object.entries(tokens).filter(([k]) => k.endsWith('_macros')).every(([, v]) => v));
     await page.evaluate(() => { switchTab('settings'); }); await page.waitForTimeout(200);
-    ok('themes: Settings → المظهر shows 5 live preview swatches', await page.locator('[data-theme-pick]').count() === 5);
+    ok('themes: Settings → المظهر shows 6 live preview swatches', await page.locator('[data-theme-pick]').count() === 6);
     await page.click('[data-theme-pick="sapphire"]');
     ok('themes: tapping a swatch switches theme', await page.evaluate(() => document.documentElement.dataset.theme) === 'sapphire');
+    // animation pauses when the tab is hidden
+    const paused = await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); const st = getComputedStyle(document.querySelector('#ambient-bg .orb')).animationPlayState;
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => false }); document.dispatchEvent(new Event('visibilitychange')); return [st, getComputedStyle(document.querySelector('#ambient-bg .orb')).animationPlayState]; });
+    ok('background: paused while the tab is hidden, resumes when visible', paused[0] === 'paused' && paused[1] === 'running', paused.join());
     await page.reload(); await booted(page);
-    ok('themes: chosen theme persists after reload', await page.evaluate(() => document.documentElement.dataset.theme === 'sapphire' && localStorage.getItem('su3rah_theme') === 'sapphire'));
+    ok('themes: chosen theme persists after reload', await page.evaluate(() => document.documentElement.dataset.theme === 'sapphire' && localStorage.getItem('su3rah_theme_v8') === 'sapphire'));
     await ctx.close();
     // pre-paint: no flash
     const ctx2 = await newContext(browser); mockAll(ctx2); const p2 = await ctx2.newPage(); watch(p2, 'prepaint');
-    await seedLegacy(p2, { extraLs: { su3rah_theme: 'plum' } });
+    await seedLegacy(p2, { extraLs: { su3rah_theme_v8: 'plum' } });
     await p2.addInitScript(() => { document.addEventListener('readystatechange', () => { if (!window.__firstBg && document.body) window.__firstBg = { theme: document.documentElement.dataset.theme, bg: getComputedStyle(document.body).backgroundColor }; }); });
     await openApp(p2);
     const fp = await p2.evaluate(() => window.__firstBg);
     ok('themes: saved theme applied before first paint (no flash)', fp && fp.theme === 'plum' && fp.bg === 'rgb(14, 10, 20)', JSON.stringify(fp));
     await ctx2.close();
+    // reduced motion → static background
+    const ctx3 = await newContext(browser, { reducedMotion: 'reduce' }); mockAll(ctx3); const p3 = await ctx3.newPage(); watch(p3, 'reduced-motion');
+    await openApp(p3);
+    const rm = await p3.evaluate(() => ({ a: getComputedStyle(document.querySelector('#ambient-bg .orb')).animationName, d: getComputedStyle(document.querySelector('#ambient-bg .dust')).animationName, bg: getComputedStyle(document.querySelector('#ambient-bg .orb')).backgroundImage }));
+    ok('background: static version with prefers-reduced-motion (orbs still glow, nothing moves)', rm.a === 'none' && rm.d === 'none' && /radial-gradient/.test(rm.bg), JSON.stringify(rm).slice(0, 120));
+    await ctx3.close();
+    // splash ≤ 1.2 s
+    const ctx4 = await newContext(browser); mockAll(ctx4); const p4 = await ctx4.newPage(); watch(p4, 'splash');
+    const t0 = Date.now(); await p4.goto(`${BASE}/index.html`);
+    await p4.waitForFunction(() => document.getElementById('splash').classList.contains('hide'), null, { timeout: 5000 });
+    const splashMs = Date.now() - t0;
+    ok('splash: icon.png with soft glow, hidden within ~1.2 s', splashMs <= 1500 && await p4.evaluate(() => /icon\.png/.test(document.querySelector('#splash img').src) && /splashGlow/.test(getComputedStyle(document.querySelector('#splash .logo')).animationName)), `${splashMs} ms`);
+    await ctx4.close();
   }
 
   // =============== 6. NUTRITION ENGINE: understanding → USDA numbers → confirmation card ===============
@@ -452,7 +483,8 @@ const SCAN_COLORS = () => {
     ok('engine: unknown food → AI estimate labelled تقديري', t[5] === 'estimate' && t[6] === 420, JSON.stringify(t));
     const pillEst = await page.evaluate(() => getComputedStyle(Object.assign(document.body.appendChild(document.createElement('span')), { className: 'pill pill-estimate' })).color);
     const pillOk = await page.evaluate(() => getComputedStyle(Object.assign(document.body.appendChild(document.createElement('span')), { className: 'pill pill-trusted' })).color);
-    ok('engine: source pills use amber for estimates and success colour for trusted', pillEst === 'rgb(251, 191, 36)' && pillOk === 'rgb(74, 222, 128)', pillEst + ' / ' + pillOk);
+    const want = await page.evaluate(() => [`rgb(${cssVar('--warn-rgb').split(' ').join(', ')})`, `rgb(${cssVar('--success-rgb').split(' ').join(', ')})`]);
+    ok('engine: source pills use the warning colour for estimates and the success colour for trusted', pillEst === want[0] && pillOk === want[1], pillEst + ' / ' + pillOk);
     await ctx.close();
 
     // bad USDA key → Arabic error; offline / no key → local parser + embedded USDA reference gives the same numbers
@@ -481,11 +513,17 @@ const SCAN_COLORS = () => {
     ok('barcode: iPhone path (no BarcodeDetector) loads ZXing from CDN and decodes', await page.evaluate(() => window.__zxingUsed === true));
     const b = await page.evaluate(() => ({ it: Confirm.items[0], T: confirmTotals(), pill: document.querySelector('#confirm-items .pill').textContent }));
     ok('barcode: Open Food Facts per-100 g nutriments × grams eaten → confirmation card', b.it.source === 'barcode' && b.it.grams === 170 && Math.round(b.T.kcal) === 107 && b.pill === 'باركود', JSON.stringify(b.T));
+    await page.click('#btn-confirm-save-product');
+    await page.waitForSelector('#modal-product:not(.hidden)');
+    const pf = await page.evaluate(() => ({ name: document.getElementById('product-name').value, kcal: document.getElementById('product-kcal').value, bc: document.getElementById('product-barcode').value, src: document.getElementById('product-source').value, kw: document.getElementById('product-keywords').value }));
+    ok('barcode result: «احفظ كمنتج من منتجاتي» opens the product editor prefilled (name, per-100, barcode, source)', /لبن زبادي/.test(pf.name) && pf.kcal === '63' && pf.bc === '6281007012345' && pf.src === 'barcode' && /لبن/.test(pf.kw), JSON.stringify(pf));
+    await page.click('#btn-product-save'); await page.waitForTimeout(250);
+    ok('barcode result: confirmation item now uses the saved product (منتجاتي badge)', await page.evaluate(() => Confirm.items[0].source === 'product' && document.querySelector('#confirm-items .pill').textContent === 'منتجاتي'));
     await page.click('#btn-confirm-save'); await page.waitForTimeout(300);
-    ok('barcode: saved to «My Foods» with its barcode', await page.evaluate(() => state.x.myFoods.some((f) => f.barcode === '6281007012345' && f.per100.kcal === 63)));
+    ok('barcode: product stored under the NEW key su3rah_my_products', await page.evaluate(() => JSON.parse(localStorage.getItem('su3rah_my_products')).some((f) => f.barcode === '6281007012345' && f.per100.kcal === 63)));
     const offCalls = M.off.length;
     await page.evaluate(() => { openMealModal(); setEntryMode('barcode'); lookupBarcode('6281007012345'); }); await page.waitForTimeout(300);
-    ok('barcode: second scan served from My Foods (no network)', M.off.length === offCalls && await page.evaluate(() => Confirm.items[0].source === 'myfood'));
+    ok('barcode: second scan served from My Products (no network)', M.off.length === offCalls && await page.evaluate(() => Confirm.items[0].source === 'product'));
     await page.evaluate(() => { closeConfirm(); lookupBarcode('0000000000017'); }); await page.waitForTimeout(400);
     ok('barcode: not found → offers "صوّر جدول القيمة الغذائية"', /صوّر جدول القيمة الغذائية/.test(await page.locator('#barcode-status').innerText()));
     // label photo
@@ -498,7 +536,7 @@ const SCAN_COLORS = () => {
     const labelReq = M.gemini.find((l) => l.body && /قارئ ملصقات/.test(JSON.stringify(l.body.systemInstruction || '')));
     ok('label: Gemini is told to read ONLY printed numbers', labelReq && /لا تقدّر ولا تخمّن/.test(JSON.stringify(labelReq.body.systemInstruction)));
     await page.click('#btn-confirm-save'); await page.waitForTimeout(300);
-    ok('label: product saved to My Foods and meal logged', await page.evaluate(() => state.x.myFoods.length === 2 && state.meals[0].breakdown[0].source === 'label'));
+    ok('label: meal logged with the label source', await page.evaluate(() => state.meals[0].breakdown[0].source === 'label' && state.meals[0].title === 'بار شوفان بالبروتين'));
     // recipe (no Gemini key → local parser; USDA live)
     page.__answer = undefined;
     const R = await page.evaluate(async () => {
@@ -517,7 +555,7 @@ const SCAN_COLORS = () => {
     const viaText = await page.evaluate(async () => (await resolveItem({ name_ar: 'كبستي', name_en: 'kabsa', grams: 200 })).source);
     ok('recipe: typing the recipe name in the AI box matches My Recipes first', viaText === 'recipe');
     await page.waitForTimeout(500);
-    ok('badges: first barcode, first label and first recipe unlocked', await page.evaluate(() => ['first_barcode', 'first_label', 'first_recipe'].every((k) => state.x.badges[k])));
+    ok('badges: first barcode, first label, first product and first recipe unlocked', await page.evaluate(() => ['first_barcode', 'first_label', 'first_recipe', 'first_product'].every((k) => state.x.badges[k])));
     await ctx.close();
   }
 
@@ -529,7 +567,8 @@ const SCAN_COLORS = () => {
     ok('coach: sanitizeCoachReply fixture → only the Arabic answer', await page.evaluate(() => selfTestSanitizer()));
     const san = await page.evaluate(() => [sanitizeCoachReply('<think>plan in English</think>\nهلا يا بطل'), sanitizeCoachReply('## الخلاصة: كل بروتين\n**مهم**: اشرب ماء 😀 😀')]);
     ok('coach: strips <think>, headings, bold and keeps max 1 emoji', san[0] === 'هلا يا بطل' && !/#|\*\*/.test(san[1]) && (san[1].match(/😀/g) || []).length === 1, JSON.stringify(san));
-    await page.evaluate(() => { state.x.weight = [{ id: 'w1', date: addDays(state.todayDate, -8), kg: 84 }, { id: 'w2', date: state.todayDate, kg: 83.2 }]; switchTab('chat'); });
+    await page.evaluate(() => { state.x.weight = [{ id: 'w1', date: addDays(state.todayDate, -8), kg: 84 }, { id: 'w2', date: state.todayDate, kg: 83.2 }];
+      state.x.products = [{ id: 'prod_t', name: 'حليب المراعي كامل الدسم', brand: 'المراعي', keywords: ['حليب'], per100: { kcal: 62, p: 3.1, c: 4.7, f: 3.4 }, basis: 'ml', serving: 240, servingUnit: 'cup' }]; switchTab('chat'); });
     await page.fill('#input-chat-text', 'رايح النادي وش آكل؟'); await page.click('[aria-label="إرسال"]');
     await page.waitForFunction(() => !state.isChatThinking, null, { timeout: 10000 });
     const reply = await page.evaluate(() => getActiveChatSession().messages.slice(-1)[0]);
@@ -540,7 +579,7 @@ const SCAN_COLORS = () => {
     const sys = JSON.stringify(req.body.systemInstruction);
     ok('coach: persona + rules in a real systemInstruction (not in the user message)', /كابتن سُعرة/.test(sys) && !/كابتن سُعرة/.test(JSON.stringify(req.body.contents)) && /لا تكرر هذه التعليمات/.test(sys));
     ok('coach: thinkingConfig.includeThoughts=false with a low budget, maxOutputTokens 300', req.body.generationConfig.thinkingConfig && req.body.generationConfig.thinkingConfig.includeThoughts === false && req.body.generationConfig.thinkingConfig.thinkingLevel === 'low' && req.body.generationConfig.maxOutputTokens === 300, JSON.stringify(req.body.generationConfig));
-    ok('coach: context includes remaining macros, today\'s meals and weight trend', /المتبقي: \d+ سعرة، بروتين/.test(sys) && /شوفان بالحليب/.test(sys) && /الوزن: آخر قياس 83.2/.test(sys) && /-0.8 كجم/.test(sys));
+    ok('coach: context includes remaining macros, today\'s meals, my products and weight trend (no water)', /المتبقي: \d+ سعرة، بروتين/.test(sys) && /شوفان بالحليب/.test(sys) && /الوزن: آخر قياس 83.2/.test(sys) && /-0.8 كجم/.test(sys) && /منتجاتي/.test(sys) && /حليب المراعي كامل الدسم/.test(sys) && /240 مل = 149 سعرة/.test(sys) && !/الماء/.test(sys));
     ok('coach: default chat model is Gemini 3.5 Flash Lite', /gemini-3\.5-flash-lite/.test(req.url));
     // detailed request → longer allowed
     await page.fill('#input-chat-text', 'اشرح لي بالتفصيل'); await page.click('[aria-label="إرسال"]');
@@ -601,19 +640,26 @@ const SCAN_COLORS = () => {
     await ctx.close();
   }
 
-  // =============== 10. DASHBOARD: snacks, no smart-reco, favourites, swipe, water, celebrations ===============
+  // =============== 10. DASHBOARD: snacks, no smart-reco, no water, favourites, swipe, celebrations ===============
   {
     const ctx = await newContext(browser); mockAll(ctx);
     const page = await ctx.newPage(); watch(page, 'dashboard');
     await page.addInitScript(() => { window.__vib = []; navigator.vibrate = (p) => { window.__vib.push(p); return true; }; });
     await seedLegacy(page, { usdaKey: 'USDA-OK' }); await openApp(page);
-    await page.waitForFunction(() => state.x.snacks && state.x.snacks.usda && state.x.snacks.usda.banana && /114/.test(document.getElementById('quick-snacks').innerText), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForFunction(() => state.x.snacks && state.x.snacks.usda && state.x.snacks.usda.banana && /105 سعرة/.test(document.getElementById('quick-snacks').innerText), null, { timeout: 8000 }).catch(() => {});
     const snacks = await page.evaluate(() => [...document.querySelectorAll('[data-snack]')].map((b) => b.dataset.snack + ':' + b.innerText.replace(/\s+/g, ' ')));
-    ok('snacks: exactly 3 quick snacks (تمر، سكوب بروتين، موزة)', snacks.length === 3 && /date:.*تمر/.test(snacks[0]) && /scoop:.*سكوب بروتين/.test(snacks[1]) && /banana:.*موزة/.test(snacks[2]), snacks.join(' | '));
-    ok('snacks: values from USDA (cached): date 8 g = 23 kcal, banana 118 g = 114 kcal (Foundation, energy 2047 fallback)', /23 سعرة/.test(snacks[0]) && /114 سعرة/.test(snacks[2]));
-    await page.evaluate(() => { switchTab('settings'); document.getElementById('scoop-use-label').checked = true; document.getElementById('scoop-kcal').value = '130'; document.getElementById('scoop-p').value = '27'; saveSnackConfig(); switchTab('dashboard'); quickAddSnack('scoop'); });
+    ok('snacks: exactly 3 quick snacks — تمر سكري، سكوب بروتين، موزة', snacks.length === 3 && /date:.*تمر سكري/.test(snacks[0]) && /scoop:.*سكوب بروتين/.test(snacks[1]) && /banana:.*موزة/.test(snacks[2]), snacks.join(' | '));
+    ok('snacks: Sukkari date 10 g = 28 kcal (USDA Medjool, source shown), scoop = 24 g protein, banana 118 g = 105 kcal (USDA "Bananas, raw")', /28 سعرة/.test(snacks[0]) && /USDA/.test(snacks[0]) && /24g بروتين/.test(snacks[1]) && /105 سعرة/.test(snacks[2]) && /USDA/.test(snacks[2]), snacks.join(' | '));
+    const dsrc = await page.evaluate(() => Snacks.values('date'));
+    ok('snacks: date source stored and marked "needs verification"', /Dates, medjool/.test(dsrc.sourceName) && dsrc.verify === true && /السكري/.test(dsrc.sourceName));
+    await page.evaluate(() => { switchTab('settings'); });
+    ok('snacks: Settings shows editable date values + source', await page.evaluate(() => document.getElementById('date-kcal').value === '277' && document.getElementById('snack-date-g').value === '10' && /medjool/.test(document.getElementById('snack-date-src').textContent)));
+    await page.evaluate(() => { document.getElementById('scoop-kcal').value = '130'; document.getElementById('scoop-c').value = '2'; saveSnackConfig(); document.getElementById('date-kcal').value = '300'; saveSnackConfig(); switchTab('dashboard'); quickAddSnack('scoop'); });
     const sc = await page.evaluate(() => state.meals[0]);
-    ok('snacks: protein scoop editable from the label in Settings', sc.calories === 130 && sc.protein === 27 && sc.breakdown[0].source === 'label', JSON.stringify({ c: sc.calories, p: sc.protein }));
+    ok('snacks: protein scoop calories/carbs editable in Settings, protein stays 24 g', sc.calories === 130 && sc.protein === 24 && sc.carbs === 2 && sc.breakdown[0].source === 'product', JSON.stringify({ c: sc.calories, p: sc.protein, s: sc.breakdown[0].source }));
+    ok('snacks: edited date values used (10 g × 300/100 = 30 kcal)', /30 سعرة/.test(await page.locator('[data-snack="date"]').innerText()));
+    await page.evaluate(() => { switchTab('settings'); resetDateSnack(); switchTab('dashboard'); });
+    ok('dashboard: NO water tracker anywhere (UI + code)', await page.evaluate(() => !document.getElementById('water-card') && typeof addWater === 'undefined' && typeof renderWater === 'undefined' && !/الماء|أكواب ماء/.test(document.body.innerText)));
     ok('dashboard: smart next-meal recommendation removed (UI + code)', await page.evaluate(() => !document.getElementById('reco-container') && typeof renderSmartRecommendations === 'undefined' && typeof RECO_FOODS === 'undefined' && !/اقتراح ذكي للوجبة القادمة/.test(document.body.innerText)));
     ok('dashboard: light vibration when a meal is added', await page.evaluate(() => window.__vib.some((p) => p === 15)));
     // favourites
@@ -632,9 +678,6 @@ const SCAN_COLORS = () => {
     ok('swipe: left = delete with an undo toast', await page.evaluate((v) => !state.meals.some((m) => safeId(m.id) === v), victim) && await page.locator('#toast-action').isVisible() && /حُذفت/.test(await lastToast(page)));
     await page.click('#toast-action'); await page.waitForTimeout(300);
     ok('swipe: undo restores the deleted meal', await page.evaluate((v) => state.meals.some((m) => safeId(m.id) === v) && !DataGuard.tomb.meals.has(state.meals.find((m) => safeId(m.id) === v).id), victim));
-    // water
-    await page.evaluate(() => { addWater(1); addWater(1); addWater(1); });
-    ok('water: 250 ml glasses saved per day under a new key', await page.evaluate(() => JSON.parse(localStorage.getItem('su3rah_water_log'))[state.todayDate] === 3 && document.getElementById('water-ml').textContent === '750'));
     // celebrations: protein goal hit once per day → confetti + vibration
     await page.evaluate(() => { window.__vib = []; quickAddFood('بروتين كبير', 400, 200, 0, 0); });
     await page.waitForTimeout(700);
@@ -645,7 +688,7 @@ const SCAN_COLORS = () => {
     const g = await page.evaluate(() => [greetingFor(8).text, greetingFor(15).text, greetingFor(23).text, greetingFor(2).text]);
     ok('greeting: صباح الخير / مساء الخير / تصبح على خير by time', g.join('|') === 'صباح الخير|مساء الخير|تصبح على خير|تصبح على خير');
     await page.reload(); await booted(page);
-    ok('water/favourites persist after reload', await page.evaluate(() => state.x.water[state.todayDate] === 3 && state.x.favorites.length === 1));
+    ok('favourites persist after reload', await page.evaluate(() => state.x.favorites.length === 1));
     await shot(page, '06-dashboard-full', { fullPage: true });
     await ctx.close();
   }
@@ -699,24 +742,24 @@ const SCAN_COLORS = () => {
     const ctx = await newContext(browser, { acceptDownloads: true }); mockAll(ctx);
     const page = await ctx.newPage(); watch(page, 'backup');
     await seedLegacy(page, { usdaKey: 'USDA-OK', dsKey: 'sk-abc' }); await openApp(page);
-    await page.evaluate(() => { addWater(4); state.x.weight = [{ id: 'w_x', date: state.todayDate, kg: 80, at: Date.now() }]; saveX('weight'); toggleFavorite(safeId(state.meals[0].id)); state.x.recipes = [{ id: 'recipe_1', name: 'مكرونتي', items: [], cookedWeight: 1000, per100: { kcal: 150, p: 6, c: 25, f: 3 }, at: 1 }]; saveX('recipes'); switchTab('settings'); });
+    await page.evaluate(() => { state.x.products = [{ id: 'prod_b', name: 'حليب المراعي', brand: 'المراعي', keywords: ['حليب'], per100: { kcal: 62, p: 3.1, c: 4.7, f: 3.4 }, basis: 'ml', serving: 240, servingUnit: 'cup', at: 1, updatedAt: 1 }]; saveX('products'); state.x.weight = [{ id: 'w_x', date: state.todayDate, kg: 80, at: Date.now() }]; saveX('weight'); toggleFavorite(safeId(state.meals[0].id)); state.x.recipes = [{ id: 'recipe_1', name: 'مكرونتي', items: [], cookedWeight: 1000, per100: { kcal: 150, p: 6, c: 25, f: 3 }, at: 1 }]; saveX('recipes'); switchTab('settings'); });
     let [dl] = await Promise.all([page.waitForEvent('download'), page.click('text=تصدير كل البيانات')]);
-    const f1 = path.join(os.tmpdir(), 'su3rah-v7-export-1.json'); await dl.saveAs(f1); const j1 = JSON.parse(fs.readFileSync(f1, 'utf8'));
-    ok('export: meals, chats, goal, water, weight, favourites, recipes included', j1.data.meals.length === 7 && j1.data.chatSessions.length === 2 && j1.data.goal.targetCalories === 2300 && j1.data.extras.water && j1.data.extras.weight.length === 1 && j1.data.extras.favorites.length === 1 && j1.data.extras.recipes.length === 1);
+    const f1 = path.join(os.tmpdir(), 'su3rah-v8-export-1.json'); await dl.saveAs(f1); const j1 = JSON.parse(fs.readFileSync(f1, 'utf8'));
+    ok('export: meals, chats, goal, weight, favourites, recipes AND My Products included', j1.appVersion === 'v8' && j1.data.meals.length === 7 && j1.data.chatSessions.length === 2 && j1.data.goal.targetCalories === 2300 && j1.data.extras.weight.length === 1 && j1.data.extras.favorites.length === 1 && j1.data.extras.recipes.length === 1 && j1.data.extras.products.length === 1 && j1.data.extras.products[0].name === 'حليب المراعي');
     ok('export: NO API keys by default (Gemini, USDA, DeepSeek)', !j1.keys && !/AIzaTEST-old-key|USDA-OK|sk-abc/.test(JSON.stringify(j1)));
     await page.check('#backup-include-keys');
     [dl] = await Promise.all([page.waitForEvent('download'), page.click('text=تصدير كل البيانات')]);
-    const f2 = path.join(os.tmpdir(), 'su3rah-v7-export-2.json'); await dl.saveAs(f2); const j2 = JSON.parse(fs.readFileSync(f2, 'utf8'));
+    const f2 = path.join(os.tmpdir(), 'su3rah-v8-export-2.json'); await dl.saveAs(f2); const j2 = JSON.parse(fs.readFileSync(f2, 'utf8'));
     ok('export: keys included only when ticked', j2.keys && j2.keys.gemini === 'AIzaTEST-old-key' && j2.keys.usda === 'USDA-OK' && j2.keys.deepseek === 'sk-abc');
     await ctx.close();
 
     const ctx2 = await newContext(browser); mockAll(ctx2); const p2 = await ctx2.newPage(); watch(p2, 'import');
     await openApp(p2);
-    await p2.evaluate(() => { quickAddFood('وجبة الجهاز الثاني', 200, 10, 20, 5); addWater(1); switchTab('settings'); });
+    await p2.evaluate(() => { quickAddFood('وجبة الجهاز الثاني', 200, 10, 20, 5); state.x.products = [{ id: 'prod_local', name: 'لبن نادك', keywords: ['لبن'], per100: { kcal: 45, p: 3, c: 4, f: 1.5 }, basis: 'ml', at: 1, updatedAt: 1 }]; saveX('products'); switchTab('settings'); });
     await p2.setInputFiles('#import-file-input', f1);
     await p2.waitForFunction(() => state.meals.length >= 9, null, { timeout: 8000 });
-    const s = await p2.evaluate(() => ({ n: state.meals.length, own: state.meals.some((m) => m.title === 'وجبة الجهاز الثاني'), w: state.x.weight.length, fav: state.x.favorites.length, rec: state.x.recipes.length, water: state.x.water[state.todayDate], goal: state.goalConfig.targetCalories }));
-    ok('import: merged by id; local data kept; extras merged', s.n === 9 && s.own && s.w === 1 && s.fav === 1 && s.rec === 1 && s.water === 4 && s.goal === 2300, JSON.stringify(s));
+    const s = await p2.evaluate(() => ({ n: state.meals.length, own: state.meals.some((m) => m.title === 'وجبة الجهاز الثاني'), w: state.x.weight.length, fav: state.x.favorites.length, rec: state.x.recipes.length, prods: state.x.products.map((p) => p.id).sort().join(), goal: state.goalConfig.targetCalories }));
+    ok('import: merged by id; local data kept; extras + My Products merged', s.n === 9 && s.own && s.w === 1 && s.fav === 1 && s.rec === 1 && s.prods === 'prod_b,prod_local' && s.goal === 2300, JSON.stringify(s));
     await p2.setInputFiles('#import-file-input', f1); await p2.waitForTimeout(600);
     ok('import twice: no duplicates', await p2.evaluate(() => state.meals.length) === 9);
     await ctx2.close();
@@ -725,8 +768,8 @@ const SCAN_COLORS = () => {
     await p3.setInputFiles('#import-file-input', f1); await p3.waitForFunction(() => /دُمجت/.test(document.getElementById('toast-text').innerText));
     ok('import: automatic snapshot taken first', await p3.evaluate(async () => (await Snapshot.get()).reason === 'import'));
     await p3.evaluate(() => undoLastSnapshot()); await p3.waitForTimeout(400);
-    const u = await p3.evaluate(() => ({ n: state.meals.length, local: state.meals.some((m) => m.title === 'محلي'), w: state.x.weight.length, rec: state.x.recipes.length, goal: state.goalConfig.targetCalories }));
-    ok('import undo: imported meals + extras removed, local meal kept, goal restored', u.n === 2 && u.local && u.w === 0 && u.rec === 0 && u.goal !== 2300, JSON.stringify(u));
+    const u = await p3.evaluate(() => ({ n: state.meals.length, local: state.meals.some((m) => m.title === 'محلي'), w: state.x.weight.length, rec: state.x.recipes.length, prods: (state.x.products || []).length, goal: state.goalConfig.targetCalories }));
+    ok('import undo: imported meals + extras + products removed, local meal kept, goal restored', u.n === 2 && u.local && u.w === 0 && u.rec === 0 && u.prods === 0 && u.goal !== 2300, JSON.stringify(u));
     await ctx3.close();
     const ctx4 = await newContext(browser); mockAll(ctx4); const p4 = await ctx4.newPage(); watch(p4, 'wipe');
     await seedLegacy(p4); await openApp(p4);
@@ -778,6 +821,14 @@ const SCAN_COLORS = () => {
     const css = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
     ok('layout: safe-area insets used for header, dock, sheets and body padding', /viewport-fit=cover/.test(css) && /safe-area-inset-bottom/.test(css) && /safe-area-inset-top/.test(css) && /bottom: calc\(12px \+ var\(--safe-b\)\)/.test(css));
     ok('motion: prefers-reduced-motion respected', /@media \(prefers-reduced-motion: reduce\)/.test(css));
+    // animated background stays smooth on mobile: compositor-only keyframes + measured frame rate
+    await page.evaluate(() => switchTab('dashboard'));
+    const perf = await page.evaluate(() => new Promise((res) => {
+      const props = new Set(); for (const sh of document.styleSheets) { let rules; try { rules = sh.cssRules; } catch (_) { continue; } for (const r of rules) if (r.type === CSSRule.KEYFRAMES_RULE && /^(orb[A-D]|dustUp)$/.test(r.name)) for (const k of r.cssRules) for (let i = 0; i < k.style.length; i++) props.add(k.style[i]); }
+      const filterBlur = [...document.querySelectorAll('#ambient-bg .orb')].some((o) => getComputedStyle(o).filter !== 'none');
+      let n = 0; const t0 = performance.now(); const tick = (t) => { n++; if (t - t0 < 2000) requestAnimationFrame(tick); else res({ fps: Math.round(n / ((t - t0) / 1000)), props: [...props], filterBlur }); }; requestAnimationFrame(tick);
+    }));
+    ok('background: GPU-friendly (keyframes animate only transform/opacity, no filter blur) and smooth on mobile (≥ 50 fps)', perf.props.every((p) => /^(transform|opacity)$/.test(p)) && !perf.filterBlur && perf.fps >= 50, JSON.stringify(perf));
     await page.evaluate(() => { switchTab('dashboard'); openMealModal(); });
     ok('layout: dock hides while a bottom sheet is open', await page.evaluate(() => document.body.classList.contains('modal-open')));
     await ctx.close();
@@ -786,10 +837,10 @@ const SCAN_COLORS = () => {
   // =============== 15. PWA: manifest + service worker + OFFLINE mode ===============
   {
     const man = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
-    ok('manifest: name, start_url, id, scope, lang, dir, description, colours', man.name === 'سُعرة' && man.start_url === './index.html' && man.id && man.scope === './' && man.lang === 'ar' && man.dir === 'rtl' && man.description && man.theme_color === '#0A0B10' && man.background_color === '#0A0B10');
+    ok('manifest: name, start_url, id, scope, lang, dir, description, colours', man.name === 'سُعرة' && man.start_url === './index.html' && man.id && man.scope === './' && man.lang === 'ar' && man.dir === 'rtl' && man.description && man.theme_color === '#0E0907' && man.background_color === '#0E0907');
     ok('manifest: separate maskable icon entry', man.icons.some((i) => i.purpose === 'maskable' && fs.existsSync(path.join(ROOT, i.src))) && man.icons.every((i) => fs.existsSync(path.join(ROOT, i.src))));
     const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
-    ok('sw: versioned cache, skipWaiting + clients.claim, network-first index.html', /VERSION = 'v7/.test(sw) && /skipWaiting\(\)/.test(sw) && /clients\.claim\(\)/.test(sw) && /networkFirst/.test(sw));
+    ok('sw: versioned cache, skipWaiting + clients.claim, network-first index.html', /VERSION = 'v8/.test(sw) && /skipWaiting\(\)/.test(sw) && /clients\.claim\(\)/.test(sw) && /networkFirst/.test(sw));
     ok('sw: never caches API calls (googleapis, USDA, Open Food Facts, DeepSeek) and never touches storage', /api\.nal\.usda\.gov/.test(sw) && /openfoodfacts/.test(sw) && /deepseek/.test(sw) && /googleapis/.test(sw) && !/indexedDB|localStorage\./.test(sw.replace(/\/\*[\s\S]*?\*\//, '')));
     const ctx = await newContext(browser, { serviceWorkers: 'allow' }); mockAll(ctx);
     const page = await ctx.newPage(); watch(page, 'offline');
@@ -810,6 +861,133 @@ const SCAN_COLORS = () => {
     await page.evaluate(() => quickAddFood('وجبة بدون نت', 300, 20, 30, 10));
     ok('offline: logging works offline', await page.evaluate(() => state.meals.length) === 8);
     await ctx.setOffline(false);
+    await ctx.close();
+  }
+
+  // =============== 17. MY PRODUCTS: label photo → product → «كوب حليب» uses MY product ===============
+  {
+    const MILK_LABEL = { product_name: 'حليب المراعي كامل الدسم', brand: 'المراعي', basis: 'per100ml', serving_size_g: null, serving_size_ml: 200, kcal: 62, kj: null, protein_g: 3.1, carbs_g: 4.7, fat_g: 3.4, sugar_g: 4.7, fiber_g: 0, readable: true };
+    const ctx = await newContext(browser); const M = mockAll(ctx, { gemini: { label: MILK_LABEL } });
+    const page = await ctx.newPage(); watch(page, 'products');
+    await seedLegacy(page, { usdaKey: 'USDA-OK' }); await openApp(page);
+    await page.evaluate(() => switchTab('settings'));
+    ok('products: Settings → منتجاتي section with search + add by label / barcode / manual', await page.locator('#products-section').isVisible() && await page.locator('#products-search').isVisible() && await page.locator('#products-section >> text=من صورة الملصق').count() === 1 && await page.locator('#products-section >> text=من الباركود').count() === 1);
+    await page.setInputFiles('#product-label-quick', path.join(ROOT, 'icon-512.png'));
+    await page.waitForFunction(() => document.getElementById('product-kcal').value === '62', null, { timeout: 8000 });
+    const f = await page.evaluate(() => ({ name: document.getElementById('product-name').value, brand: document.getElementById('product-brand').value, kw: document.getElementById('product-keywords').value, ml: document.getElementById('product-basis-ml').classList.contains('is-active'), src: document.getElementById('product-source').value, p: document.getElementById('product-p').value, sugar: document.getElementById('product-sugar').value, serving: document.getElementById('product-serving').value, thumb: !!document.querySelector('#product-thumb img') }));
+    ok('products: label photo → Gemini reads ONLY printed numbers → editor filled for me to confirm', f.name === 'حليب المراعي كامل الدسم' && f.brand === 'المراعي' && f.p === '3.1' && f.sugar === '4.7' && f.ml && f.src === 'label' && f.serving === '200' && f.thumb, JSON.stringify(f));
+    ok('products: keywords suggested (حليب، milk…)', /حليب/.test(f.kw) && /milk/.test(f.kw), f.kw);
+    await page.fill('#product-kcal', '63'); await page.fill('#product-kcal', '62');
+    await page.click('#btn-product-save'); await page.waitForTimeout(250);
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('su3rah_my_products')));
+    ok('products: saved under the NEW key su3rah_my_products with per-100 ml values + source', stored.length === 1 && stored[0].basis === 'ml' && stored[0].per100.kcal === 62 && stored[0].source === 'label' && stored[0].keywords.includes('حليب'), JSON.stringify(stored[0]).slice(0, 160));
+    ok('products: listed in Settings with منتجاتي + ملصق pills', /حليب المراعي كامل الدسم/.test(await page.locator('#products-list').innerText()) && await page.locator('#products-list .pill').count() >= 2);
+    await shot(page, '13-my-products');
+    // «كوب حليب» via Gemini → my product, not USDA
+    const usdaBefore = M.usda.length;
+    await page.evaluate(() => { switchTab('dashboard'); openMealModal(); });
+    await page.fill('#ai-description', 'كوب حليب'); await page.click('#btn-submit-ai');
+    await page.waitForSelector('#modal-confirm:not(.hidden)', { timeout: 10000 });
+    const c = await page.evaluate(() => ({ it: Confirm.items[0], pill: document.querySelector('#confirm-items .pill').textContent, unit: document.querySelector('#confirm-items [data-unit]').textContent, T: confirmTotals() }));
+    ok('products: «كوب حليب» uses MY product first (not USDA) with the منتجاتي badge', c.it.source === 'product' && c.pill === 'منتجاتي' && /حليب المراعي/.test(c.it.sourceName) && M.usda.length === usdaBefore, JSON.stringify({ s: c.it.source, n: c.it.sourceName, usda: M.usda.length - usdaBefore }));
+    ok('products: كوب = 240 ml, shown in ml, macros from my label (149 kcal)', c.it.grams === 240 && c.it.unit === 'ml' && c.unit === 'مل' && Math.round(c.T.kcal) === 149 && Math.abs(c.T.p - 7.44) < 0.01, JSON.stringify({ g: c.it.grams, u: c.unit, T: c.T }));
+    await shot(page, '14-confirm-my-product');
+    await page.click('#btn-confirm-save'); await page.waitForTimeout(300);
+    ok('products: meal saved with product breakdown (unit ml) and high confidence', await page.evaluate(() => { const m = state.meals[0]; return m.calories === 149 && m.breakdown[0].source === 'product' && m.breakdown[0].unit === 'ml' && m.breakdown[0].productId && m.confidence === 'high'; }));
+    ok('products: meal card shows the ml amount', /240 مل/.test(await page.locator('#meals-container [data-swipe]').first().textContent()));
+    // offline/local parser path + units
+    const loc = await page.evaluate(async () => {
+      const r = async (t) => { const u = parseItemsLocally(t); const x = await resolveItem(u.items[0]); return { s: x.source, g: x.grams, u: x.unit, n: x.sourceName }; };
+      const a = await r('كوب حليب'); const b = await r('علبة حليب'); const c2 = await r('2 كوب حليب');
+      state.x.units.cupMl = 250; const d = await r('كوب حليب'); state.x.units.cupMl = 240;
+      const e = await r('شاي بالحليب'); state.x.products.push({ id: 'tmp_laban', name: 'لبن المراعي', brand: 'المراعي', keywords: ['لبن'], per100: { kcal: 45, p: 3, c: 4.5, f: 1.5 }, basis: 'ml' }); const lab = await r('100 جرام لبنة'); state.x.products = state.x.products.filter((p) => p.id !== 'tmp_laban');
+      return { a, b, c2, d, e, lab };
+    });
+    ok('products: local parser — كوب = 240 ml, علبة = serving (200 ml), 2 أكواب = 480 ml', loc.a.s === 'product' && loc.a.g === 240 && loc.a.u === 'ml' && loc.b.g === 200 && loc.c2.g === 480, JSON.stringify([loc.a, loc.b, loc.c2]));
+    ok('products: «كوب» size editable (250 ml)', loc.d.g === 250, JSON.stringify(loc.d));
+    ok('products: «بالحليب» prefix still matches; «لبنة» does NOT match a «لبن»-type keyword', loc.e.s === 'product' && loc.lab.s === 'table', JSON.stringify([loc.e.s, loc.lab]));
+    // several products for one keyword → default wins, switchable on the confirmation card
+    const multi = await page.evaluate(async () => {
+      state.x.products.push({ id: 'prod_nadec', name: 'حليب نادك قليل الدسم', brand: 'نادك', keywords: ['حليب', 'milk'], per100: { kcal: 46, p: 3.2, c: 4.8, f: 1.5 }, basis: 'ml', serving: 200, servingUnit: 'ml', isDefault: true, at: 2, updatedAt: 2 });
+      const a = await resolveItem({ name_ar: 'حليب', name_en: 'milk whole', grams: 240, unit: 'ml', state: 'n/a' });
+      const b = await resolveItem({ name_ar: 'حليب المراعي', name_en: 'milk', grams: 240, unit: 'ml', state: 'n/a' });
+      await openConfirm({ title: 't', items: [a], origin: 'ai' });
+      return { a: a.sourceName, alts: a.productAlts.length, b: b.sourceName };
+    });
+    ok('products: several matches → the one marked default is used (and the brand name still wins when typed)', /نادك/.test(multi.a) && multi.alts === 1 && /المراعي/.test(multi.b), JSON.stringify(multi));
+    await page.evaluate(() => swapConfirmItem(0)); await page.waitForTimeout(100);
+    ok('products: confirmation card lists my other matching products to switch', /حليب المراعي كامل الدسم/.test(await page.locator('#confirm-items [data-ci="0"] .swap-box').innerText()));
+    await page.locator('#confirm-items [data-ci="0"] .swap-box button:has-text("حليب المراعي")').click();
+    ok('products: switching on the confirmation card recalculates (240 ml → 149 kcal)', await page.evaluate(() => /المراعي/.test(Confirm.items[0].sourceName) && Math.round(confirmTotals().kcal) === 149));
+    await page.evaluate(() => closeConfirm());
+    // density: product per 100 g, amount given in ml
+    const dens = await page.evaluate(() => { const p = { id: 'x', name: 'زبادي', basis: 'g', density: 1.05, per100: { kcal: 60, p: 3.5, c: 4.7, f: 3 } }; return productAmount({ grams: 200, unit: 'ml' }, p); });
+    ok('products: ml ↔ g uses the label density when given (200 ml × 1.05 = 210 g)', dens.amount === 210 && dens.unit === 'g', JSON.stringify(dens));
+    // manage: search, set default, delete with undo
+    await page.evaluate(() => { saveX('products'); switchTab('settings'); });
+    await page.fill('#products-search', 'نادك');
+    ok('products: search filters the list', await page.locator('#products-list [data-product]').count() === 1);
+    await page.fill('#products-search', ''); await page.evaluate(() => renderProductsList());
+    await page.evaluate(() => toggleDefaultProduct(state.x.products[0].id));
+    ok('products: «set default» moves the default (only one default per keyword)', await page.evaluate(() => state.x.products.filter((p) => p.isDefault).length === 1 && state.x.products[0].isDefault));
+    await page.evaluate(() => deleteProduct('prod_nadec')); await page.waitForTimeout(150);
+    ok('products: delete with undo toast', await page.evaluate(() => state.x.products.length === 1) && await page.locator('#toast-action').isVisible());
+    await page.click('#toast-action'); await page.waitForTimeout(200);
+    ok('products: undo restores the product', await page.evaluate(() => state.x.products.length === 2));
+    // edit
+    await page.evaluate(() => openProductEditor(state.x.products[0].id)); await page.fill('#product-kcal', '64'); await page.click('#btn-product-save'); await page.waitForTimeout(200);
+    ok('products: edit updates values', await page.evaluate(() => state.x.products[0].per100.kcal === 64));
+    // barcode → product (Settings → من الباركود)
+    await page.evaluate(() => scanBarcodeForProduct()); await page.evaluate(() => { stopBarcodeScan(); lookupBarcode('6281007012345'); });
+    await page.waitForSelector('#modal-product:not(.hidden)', { timeout: 6000 });
+    const bp = await page.evaluate(() => ({ n: document.getElementById('product-name').value, bc: document.getElementById('product-barcode').value, k: document.getElementById('product-kcal').value, src: document.getElementById('product-source').value }));
+    ok('products: add by barcode (Open Food Facts) → editor filled to confirm', /لبن زبادي/.test(bp.n) && bp.bc === '6281007012345' && bp.k === '63' && bp.src === 'barcode', JSON.stringify(bp));
+    await page.click('#btn-product-save'); await page.waitForTimeout(200);
+    // manual + migration of V7 «أطعمتي» (non-destructive)
+    ok('products: 3 products now (label, manual-default, barcode)', await page.evaluate(() => state.x.products.length === 3));
+    await page.reload(); await booted(page);
+    ok('products: persist after reload', await page.evaluate(() => state.x.products.length === 3));
+    await ctx.close();
+    const ctx2 = await newContext(browser); mockAll(ctx2); const p2 = await ctx2.newPage(); watch(p2, 'myfoods-migration');
+    await seedLegacy(p2, { extraLs: { su3rah_my_foods: JSON.stringify([{ id: 'food_1', name_ar: 'لبن المراعي', per100: { kcal: 45, p: 3, c: 4.5, f: 1.5 }, barcode: '628100', origin: 'باركود', at: 1 }]) } });
+    await openApp(p2);
+    const mig = await p2.evaluate(() => ({ prods: state.x.products.map((p) => p.name), old: JSON.parse(localStorage.getItem('su3rah_my_foods')).length }));
+    ok('products: V7 «أطعمتي» copied into My Products once; the old key is left untouched', mig.prods.includes('لبن المراعي') && mig.old === 1, JSON.stringify(mig));
+    await p2.reload(); await booted(p2);
+    ok('products: migration not repeated', await p2.evaluate(() => state.x.products.length === 1));
+    await ctx2.close();
+  }
+
+  // =============== 18. SMART AUTO-SAVE SUGGESTION ===============
+  {
+    const ctx = await newContext(browser); mockAll(ctx);
+    const page = await ctx.newPage(); watch(page, 'autosave');
+    await seedLegacy(page, { usdaKey: 'USDA-OK' }); await openApp(page);
+    const logAI = async () => { await page.evaluate(() => openMealModal()); await page.fill('#ai-description', 'شوفان بالموز'); await page.click('#btn-submit-ai'); await page.waitForSelector('#modal-confirm:not(.hidden)', { timeout: 8000 }); await page.click('#btn-confirm-save'); await page.waitForTimeout(250); };
+    await logAI(); await logAI();
+    ok('autosave: no suggestion after 2 logs', await page.evaluate(() => document.getElementById('autosave-suggest').classList.contains('hidden')));
+    await logAI();
+    const card = await page.evaluate(() => ({ vis: !document.getElementById('autosave-suggest').classList.contains('hidden'), n: document.querySelectorAll('#autosave-suggest [data-suggest]').length, t: document.getElementById('autosave-suggest').innerText }));
+    ok('autosave: same food 3× within 10 days → ONE suggestion card with the 3 options', card.vis && card.n === 1 && /تضيفها دائماً — تبغى تحفظها؟/.test(card.t) && /شوفان بالموز/.test(card.t) && /حفظ في المفضلة/.test(card.t) && /حفظ كمنتج من منتجاتي/.test(card.t) && /لا، شكراً/.test(card.t), card.t.replace(/\s+/g, ' ').slice(0, 140));
+    await shot(page, '15-autosave-suggestion');
+    await page.click('#autosave-suggest >> text=لا، شكراً'); await page.waitForTimeout(150);
+    await logAI();
+    const sn = await page.evaluate(() => { const e = Object.values(state.x.logStats).find((x) => x.name === 'شوفان بالموز'); return { hidden: document.getElementById('autosave-suggest').classList.contains('hidden'), days: Math.round((e.snoozeUntil - Date.now()) / 864e5) }; });
+    ok('autosave: «لا، شكراً» → not asked again for that item for 30 days', sn.hidden && sn.days === 30, JSON.stringify(sn));
+    ok('autosave: stats stored under a NEW key', await page.evaluate(() => !!localStorage.getItem('su3rah_food_log_stats')));
+    await page.evaluate(() => { for (let i = 0; i < 3; i++) quickAddFood('سلطة دجاج', 320, 30, 12, 15); });
+    await page.click('#autosave-suggest >> text=حفظ في المفضلة'); await page.waitForTimeout(150);
+    ok('autosave: «حفظ في المفضلة» stars it and the card disappears', await page.evaluate(() => state.x.favorites.some((f) => f.title === 'سلطة دجاج') && document.getElementById('autosave-suggest').classList.contains('hidden')));
+    await page.evaluate(() => { for (let i = 0; i < 3; i++) quickAddFood('زبادي بالعسل', 180, 9, 25, 4); });
+    await page.click('#autosave-suggest >> text=حفظ كمنتج من منتجاتي');
+    await page.waitForSelector('#modal-product:not(.hidden)');
+    ok('autosave: «حفظ كمنتج» opens the product editor prefilled', await page.evaluate(() => document.getElementById('product-name').value === 'زبادي بالعسل' && document.getElementById('product-kcal').value === '180'));
+    await page.click('#btn-product-save'); await page.waitForTimeout(200);
+    ok('autosave: saving the product closes the suggestion', await page.evaluate(() => state.x.products.some((p) => p.name === 'زبادي بالعسل') && document.getElementById('autosave-suggest').classList.contains('hidden')));
+    const r = await page.evaluate(async () => { const x = await resolveItem(parseItemsLocally('زبادي بالعسل').items[0]); return [x.source, Math.round(itemTotals(x).kcal)]; });
+    ok('autosave: the new product is then used with its full serving (180 kcal)', r[0] === 'product' && r[1] === 180, JSON.stringify(r));
+    await page.evaluate(() => { for (let i = 0; i < 4; i++) quickAddSnack('date'); });
+    ok('autosave: quick snacks never trigger a suggestion', await page.evaluate(() => document.getElementById('autosave-suggest').classList.contains('hidden')));
     await ctx.close();
   }
 
