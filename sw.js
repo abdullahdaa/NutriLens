@@ -1,23 +1,25 @@
-/* سُعرة — Service Worker (app-shell cache)
+/* سُعرة — Service Worker (app-shell cache) — V7
  * - index.html / navigations: network-first (updates arrive immediately), cache fallback offline.
- * - Other same-origin files + fonts/Tailwind CDN: stale-while-revalidate.
- * - API calls (Gemini, DeepSeek, any googleapis.com API) are NEVER intercepted or cached.
+ * - Other same-origin files + fonts / Tailwind / barcode-reader CDN: stale-while-revalidate.
+ * - API calls are NEVER intercepted or cached: Gemini (googleapis.com), USDA (api.nal.usda.gov),
+ *   Open Food Facts, DeepSeek.
  * - This worker never touches IndexedDB or localStorage. It only deletes its OWN old caches.
  */
-const VERSION = 'v6.0.0';
+const VERSION = 'v7.0.0';
 const SHELL_CACHE = `su3rah-shell-${VERSION}`;
 const RUNTIME_CACHE = `su3rah-runtime-${VERSION}`;
 const OWN_CACHE_PREFIXES = ['su3rah-shell-', 'su3rah-runtime-'];
-const SHELL_FILES = ['./', './index.html', './manifest.json', './icon.png'];
+const SHELL_FILES = ['./', './index.html', './manifest.json', './icon.png', './icon-512.png', './icon-maskable.png'];
 
-// Hosts whose responses may be cached for offline use (static assets only).
-const CACHEABLE_CDN = new Set(['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.tailwindcss.com']);
+// Static asset hosts that may be cached for offline use.
+const CACHEABLE_CDN = new Set(['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.tailwindcss.com', 'cdn.jsdelivr.net']);
+// API hosts: never cached, never intercepted.
+const API_HOSTS = ['api.nal.usda.gov', 'world.openfoodfacts.org', 'openfoodfacts.org', 'api.deepseek.com', 'deepseek.com'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(SHELL_CACHE)
-      .then((cache) => cache.addAll(SHELL_FILES.map((u) => new Request(u, { cache: 'reload' }))))
-      .catch(() => {})
+      .then((cache) => Promise.all(SHELL_FILES.map((u) => cache.add(new Request(u, { cache: 'reload' })).catch(() => {}))))
       .then(() => self.skipWaiting())
   );
 });
@@ -33,8 +35,9 @@ self.addEventListener('activate', (event) => {
 });
 
 function isApiRequest(url) {
-  if (url.hostname === 'api.deepseek.com' || url.hostname.endsWith('.deepseek.com')) return true;
-  if (url.hostname === 'googleapis.com' || url.hostname.endsWith('.googleapis.com')) return url.hostname !== 'fonts.googleapis.com';
+  const h = url.hostname;
+  if (API_HOSTS.some((a) => h === a || h.endsWith('.' + a))) return true;
+  if (h === 'googleapis.com' || h.endsWith('.googleapis.com')) return h !== 'fonts.googleapis.com';
   return false;
 }
 

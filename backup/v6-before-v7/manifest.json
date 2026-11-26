@@ -1,0 +1,23 @@
+{
+  "id": "./index.html",
+  "name": "سُعرة",
+  "short_name": "سُعرة",
+  "description": "متتبع السعرات والماكروز الذكي مع مدرب تغذية بالذكاء الاصطناعي — بياناتك محفوظة على جهازك فقط.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0806",
+  "theme_color": "#0c0806",
+  "categories": ["health", "fitness", "food"],
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
